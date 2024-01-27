@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ETH Analysis Week  1.21-1.27</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="bear-note-unique-identifier" content="340F4ABF-3C63-4A90-9775-B05BB9EE1445">
+        <meta name="created" content="2024-01-26T16:55:14-0800"/>
+        <meta name="modified" content="2024-01-26T17:28:34-0800"/>
+        <meta name="tags" content="CryptoAnalysis"/>
+        <meta name="last device" content="Zhipeng’s MacBook Pro"/>
+        
+    </head>
+        <style>
+             body {
+   --base-background-color: #ffffff;
+   --document-background-color: var(--base-background-color);
+ }
+
+.document-wrapper {
+  /* Constants used to transform theme values to CSS */
+  --transform-line-height-factor: 1.17;
+
+  /* From template */
+  --base-text-color: #444444;
+  --base-text-secondary-color: #888888;
+  --base-text-tertiary-color: #d9d9d9;
+  --base-background-color: #ffffff;
+  --base-background-secondary-color: #F3F5F7;
+  --base-background-tertiary-color: #E4E5E6;
+  --base-stroke-color: #d9d9d9;
+  --base-stroke-secondary-color: #d9d9d9;
+  --base-accent-color: #DD4C4F;
+  --base-highlight-color: #D3FFA4;
+
+  --document-background-color: var(--base-background-color);
+  --document-text-color: var(--base-text-color);
+  --document-text-secondary-color: var(--base-text-secondary-color);
+  --document-text-light-color: var(--base-text-secondary-color);
+  --document-accent-color: var(--base-accent-color);
+  --document-cursor-color: var(--base-accent-color);
+  --document-link-color: var(--base-accent-color);
+  --document-list-marker-color: var(--base-accent-color);
+  --document-marker-color: var(--base-text-tertiary-color);
+  --document-selection-color: var(--base-selection-color);
+  --document-selection-inactive-color: var(--base-background-tertiary-color);
+  --document-text-font: "AvenirNext-Regular";
+  --document-text-size: 15px;
+  --document-line-height-multiplier: calc(
+    1.5 * var(--transform-line-height-factor)
+  );
+
+  --document-headers-text-color: var(--base-text-color);
+  --document-headers-font: "AvenirNext-Medium";
+  --document-headers-modular-scale: 1.125;
+  --document-headers-line-height-multiplier: calc(
+    1.3 * var(--transform-line-height-factor)
+  );
+  --document-headers-add-top-bottom-padding: 1;
+  --document-headers-padding-top-multiplier: 0.5;
+  --document-headers-padding-bottom-multiplier: 0.3;
+
+  --document-code-text-color: var(--base-text-color);
+  --document-code-border-color: var(--base-text-tertiary-color);
+  --document-code-background-color: var(--base-background-secondary-color);
+  --document-code-font: "Menlo-Regular";
+  --document-code-text-size-multiplier: 0.91;
+
+  --document-code-syntax-highlight-comment: #65798c;
+  --document-code-syntax-highlight-constant: #0095c9;
+  --document-code-syntax-highlight-number: #0095c9;
+  --document-code-syntax-highlight-string: #d12f1b;
+  --document-code-syntax-highlight-entity: #4a838b;
+  --document-code-syntax-highlight-keyword: #ad3da4;
+  --document-code-syntax-highlight-function: #4a838b;
+  --document-code-syntax-highlight-variable: #4a838b;
+
+  --document-task-background-color: var(--base-background-color);
+  --document-task-border-color: var(--base-text-secondary-color);
+  --document-task-check-color: var(--base-text-color);
+
+  --document-tag-background-color: var(--base-background-tertiary-color);
+  --document-tag-text-color: var(--base-text-color);
+  --document-tag-marker-color: var(--base-text-secondary-color);
+
+  --document-highlighter-background-color: var(--base-highlight-color);
+  --document-highlighter-text-color: var(--base-text-color);
+
+  --document-file-fold-color: var(--base-background-tertiary-color);
+  --document-file-background-color: var(--base-background-secondary-color);
+
+  --document-separator-border-color: var(--base-stroke-secondary-color);
+
+  --document-table-border-color: var(--base-stroke-secondary-color);
+  --document-table-cell-background-color: var(--base-background-color);
+  --document-table-cell-alternate-background-color: var(
+    --base-background-secondary-color
+  );
+}
+
+.document-wrapper,body{background-color:var(--document-background-color)}.document-wrapper h1.setext,.document-wrapper h2.setext{border-bottom:calc(2 * var(--document-hairline-width)) solid var(--document-separator-border-color);padding-bottom:.6em}.document-wrapper blockquote blockquote blockquote blockquote blockquote::before,.document-wrapper blockquote blockquote blockquote::before,.document-wrapper blockquote::before{background-color:var(--document-list-marker-color)}.document-wrapper a:hover,.document-wrapper mark{text-decoration:inherit}.document-wrapper td[data-alignment="1"],.document-wrapper th{text-align:left}.document-wrapper :after,.document-wrapper :before,.document-wrapper a,.document-wrapper abbr,.document-wrapper acronym,.document-wrapper address,.document-wrapper applet,.document-wrapper article,.document-wrapper aside,.document-wrapper audio,.document-wrapper b,.document-wrapper big,.document-wrapper blockquote,.document-wrapper canvas,.document-wrapper caption,.document-wrapper center,.document-wrapper cite,.document-wrapper code,.document-wrapper dd,.document-wrapper del,.document-wrapper details,.document-wrapper dfn,.document-wrapper div,.document-wrapper dl,.document-wrapper dt,.document-wrapper em,.document-wrapper embed,.document-wrapper fieldset,.document-wrapper figcaption,.document-wrapper figure,.document-wrapper footer,.document-wrapper form,.document-wrapper h1,.document-wrapper h2,.document-wrapper h3,.document-wrapper h4,.document-wrapper h5,.document-wrapper h6,.document-wrapper header,.document-wrapper hgroup,.document-wrapper i,.document-wrapper iframe,.document-wrapper ins,.document-wrapper kbd,.document-wrapper label,.document-wrapper legend,.document-wrapper li,.document-wrapper mark,.document-wrapper menu,.document-wrapper nav,.document-wrapper object,.document-wrapper ol,.document-wrapper output,.document-wrapper p,.document-wrapper pre,.document-wrapper q,.document-wrapper ruby,.document-wrapper s,.document-wrapper samp,.document-wrapper section,.document-wrapper small,.document-wrapper span,.document-wrapper strike,.document-wrapper strong,.document-wrapper summary,.document-wrapper table,.document-wrapper tbody,.document-wrapper td,.document-wrapper tfoot,.document-wrapper th,.document-wrapper thead,.document-wrapper time,.document-wrapper tr,.document-wrapper tt,.document-wrapper u,.document-wrapper ul,.document-wrapper var,.document-wrapper video{all:unset}.document-wrapper{--document-inline-padding-top-bottom:0.25em;--document-inline-padding-left-right:0.25em;--header-1-font-size:2em;--header-2-font-size:1.6em;--header-3-font-size:1.27em;--document-hairline-width:calc(var(--document-text-size) / 15);box-sizing:border-box;color:var(--document-text-color);font-family:var(--document-text-font);font-size:var(--document-text-size);line-height:var(--document-line-height-multiplier);min-height:100%;max-width:48em;width:100%;tab-size:4;margin:0 auto;padding:0 2em}body{text-rendering:optimizeLegibility}.document-wrapper:focus-visible{outline:0}.document-wrapper .marker{color:var(--document-marker-color);display:none}.document-wrapper [data-direction="2"]{direction:rtl}.document-wrapper div.footnote,.document-wrapper div.link-definition,.document-wrapper p{display:block}.document-wrapper p.blank-line::before{content:" "}.document-wrapper h1,.document-wrapper h2,.document-wrapper h3,.document-wrapper h4,.document-wrapper h5,.document-wrapper h6{font-family:var(--document-headers-font);display:block;line-height:var(--document-headers-line-height-multiplier)}.document-wrapper h1{font-size:var(--header-1-font-size);padding-block-start:0.8em;padding-block-end:0.33em}.document-wrapper h2{font-size:var(--header-2-font-size);padding-block-start:0.66em;padding-block-end:0.27em}.document-wrapper h3{font-size:var(--header-3-font-size);padding-block-start:0.53em;padding-block-end:0.27em}.document-wrapper code,.document-wrapper pre{font-size:var(--document-code-text-size-multiplier);font-family:var(--document-code-font),monospace}.document-wrapper h4,.document-wrapper h5,.document-wrapper h6{padding-block-start:0.4em;padding-block-end:0.27em}.document-wrapper h1.setext{margin-bottom:.45em}.document-wrapper h2.setext{margin-bottom:.2em}.document-wrapper .fenced-code *,.document-wrapper .fenced-code-content .marker,.document-wrapper .fenced-code-content .space,.document-wrapper .hard-linebreak-marker,.document-wrapper .image .space,.document-wrapper .image-destination,.document-wrapper .image-label,.document-wrapper .image-title,.document-wrapper .indented-code .space,.document-wrapper .link .space,.document-wrapper .link-destination,.document-wrapper .link-label,.document-wrapper .link-title,.document-wrapper .replace .text,.document-wrapper .setext-heading-marker+.line-ending,.document-wrapper .yaml-marker+.line-ending,.document-wrapper li>p>.space:first-child,.document-wrapper tr.delimiter-row{display:none}.document-wrapper ol,.document-wrapper ul{display:block;padding-inline-start:2.13em}.document-wrapper li{display:list-item;color:var(--document-text-color)}.document-wrapper .color-marker,.document-wrapper .entity-marker,.document-wrapper .fenced-code-content,.document-wrapper .fenced-code-content *,.document-wrapper .footnote-separator,.document-wrapper .link-definition-separator,.document-wrapper code.code-inline,.document-wrapper li>p{display:inline}.document-wrapper ul{list-style-type:disc}.document-wrapper li li li li li li li ul,.document-wrapper li li li li li ul,.document-wrapper li li li ul,.document-wrapper li ul{list-style:circle}.document-wrapper li li li li li li ul,.document-wrapper li li li li ul,.document-wrapper li li ul{list-style:disc}.document-wrapper li::marker{color:var(--document-list-marker-color)}.document-wrapper ol{list-style-type:none;counter-reset:custom-list-item calc(var(--data-list-start,1) - 1)}.document-wrapper ol>li{counter-increment:custom-list-item;position:relative}.document-wrapper ol>li::before{content:counter(custom-list-item) ". ";color:var(--document-list-marker-color);position:absolute;transform:translate(calc(-100% - .33em),0)}.document-wrapper ol>li[data-big-number=true]{margin-inline-start:-2.05em}.document-wrapper ol>li[data-big-number=true]::before{position:static;padding-inline-end:0.25em}.document-wrapper ol>li[data-list-type="1"]:before{content:counter(custom-list-item) ") "}.document-wrapper [data-direction="2"] ol>li::before,.document-wrapper ol[data-direction="2"]>li::before{transform:translate(calc(100% + .33em),0)}.document-wrapper li[role=checkbox]{list-style:none;position:relative}.document-wrapper li[aria-checked=true]{color:var(--document-text-secondary-color)}.document-wrapper .todo-checkbox{display:inline-block;margin-left:-1.7em;margin-right:.5em}.document-wrapper .todo-checkbox svg{display:inline-block;margin-bottom:-.3em}.document-wrapper blockquote{display:block;padding-inline-start:2.13em;position:relative}.document-wrapper code,.document-wrapper mark{padding:var(--document-inline-padding-top-bottom) var(--document-inline-padding-left-right)}.document-wrapper blockquote::before{content:"";position:absolute;top:.2em;left:1em;width:.13em;height:calc(100% - .4em);border:var(--document-hairline-width) solid var(--document-list-marker-color);border-radius:.33em}.document-wrapper code,.document-wrapper pre.fenced-code,.document-wrapper pre.indented-code,.document-wrapper pre.yaml{color:var(--document-code-text-color);background-color:var(--document-code-background-color);border-radius:.25em}.document-wrapper [data-direction="2"] blockquote::before,.document-wrapper blockquote[data-direction="2"]::before{left:0;right:1em}.document-wrapper blockquote blockquote blockquote blockquote blockquote blockquote::before,.document-wrapper blockquote blockquote blockquote blockquote::before,.document-wrapper blockquote blockquote::before{background-color:transparent}.document-wrapper hr{display:block;margin-block-start:calc(var(--document-line-height-multiplier) * 0.5em);margin-block-end:calc(var(--document-line-height-multiplier) * -0.5em);border-top:var(--document-hairline-width) solid var(--document-separator-border-color)}.document-wrapper pre{display:block;white-space:pre-wrap}.document-wrapper pre.indented-code{padding-inline-start:2.13em}.document-wrapper pre.fenced-code,.document-wrapper pre.yaml{padding:0 .5em}.document-wrapper .fenced-code::before{content:"\200B"}.document-wrapper code{font-weight:400;font-style:normal;display:block}.document-wrapper mark,.document-wrapper mark code{color:var(--document-text-color);background-color:var(--document-highlighter-background-color)}.document-wrapper em,.document-wrapper i{font-family:AvenirNext-Italic}.document-wrapper b,.document-wrapper strong,.document-wrapper th{font-family:AvenirNext-Bold}.document-wrapper mark{unicode-bidi:embed;border-radius:.25em}.document-wrapper u{text-decoration:underline;text-decoration-color:var(--document-accent-color);unicode-bidi:embed}.document-wrapper s,.document-wrapper strike{text-decoration:line-through}.document-wrapper a{color:var(--document-link-color);unicode-bidi:embed;cursor:pointer}.document-wrapper .wiki-separator-marker{display:inline;color:inherit}.document-wrapper .link-definition-title{color:var(--document-text-light-color)}.document-wrapper .footnote-ref{font-size:.9em;vertical-align:super}.document-wrapper span.entity{direction:ltr;unicode-bidi:embed;color:var(--document-code-syntax-highlight-entity)}.document-wrapper span.escape{unicode-bidi:embed}.document-wrapper .color{font-family:var(--document-code-font),monospace;font-size:var(--document-code-text-size-multiplier);padding-inline-start:1.2em;position:relative;direction:ltr;unicode-bidi:embed}.document-wrapper .color::before{content:"";position:absolute;width:.9em;height:.9em;left:0;bottom:0;transform:translateY(-15%);border:var(--document-hairline-width) solid rgb(0,0,0,.3);border-radius:.9em;background-color:var(--data-color)}.document-wrapper .hashtag{color:var(--document-tag-text-color);background-color:var(--document-tag-background-color);border-radius:1em;padding:calc(var(--document-inline-padding-top-bottom) - 2 * var(--document-hairline-width)) calc(var(--document-inline-padding-left-right) + .3em);unicode-bidi:embed}.document-wrapper .hashtag>.marker{display:inline;color:var(--document-tag-marker-color);padding:0}.document-wrapper table{display:block;max-width:fit-content;overflow-x:auto;border-collapse:separate;border-spacing:0;border:var(--document-hairline-width) solid var(--document-table-border-color);border-radius:.33em;margin-bottom:calc(var(--document-line-height-multiplier) * 1em)}.document-wrapper table[data-direction="2"]{margin-left:auto;direction:ltr}.document-wrapper tr{display:table-row;background-color:var(--document-table-cell-background-color)}.document-wrapper tr.header-row,.document-wrapper tr:nth-child(odd){background-color:var(--document-table-cell-alternate-background-color)}.document-wrapper td,.document-wrapper th{box-sizing:border-box;display:table-cell;padding:.37em .75em;min-width:5em;border-right:var(--document-hairline-width) solid var(--document-table-border-color)}.document-wrapper td:last-of-type,.document-wrapper th:last-of-type{border:none}.document-wrapper table[data-direction="2"] td{margin-left:auto}.document-wrapper td[data-alignment="2"]{text-align:right}.document-wrapper td[data-alignment="3"]{text-align:center}.document-wrapper .code_comment{color:var(--document-code-syntax-highlight-comment)}.document-wrapper .code_constant{color:var(--document-code-syntax-highlight-constant)}.document-wrapper .code_number{color:var(--document-code-syntax-highlight-number)}.document-wrapper .code_string{color:var(--document-code-syntax-highlight-string)}.document-wrapper .code_entity{color:var(--document-code-syntax-highlight-entity)}.document-wrapper .code_keyword{color:var(--document-code-syntax-highlight-keyword)}.document-wrapper .code_function{color:var(--document-code-syntax-highlight-function)}.document-wrapper .code_variable{color:var(--document-code-syntax-highlight-variable)}.document-wrapper img{max-width:100%}.document-wrapper .pdf_preview{display:inline-block;width:100%;height:500px;background-color:#fff;overflow:hidden;padding:0;margin:0;position:relative;border-radius:4px}.document-wrapper .arrow svg #body,.document-wrapper .arrow svg #head{fill:var(--base-text-color)}.document-wrapper .todo-checkbox svg #body{stroke:var(--document-task-border-color)}.document-wrapper .todo-checkbox svg #check{fill:var(--document-task-check-color)}.document-wrapper .todo-checkbox.todo-checked svg #body{opacity:.35}.document-wrapper .todo-checkbox.todo-checked svg #check{opacity:.4}
+
+        </style>
+    <body>
+        <div class="document-wrapper">
+            <h1 id='ETH Analysis Week  1.21-1.27'>ETH Analysis Week  1.21-1.27</h1><br>
+<p><span class='hashtag'><span class='hashtag-marker marker'>#</span>CryptoAnalysis</span></p><br>
+<h2 id='本周汇总：'>本周汇总：</h2><p>这周总的来说ETH是跟随BTC的走势出了一个瀑布，但是幅度要比BTC大得多，这在ETH/BTC汇率上体现的非常明显，最近ETH的汇率经历了突破周线级别下跌趋势线又掉回跌势的行情，原本计划在2360-2440区间接多等待ETH补涨2880的，但基于走势也被迫止损了。<br>
+周中ETH走的也比较乱，汇率一路下跌，盘面上相比BTC一次次构筑上升趋势线，ETH更像是在走一个小箱体盘整，二次低点也重新试探了第一次初次瀑布插针到达的2170左右的位置，情况并不乐观。<br>
+<img src='ETH%20Analysis%20Week%20%201.21-1.27/image.png'><br>
+相比BTC在关键位置有多个压力位需要突破，ETH面对的要少得多，充其量就是箱体上边缘2240-2250，以及第二次上升趋势线跌破后形成的阻力。而当BTC在冲刺突破的时候，ETH很尴尬的还在接近次低点的位置梦游…<br>
+后来的剧情大家都看到了，BTC喷了一根大阳线冲破重重阻力，从40000一直冲去了41400的位置才稍事休整，而同一时刻ETH不过才到达2060的位置而已。尽管情况相当弱势，ETH仍然是稳稳地打破了这条上升趋势线的压制，这还算是一个合格的好消息了。<br>
+之后BTC一路高歌猛进，冲去之前估计的42250附近才缓缓回落，这个过程中ETH页到了2280的位置，但很快跌落。我自己睡了一觉醒来同时给ETH和BTC补了的多单仓位，竟然可以出现ETH的浮亏抵消BTC浮盈的尴尬情况。只能一声叹息，ETH太惨。<br>
+本周ETH的复盘就简单点吧，没啥可讲的，我看着只能一声又一声叹息。</p><br>
+<h2 id='开单建议：'>开单建议：</h2><p>ETH的情况比较简单，目前盘面上来看，支撑位有这跟上升趋势线，并且2280回落以后成功回踩，也验证了有效性。而上方有一个日线级别的下跌趋势线，能否突破这条趋势线是ETH汇率回暖的重要指标。<br>
+截止目前UTC-8时区17:15分，ETH这个位置仍然是以多单为主要目标。建议在回踩趋势线的时候或者略微回撤的时候入场，可以在2255-2265甚至2270的范围内分批委托多单，短时间内没有特别明确的止损位置，可以考虑30点止损，或者站稳趋势线下方止损，由于ETH振幅相比BTC要大，且近期汇率波动不小，止损要灵活。<br>
+止盈可以看向2300-2335的区间，也就是日线级别下跌趋势线在近期的高度，如果ETH在之后能够汇率回暖，我们也可以进一步看到2420-2480的区间。<br>
+总的来说现在开多，盈亏比也依然相对比较好，哪怕是已经经过了几十点的反弹。<br>
+至于开空的机会，目前看会比较难以把握，或许是之后触及下跌趋势线的时候可以在突破失败时开仓，止损就放在突破后站稳，但这个盈利空间有多少就很难讲了。ETH开空需谨慎。</p><br>
+<h2 id='行情简评：'>行情简评：</h2><p>ETH近期其实是有利好预期的，包括耳熟能详的坎昆升级，ETH领衔的Layer-2集体上涨，还有传闻中或许会在年中通过的ETF，都是还没有兑现的利好消息，也正是因此，在ETH下跌之前有非常多的期望回补2880-3200的声音。<br>
+但毕竟ETH仍然是BTC的小弟，BTC的走势左右了大家的总体趋势，这波下跌是没有办法抵抗的，但汇率下跌倒确实是比较意外。<br>
+ETH之后或许还将有一次进一步的下探，这周没有开始建仓ETH或者Layer-2板块现货的，大概还会有更好的机会布局，如果要担心踏空，那趁现在就初步建立头仓即可。</p>
+        </div>
+    </body>
+</html>
