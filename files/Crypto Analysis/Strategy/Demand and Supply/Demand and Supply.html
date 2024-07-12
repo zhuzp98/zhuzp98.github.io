@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Demand and Supply</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="bear-note-unique-identifier" content="82B75618-8361-4902-AE1D-333C9D913E10">
+        <meta name="created" content="2024-07-10T22:45:53-0700"/>
+        <meta name="modified" content="2024-07-11T22:57:12-0700"/>
+        <meta name="tags" content="TradingTips, ChartistRaphaelZ"/>
+        <meta name="last device" content="Z MBP"/>
+        
+    </head>
+        <style>
+             body {
+   --base-background-color: #ffffff;
+   --document-background-color: var(--base-background-color);
+ }
+
+.document-wrapper {
+  /* Constants used to transform theme values to CSS */
+  --transform-line-height-factor: 1.17;
+
+  /* From template */
+  --base-text-color: #444444;
+  --base-text-secondary-color: #888888;
+  --base-text-tertiary-color: #d9d9d9;
+  --base-background-color: #ffffff;
+  --base-background-secondary-color: #F3F5F7;
+  --base-background-tertiary-color: #E4E5E6;
+  --base-stroke-color: #d9d9d9;
+  --base-stroke-secondary-color: #d9d9d9;
+  --base-accent-color: #DD4C4F;
+  --base-highlight-color: #D3FFA4;
+
+  --document-background-color: var(--base-background-color);
+  --document-text-color: var(--base-text-color);
+  --document-text-secondary-color: var(--base-text-secondary-color);
+  --document-text-light-color: var(--base-text-secondary-color);
+  --document-accent-color: var(--base-accent-color);
+  --document-cursor-color: var(--base-accent-color);
+  --document-link-color: var(--base-accent-color);
+  --document-list-marker-color: var(--base-accent-color);
+  --document-marker-color: var(--base-text-tertiary-color);
+  --document-selection-color: var(--base-selection-color);
+  --document-selection-inactive-color: var(--base-background-tertiary-color);
+  --document-text-font: "AvenirNext-Regular";
+  --document-text-size: 15px;
+  --document-line-height-multiplier: calc(
+    1.5 * var(--transform-line-height-factor)
+  );
+
+  --document-headers-text-color: var(--base-text-color);
+  --document-headers-font: "AvenirNext-Medium";
+  --document-headers-modular-scale: 1.125;
+  --document-headers-line-height-multiplier: calc(
+    1.3 * var(--transform-line-height-factor)
+  );
+  --document-headers-add-top-bottom-padding: 1;
+  --document-headers-padding-top-multiplier: 0.5;
+  --document-headers-padding-bottom-multiplier: 0.3;
+
+  --document-code-text-color: var(--base-text-color);
+  --document-code-border-color: var(--base-text-tertiary-color);
+  --document-code-background-color: var(--base-background-secondary-color);
+  --document-code-font: "Menlo-Regular";
+  --document-code-text-size-multiplier: 0.91;
+
+  --document-code-syntax-highlight-comment: #65798c;
+  --document-code-syntax-highlight-constant: #0095c9;
+  --document-code-syntax-highlight-number: #0095c9;
+  --document-code-syntax-highlight-string: #d12f1b;
+  --document-code-syntax-highlight-entity: #4a838b;
+  --document-code-syntax-highlight-keyword: #ad3da4;
+  --document-code-syntax-highlight-function: #4a838b;
+  --document-code-syntax-highlight-variable: #4a838b;
+
+  --document-task-background-color: var(--base-background-color);
+  --document-task-border-color: var(--base-text-secondary-color);
+  --document-task-check-color: var(--base-text-color);
+
+  --document-tag-background-color: var(--base-background-tertiary-color);
+  --document-tag-text-color: var(--base-text-color);
+  --document-tag-marker-color: var(--base-text-secondary-color);
+
+  --document-highlighter-background-color: var(--base-highlight-color);
+  --document-highlighter-text-color: var(--base-text-color);
+
+  --document-file-fold-color: var(--base-background-tertiary-color);
+  --document-file-background-color: var(--base-background-secondary-color);
+
+  --document-separator-border-color: var(--base-stroke-secondary-color);
+
+  --document-table-border-color: var(--base-stroke-secondary-color);
+  --document-table-cell-background-color: var(--base-background-color);
+  --document-table-cell-alternate-background-color: var(
+    --base-background-secondary-color
+  );
+}
+
+.document-wrapper,body{background-color:var(--document-background-color)}.document-wrapper h1.setext,.document-wrapper h2.setext{border-bottom:calc(2 * var(--document-hairline-width)) solid var(--document-separator-border-color);padding-bottom:.6em}.document-wrapper blockquote blockquote blockquote blockquote blockquote::before,.document-wrapper blockquote blockquote blockquote::before,.document-wrapper blockquote::before{background-color:var(--document-list-marker-color)}.document-wrapper a:hover,.document-wrapper mark{text-decoration:inherit}.document-wrapper td[data-alignment="1"],.document-wrapper th{text-align:left}.document-wrapper :after,.document-wrapper :before,.document-wrapper a,.document-wrapper abbr,.document-wrapper acronym,.document-wrapper address,.document-wrapper applet,.document-wrapper article,.document-wrapper aside,.document-wrapper audio,.document-wrapper b,.document-wrapper big,.document-wrapper blockquote,.document-wrapper canvas,.document-wrapper caption,.document-wrapper center,.document-wrapper cite,.document-wrapper code,.document-wrapper dd,.document-wrapper del,.document-wrapper details,.document-wrapper dfn,.document-wrapper div,.document-wrapper dl,.document-wrapper dt,.document-wrapper em,.document-wrapper embed,.document-wrapper fieldset,.document-wrapper figcaption,.document-wrapper figure,.document-wrapper footer,.document-wrapper form,.document-wrapper h1,.document-wrapper h2,.document-wrapper h3,.document-wrapper h4,.document-wrapper h5,.document-wrapper h6,.document-wrapper header,.document-wrapper hgroup,.document-wrapper i,.document-wrapper iframe,.document-wrapper ins,.document-wrapper kbd,.document-wrapper label,.document-wrapper legend,.document-wrapper li,.document-wrapper mark,.document-wrapper menu,.document-wrapper nav,.document-wrapper object,.document-wrapper ol,.document-wrapper output,.document-wrapper p,.document-wrapper pre,.document-wrapper q,.document-wrapper ruby,.document-wrapper s,.document-wrapper samp,.document-wrapper section,.document-wrapper small,.document-wrapper span,.document-wrapper strike,.document-wrapper strong,.document-wrapper summary,.document-wrapper table,.document-wrapper tbody,.document-wrapper td,.document-wrapper tfoot,.document-wrapper th,.document-wrapper thead,.document-wrapper time,.document-wrapper tr,.document-wrapper tt,.document-wrapper u,.document-wrapper ul,.document-wrapper var,.document-wrapper video{all:unset}.document-wrapper{--document-inline-padding-top-bottom:0.25em;--document-inline-padding-left-right:0.25em;--header-1-font-size:2em;--header-2-font-size:1.6em;--header-3-font-size:1.27em;--document-hairline-width:calc(var(--document-text-size) / 15);box-sizing:border-box;color:var(--document-text-color);font-family:var(--document-text-font);font-size:var(--document-text-size);line-height:var(--document-line-height-multiplier);min-height:100%;max-width:48em;width:100%;tab-size:4;margin:0 auto;padding:0 2em}body{text-rendering:optimizeLegibility}.document-wrapper:focus-visible{outline:0}.document-wrapper .marker{color:var(--document-marker-color);display:none}.document-wrapper [data-direction="2"]{direction:rtl}.document-wrapper div.footnote,.document-wrapper div.link-definition,.document-wrapper p{display:block}.document-wrapper p.blank-line::before{content:" "}.document-wrapper h1,.document-wrapper h2,.document-wrapper h3,.document-wrapper h4,.document-wrapper h5,.document-wrapper h6{font-family:var(--document-headers-font);display:block;line-height:var(--document-headers-line-height-multiplier)}.document-wrapper h1{font-size:var(--header-1-font-size);padding-block-start:0.8em;padding-block-end:0.33em}.document-wrapper h2{font-size:var(--header-2-font-size);padding-block-start:0.66em;padding-block-end:0.27em}.document-wrapper h3{font-size:var(--header-3-font-size);padding-block-start:0.53em;padding-block-end:0.27em}.document-wrapper code,.document-wrapper pre{font-size:var(--document-code-text-size-multiplier);font-family:var(--document-code-font),monospace}.document-wrapper h4,.document-wrapper h5,.document-wrapper h6{padding-block-start:0.4em;padding-block-end:0.27em}.document-wrapper h1.setext{margin-bottom:.45em}.document-wrapper h2.setext{margin-bottom:.2em}.document-wrapper .fenced-code *,.document-wrapper .fenced-code-content .marker,.document-wrapper .fenced-code-content .space,.document-wrapper .hard-linebreak-marker,.document-wrapper .image .space,.document-wrapper .image-destination,.document-wrapper .image-label,.document-wrapper .image-title,.document-wrapper .indented-code .space,.document-wrapper .link .space,.document-wrapper .link-destination,.document-wrapper .link-label,.document-wrapper .link-title,.document-wrapper .replace .text,.document-wrapper .setext-heading-marker+.line-ending,.document-wrapper .yaml-marker+.line-ending,.document-wrapper li>p>.space:first-child,.document-wrapper tr.delimiter-row{display:none}.document-wrapper ol,.document-wrapper ul{display:block;padding-inline-start:2.13em}.document-wrapper li{display:list-item;color:var(--document-text-color)}.document-wrapper .color-marker,.document-wrapper .entity-marker,.document-wrapper .fenced-code-content,.document-wrapper .fenced-code-content *,.document-wrapper .footnote-separator,.document-wrapper .link-definition-separator,.document-wrapper code.code-inline,.document-wrapper li>p{display:inline}.document-wrapper ul{list-style-type:disc}.document-wrapper li li li li li li li ul,.document-wrapper li li li li li ul,.document-wrapper li li li ul,.document-wrapper li ul{list-style:circle}.document-wrapper li li li li li li ul,.document-wrapper li li li li ul,.document-wrapper li li ul{list-style:disc}.document-wrapper li::marker{color:var(--document-list-marker-color)}.document-wrapper ol{list-style-type:none;counter-reset:custom-list-item calc(var(--data-list-start,1) - 1)}.document-wrapper ol>li{counter-increment:custom-list-item;position:relative}.document-wrapper ol>li::before{content:counter(custom-list-item) ". ";color:var(--document-list-marker-color);position:absolute;transform:translate(calc(-100% - .33em),0)}.document-wrapper ol>li[data-big-number=true]{margin-inline-start:-2.05em}.document-wrapper ol>li[data-big-number=true]::before{position:static;padding-inline-end:0.25em}.document-wrapper ol>li[data-list-type="1"]:before{content:counter(custom-list-item) ") "}.document-wrapper [data-direction="2"] ol>li::before,.document-wrapper ol[data-direction="2"]>li::before{transform:translate(calc(100% + .33em),0)}.document-wrapper li[role=checkbox]{list-style:none;position:relative}.document-wrapper li[aria-checked=true]{color:var(--document-text-secondary-color)}.document-wrapper .todo-checkbox{display:inline-block;margin-left:-1.7em;margin-right:.5em}.document-wrapper .todo-checkbox svg{display:inline-block;margin-bottom:-.3em}.document-wrapper blockquote{display:block;padding-inline-start:2.13em;position:relative}.document-wrapper code,.document-wrapper mark{padding:var(--document-inline-padding-top-bottom) var(--document-inline-padding-left-right)}.document-wrapper blockquote::before{content:"";position:absolute;top:.2em;left:1em;width:.13em;height:calc(100% - .4em);border:var(--document-hairline-width) solid var(--document-list-marker-color);border-radius:.33em}.document-wrapper code,.document-wrapper pre.fenced-code,.document-wrapper pre.indented-code,.document-wrapper pre.yaml{color:var(--document-code-text-color);background-color:var(--document-code-background-color);border-radius:.25em}.document-wrapper [data-direction="2"] blockquote::before,.document-wrapper blockquote[data-direction="2"]::before{left:0;right:1em}.document-wrapper blockquote blockquote blockquote blockquote blockquote blockquote::before,.document-wrapper blockquote blockquote blockquote blockquote::before,.document-wrapper blockquote blockquote::before{background-color:transparent}.document-wrapper hr{display:block;margin-block-start:calc(var(--document-line-height-multiplier) * 0.5em);margin-block-end:calc(var(--document-line-height-multiplier) * -0.5em);border-top:var(--document-hairline-width) solid var(--document-separator-border-color)}.document-wrapper pre{display:block;white-space:pre-wrap}.document-wrapper pre.indented-code{padding-inline-start:2.13em}.document-wrapper pre.fenced-code,.document-wrapper pre.yaml{padding:0 .5em}.document-wrapper .fenced-code::before{content:"\200B"}.document-wrapper code{font-weight:400;font-style:normal;display:block}.document-wrapper mark,.document-wrapper mark code{color:var(--document-text-color);background-color:var(--document-highlighter-background-color)}.document-wrapper em,.document-wrapper i{font-family:AvenirNext-Italic}.document-wrapper b,.document-wrapper strong,.document-wrapper th{font-family:AvenirNext-Bold}.document-wrapper mark{unicode-bidi:embed;border-radius:.25em}.document-wrapper u{text-decoration:underline;text-decoration-color:var(--document-accent-color);unicode-bidi:embed}.document-wrapper s,.document-wrapper strike{text-decoration:line-through}.document-wrapper a{color:var(--document-link-color);unicode-bidi:embed;cursor:pointer}.document-wrapper .wiki-separator-marker{display:inline;color:inherit}.document-wrapper .link-definition-title{color:var(--document-text-light-color)}.document-wrapper .footnote-ref{font-size:.9em;vertical-align:super}.document-wrapper span.entity{direction:ltr;unicode-bidi:embed;color:var(--document-code-syntax-highlight-entity)}.document-wrapper span.escape{unicode-bidi:embed}.document-wrapper .color{font-family:var(--document-code-font),monospace;font-size:var(--document-code-text-size-multiplier);padding-inline-start:1.2em;position:relative;direction:ltr;unicode-bidi:embed}.document-wrapper .color::before{content:"";position:absolute;width:.9em;height:.9em;left:0;bottom:0;transform:translateY(-15%);border:var(--document-hairline-width) solid rgb(0,0,0,.3);border-radius:.9em;background-color:var(--data-color)}.document-wrapper .hashtag{color:var(--document-tag-text-color);background-color:var(--document-tag-background-color);border-radius:1em;padding:calc(var(--document-inline-padding-top-bottom) - 2 * var(--document-hairline-width)) calc(var(--document-inline-padding-left-right) + .3em);unicode-bidi:embed}.document-wrapper .hashtag>.marker{display:inline;color:var(--document-tag-marker-color);padding:0}.document-wrapper table{display:block;max-width:fit-content;overflow-x:auto;border-collapse:separate;border-spacing:0;border:var(--document-hairline-width) solid var(--document-table-border-color);border-radius:.33em;margin-bottom:calc(var(--document-line-height-multiplier) * 1em)}.document-wrapper table[data-direction="2"]{margin-left:auto;direction:ltr}.document-wrapper tr{display:table-row;background-color:var(--document-table-cell-background-color)}.document-wrapper tr.header-row,.document-wrapper tr:nth-child(odd){background-color:var(--document-table-cell-alternate-background-color)}.document-wrapper td,.document-wrapper th{box-sizing:border-box;display:table-cell;padding:.37em .75em;min-width:5em;border-right:var(--document-hairline-width) solid var(--document-table-border-color)}.document-wrapper td:last-of-type,.document-wrapper th:last-of-type{border:none}.document-wrapper table[data-direction="2"] td{margin-left:auto}.document-wrapper td[data-alignment="2"]{text-align:right}.document-wrapper td[data-alignment="3"]{text-align:center}.document-wrapper .code_comment{color:var(--document-code-syntax-highlight-comment)}.document-wrapper .code_constant{color:var(--document-code-syntax-highlight-constant)}.document-wrapper .code_number{color:var(--document-code-syntax-highlight-number)}.document-wrapper .code_string{color:var(--document-code-syntax-highlight-string)}.document-wrapper .code_entity{color:var(--document-code-syntax-highlight-entity)}.document-wrapper .code_keyword{color:var(--document-code-syntax-highlight-keyword)}.document-wrapper .code_function{color:var(--document-code-syntax-highlight-function)}.document-wrapper .code_variable{color:var(--document-code-syntax-highlight-variable)}.document-wrapper img{max-width:100%}.document-wrapper .pdf_preview{display:inline-block;width:100%;height:500px;background-color:#fff;overflow:hidden;padding:0;margin:0;position:relative;border-radius:4px}.document-wrapper .arrow svg #body,.document-wrapper .arrow svg #head{fill:var(--base-text-color)}.document-wrapper .todo-checkbox svg #body{stroke:var(--document-task-border-color)}.document-wrapper .todo-checkbox svg #check{fill:var(--document-task-check-color)}.document-wrapper .todo-checkbox.todo-checked svg #body{opacity:.35}.document-wrapper .todo-checkbox.todo-checked svg #check{opacity:.4}
+
+        </style>
+    <body>
+        <div class="document-wrapper">
+            <h1 id='Demand and Supply'>Demand and Supply</h1><p><span class='hashtag'><span class='hashtag-marker marker'>#</span>TradingTips</span> <span class='hashtag'><span class='hashtag-marker marker'>#</span>ChartistRaphaelZ</span></p><br>
+<p>让我们用BTC最近的走势来做个Deman & Supply 的教学</p><br>
+<p>从这个大跌开始吧<br>
+<img src='Demand%20and%20Supply/image.png'><br>
+首先我们依据之前的一段下行，粗略识别出了4个潜在的供应区域，也相当于是阻力带。</p><br>
+<p><img src='Demand%20and%20Supply/image%202.png'><br>
+在几个1h后，出现了一定程度上止跌的端倪，低点开始抬升，并且阳线开始突破下落后的第一次反弹阳线的收线位置，这时候要准备开始寻找需求区。</p><br>
+<p><img src='Demand%20and%20Supply/image%203.png'>两个1h线后，一根阴线收在了之前反弹阳线的上方，这里初步可以绘制一个潜在的需求区。<br>
+<b>Demand Anticipation</b></p><blockquote>
+<p>建立多头仓位，止损放在下方阴线开盘，止盈在上方供应区压力带。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%204.png'><br>
+接下来的1h线出现了看涨吞没形态，此时在上一根1h阴线开盘价位置挂单加仓。<br>
+<b>Demand Anticipation</b></p><blockquote>
+<p>建立突破多头加仓位，止损放在1h需求阴线的低点，止盈在上方供应区压力带。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%205.png'><br>
+进入一系列的震荡横盘，但是没有明显的跌破结构出现，有低点跌破但是并没有形成回踩的确认。因此保持仓位，直到出现一根1h阳线突破前方所有实线高点，观察是否有突破加仓机会。</p><br>
+<p><img src='Demand%20and%20Supply/image%206.png'><br>
+连续两根1h线之后，出现了阴线的回踩高于前高。<br>
+<b>Demand Anticipation</b></p><blockquote>
+<p>建立突破多头加仓位，止损放置于震荡横盘结构的实线低点，止盈放置于上方第二个供应阻力带。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%207.png'><br>
+此时已有三个多头仓位，其中两个在接近止盈。另一个等待突破确认。</p><br>
+<p><img src='Demand%20and%20Supply/image%208.png'><br>
+三个仓位均已止盈。共计捕捉约5000点。</p><br>
+<p><img src='Demand%20and%20Supply/image%209.png'><br>
+注意此时出现两根连续的实体阴线，击穿了上行至这个阻力带附近以后的所有前方k线的实体下端甚至是影线下端，这个时候要考虑是不是出现了阻力带的拒绝。考虑开始做空。</p><br>
+<p><img src='Demand%20and%20Supply/image%2010.png'><br>
+接下来一根阳线没能够将价格拉回前部，潜在的短线供应形成，并且位于之前已经判定的供应区内，存在较大的阻力。<br>
+<b>Supply Anticipation</b></p><blockquote>
+<p>建立空头仓位，止损放置在两根阴线的开盘处，止盈考虑下方需求区。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%2011.png'><br>
+这段趋势在第三个多头仓位的开仓点附近得到反弹，但是并没能够收于前部下行阴线收盘之上，反而是出现了一根阴线似乎预示着进一步的被拒绝。<br>
+<b>Supply Anticipation</b> / <b>Demand Retest</b></p><blockquote>
+<p>此处阴线收线建立跌破的空头仓位，止损位于第一个空头仓所依据的连续阴线收线位置，止盈同样看到更下方的潜在需求区。</p>
+<p>同时在更下方的潜在需求区埋伏一个回踩多单，止损位于需求区阳线低点，止盈看到刚才的反弹点。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%2012.png'><br>
+空头仓位均已止盈，共计捕捉约5000点。下方埋伏多头吃进，并且在之前的需求区出现了类似的突破结构。<br>
+<b>Demand Anticipation</b></p><blockquote>
+<p>在此处的阴线开盘价位置挂单多头仓位，止损阴线低点，止盈看到第一个空头仓位开仓点。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%2013.png'><br>
+两个多头仓位均止盈，共计捕捉4500点。并且顶部出现了再次被供应区拒绝的形态，考虑空单。一根较短的阳线之后收了一根十字阴线，上下影线均很长。<br>
+<b>Supply Anticipation</b></p><blockquote>
+<p>阴线十字收线后进入空头仓位，止损放置于之前两根阴线的开盘价处，止盈看到上一个多头仓位的开仓位置，也在此前突破的需求区范围。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%2014.png'><br>
+空头的仓位也已经全部止盈，捕捉到了1700点左右。<br>
+在之前的盘整区间，出现了一个潜在的突破结构，那自然就在这里去考虑一个多头的开仓，并且结构上这个地方的下探没有跌破前一次的低点，比较明显的出现了止跌的迹象，那就能够往更高的位置去看。<br>
+<b>Demand Anticipation</b></p><blockquote>
+<p>在阴线开盘价位置挂单多头仓位，止损放在这部分的低点，止盈看去上方第二个阻力位置。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%2015.png'><br>
+这个多头仓位也止盈了，经历了一段盘整以后收获1700点。<br>
+接下来又出现了一个比较小的突破结构，考虑到这处于前方两次高点附近，并且经历了较长的盘整期，那可以观察一下进一步开仓多头突破。<br>
+<b>Demand Anticipation</b></p><blockquote>
+<p>由于这跟阴线影线较长，选择前一个阴线收盘价挂单，止损考虑1%左右的止损幅度，止盈看到当前阻力带之前的一次反弹高点。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%2016.png'><br>
+这个仓位很快止盈了，收获1400点，随后的走势出现了连续的阴线和一个没能够拉回高度的阳线，这里考虑追进去一个空头仓位。<br>
+<b>Supply Anticipation</b></p><blockquote>
+<p>在阳线收线后开始空头仓位，止损放到前两根阴线的高点，止盈看到刚刚的多头仓位开仓点。</p>
+</blockquote><br>
+<p><img src='Demand%20and%20Supply/image%2017.png'><br>
+不久之后这个空头仓位也完全止盈，获利1000点左右。</p><br>
+
+        </div>
+    </body>
+</html>
