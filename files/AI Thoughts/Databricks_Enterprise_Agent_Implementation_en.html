@@ -1,0 +1,774 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Databricks Enterprise-Grade Agent Implementation Mapping - Raphael Zhu</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../assets/css/noscript.css" /></noscript>
+
+		<style>
+			.inner table { font-size: 0.88em; }
+			.inner pre {
+				overflow-x: auto;
+				font-size: 0.72em;
+				line-height: 1.35;
+				background: rgba(0,0,0,0.03);
+				padding: 1em;
+				border-radius: 4px;
+			}
+			.inner .table-wrapper { overflow-x: auto; margin-bottom: 2em; }
+			.lang-switch { font-size: 0.9em; }
+			.lang-switch a { margin: 0 0.25em; }
+		</style>
+
+	</head>
+	<body class="is-preload">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="../../index.html">Home</a></h1>
+						<nav id="nav">
+							<ul>
+								<li class="special">
+									<a href="#menu" class="menuToggle"><span>Menu</span></a>
+									<div id="menu">
+										<ul>
+											<li><a href="../../index.html">Home</a></li>
+											<li><a href="../../cv.html">CV</a></li>
+											<li><a href="../../gallery.html">Gallery</a></li>
+											<li><a href="../../blog.html">Blog</a></li>
+											<li><a href="../../qanda.html">Q &amp; A</a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<article id="main">
+						<header>
+							<h2>Databricks Enterprise-Grade Agent Implementation Mapping</h2>
+							<p>Component map, availability, phased rollout, and platform gaps (v1.4)</p>
+							<p class="lang-switch"><a href="Databricks_Enterprise_Agent_Implementation.html">中文</a> · <a href="Databricks_Enterprise_Agent_Implementation_en.html">EN</a></p>
+						</header>
+						<section class="wrapper style5">
+							<div class="inner">
+<blockquote>
+<p><strong>Read this first:</strong> the Databricks data/AI stack moves fast. Every component is tagged <strong>GA / Beta / Public Preview / Private Preview / Labs</strong> (Labs = community, no official SLA). Preview / Beta / Labs need a <strong>fallback</strong>. Status is as of ~<strong>August 2026</strong>; re-check official docs before you commit a program.</p>
+</blockquote>
+<hr />
+<h2 id="overview-module-databricks-building-blocks">1. Overview: module ↔︎ Databricks building blocks</h2>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 43%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th>Module</th>
+<th>Core components</th>
+<th>Availability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>① Dynamic inputs</strong></td>
+<td>Lakeflow Connect (100+ sources incl. SharePoint / Google Drive), Auto Loader, Lakeflow Spark Declarative Pipelines (stream+batch ETL), Lakeflow Jobs; optional <strong>Genie Code Web Search</strong></td>
+<td>Connect / Auto Loader / SDP / Jobs: <strong>GA</strong>; some Connect sources (OpenAI, PagerDuty): <strong>Beta</strong>; Genie Code Web Search: <strong>Beta</strong> (2026-08)</td>
+</tr>
+<tr>
+<td><strong>② Knowledge &amp; memory</strong></td>
+<td>Unity Catalog (lineage / governance / <strong>domain schemas</strong>), Metric Views (corporate + domain scope), Vector Search (<strong>metadata filters</strong>), Genie Ontology + OntoRank, Ontobricks; <strong>Genie Agents</strong> on the business side</td>
+<td>UC / Vector Search / Metric Views: <strong>GA</strong>; Genie Ontology: 2026 release; Ontobricks: <strong>Labs</strong></td>
+</tr>
+<tr>
+<td><strong>③ AI processing</strong></td>
+<td>Lakeflow Jobs / Workflows, Mosaic AI Agent Framework, Agent Bricks, <strong>Managed MCP (under Unity AI Gateway)</strong>, Model Serving, Unity AI Gateway; department capabilities as <strong>UC Functions / MCP contracts</strong></td>
+<td>Agent Framework: <strong>GA</strong> (early 2026); Unity AI Gateway <strong>core GA</strong> (2026-08-04); Managed MCP ↔︎ Gateway: <strong>Beta</strong> (2026-08-06); some Service Policies / Agent Services: <strong>Beta</strong></td>
+</tr>
+<tr>
+<td><strong>④ Business execution</strong></td>
+<td>Internal: Databricks Apps, Alerts, <strong>Genie One Native Apps</strong>, Lark–Meegle; external: CustomerLake; <strong>people routing (org graph) + capability routing (contract discovery, as a pattern)</strong></td>
+<td>Apps / Alerts / Genie One plugins: <strong>GA</strong>; CustomerLake: <strong>Private Preview</strong>; discovery: §2.4 (not a GA Gateway API)</td>
+</tr>
+<tr>
+<td><strong>⑤ Eval / feedback / learning</strong></td>
+<td>MLflow 3 (CLEARS + <strong>domain Custom Judges</strong>), Inference Tables, Lakehouse Monitoring, DABs + Git, <strong>Lakeflow Pipeline unit tests</strong></td>
+<td>MLflow / Inference Tables / Monitoring / DABs: <strong>GA</strong>; Pipeline unit testing: <strong>Beta</strong> (2026-07)</td>
+</tr>
+<tr>
+<td><strong>Orchestration / governance</strong></td>
+<td>Unity Catalog + <strong>UC Secrets</strong>, Unity AI Gateway, Lakeflow Jobs, MLflow 3, DABs + Git, system tables / budgets; <strong>contract registry, cross-domain auth, domain quotas, workspace strategy, Serving caps</strong></td>
+<td>UC / UC Secrets / Gateway core / Jobs / MLflow / DABs / Serving: <strong>GA</strong>; advanced Gateway policies, Agent Services, deep MCP bind: <strong>Beta</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="per-module-mapping">2. Per-module mapping</h2>
+<h3 id="module-①-dynamic-inputs">2.1 Module ① Dynamic inputs</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>Need</th>
+<th>Component</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100+ enterprise sources (OLTP, SaaS, external)</td>
+<td><strong>Lakeflow Connect</strong></td>
+<td>Managed ingest for most structured upstream/downstream sources. <strong>2026-08:</strong> SharePoint and Google Drive connectors <strong>GA</strong>; OpenAI and PagerDuty connectors <strong>Beta</strong></td>
+</tr>
+<tr>
+<td>Incremental, idempotent object-store loads</td>
+<td><strong>Auto Loader</strong></td>
+<td>Fits high-frequency telemetry</td>
+</tr>
+<tr>
+<td>Unified stream+batch ETL to bronze</td>
+<td><strong>Lakeflow Spark Declarative Pipelines (SDP)</strong></td>
+<td>SQL/Python; streaming tables, materialized views, flows, sinks</td>
+</tr>
+<tr>
+<td>Schedule, deps, orchestration</td>
+<td><strong>Lakeflow Jobs</strong></td>
+<td>Cron / DAG</td>
+</tr>
+<tr>
+<td>Non-engineers building simple pipelines</td>
+<td><strong>Lakeflow Designer</strong> (GA, 2026-06)</td>
+<td>Drag-and-drop + NL</td>
+</tr>
+<tr>
+<td>Public web as live unstructured supplement</td>
+<td><strong>Genie Code Web Search</strong> (Beta, 2026-08)</td>
+<td>Full-page code Agent for data/AI builders; <strong>not</strong> a substitute for governed ingest; for time-sensitive public facts that should not sit in the lake first</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Implementation notes:</strong> - Express stream vs batch in SDP: telemetry/trades → streaming tables; periodic rollups → materialized views. - Structured data → Delta + UC tags. Unstructured Context (OKRs, project status, competitive intel) → files + metadata (SharePoint / Drive GA connectors). Graph + embed in module ②. - <strong>Live web search</strong> vs <strong>governed ingest:</strong> the former fills “visible on the public web <em>now</em>”; the latter is traceable enterprise assets. Tag confidence differently when Agents consume both.</p>
+<h3 id="module-②-knowledge-and-memory">2.2 Module ② Knowledge and memory</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>Need</th>
+<th>Component</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identity, lineage, grants, tags per table/column</td>
+<td><strong>Unity Catalog</strong></td>
+<td>Trust base and later egress control</td>
+</tr>
+<tr>
+<td>Bronze → silver modeling</td>
+<td><strong>SDP (medallion)</strong></td>
+<td>Business-defined cleanses</td>
+</tr>
+<tr>
+<td><strong>Single source of metric truth</strong></td>
+<td><strong>Metric Views</strong></td>
+<td>Stops colliding definitions</td>
+</tr>
+<tr>
+<td>Semantic retrieve of unstructured knowledge</td>
+<td><strong>Vector Search</strong></td>
+<td>Experiential memory, Context docs</td>
+</tr>
+<tr>
+<td>Context as graph + authority ranking</td>
+<td><strong>Genie Ontology + OntoRank</strong></td>
+<td>Authority scores (incl. org graph) drive review priority and ④ routing</td>
+</tr>
+<tr>
+<td>Tables as graph nodes</td>
+<td><strong>Ontobricks</strong> (Labs)</td>
+<td>Joint structured/unstructured retrieve; no official SLA</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Two memory classes:</strong> - <strong>Domain knowledge / rules</strong> (policy, SOP, metric specs) → Metric Views + governed UC objects; changes go through approval. - <strong>Experiential memory</strong> (cases, samples) → Vector Search indexes, written back from ⑤.</p>
+<p><strong>Review:</strong> OntoRank-ranked; high authority/risk gets humans; rest AI pre-screen + sample.</p>
+<p><strong>Context Namespace (turn on in Phase 1—do not retrofit a dirty index in Phase 4):</strong> - <strong>Tables:</strong> <code>catalog.schema</code> per domain; row/column sensitivity via <strong>ABAC / row filters / column masks</strong>. - <strong>Files / Volumes:</strong> schema grants—do not pretend row filters apply to files. - <strong>Vectors:</strong> <code>domain</code> (etc.) metadata; default <strong>filter expressions</strong> such as <code>domain = 'supply_chain' OR domain = 'corporate'</code>. - <strong>Metrics:</strong> corporate Metric Views in a shared schema; department specs in domain schemas; cross-domain only via contract-shaped read-only views. - <strong>Cross-domain retrieve:</strong> control plane authenticates first (Gateway / UC). <strong>After auth, the Agent retrieve call injects the filter mix</strong>—filters live on the retrieve path, not as a Gateway “pass-through.” Definition conflicts: corporate-shared first, then OntoRank + requesting-domain priority.</p>
+<h3 id="module-③-ai-processing">2.3 Module ③ AI processing</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>Role</th>
+<th>Component</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deterministic workflows (cron / DAGs)</td>
+<td><strong>Lakeflow Jobs / Workflows + SDP</strong></td>
+<td>Standardize into Jobs; <strong>Pipeline unit tests</strong> (Beta) in Lakeflow Editor before prod</td>
+</tr>
+<tr>
+<td>Custom / complex Agents</td>
+<td><strong>Mosaic AI Agent Framework</strong> (GA, early 2026)</td>
+<td>Any harness (LangGraph / CrewAI / Claude Agent SDK); MLflow, UC register, Model Serving</td>
+</tr>
+<tr>
+<td>Task-first, low-ops Agents</td>
+<td><strong>Agent Bricks</strong></td>
+<td>Serverless via Databricks Apps; native MCP; platform/builder surface—complement to Genie One / Genie Code</td>
+</tr>
+<tr>
+<td>Governed tools: UC Functions / Genie Agents / Vector Search / DBSQL</td>
+<td><strong>Managed MCP servers</strong> via <strong>Unity AI Gateway</strong></td>
+<td><strong>2026-08-06:</strong> managed MCP connectors (incl. Genie One / Genie Code) moved under Gateway (<strong>Beta</strong> bind)—central auth, access logs, cost. No scatter-shot tool wiring</td>
+</tr>
+<tr>
+<td>Deploy Agents / models</td>
+<td><strong>Model Serving</strong></td>
+<td>Shared serving surface</td>
+</tr>
+<tr>
+<td>Unified AI control plane (route, throttle, cost, guardrails, traces)</td>
+<td><strong>Unity AI Gateway</strong></td>
+<td><strong>Core GA 2026-08-04</strong>; some <strong>Service Policies</strong> and <strong>Agent Services</strong> still <strong>Beta</strong></td>
+</tr>
+<tr>
+<td>Staff AI Q&amp;A traces (automation path ③)</td>
+<td><strong>Unity AI Gateway → Inference Tables</strong></td>
+<td>Request/response as UC Delta</td>
+</tr>
+<tr>
+<td>Lifecycle, tracing, eval</td>
+<td><strong>MLflow 3</strong></td>
+<td>GenAI-native spine</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Genie product matrix (do not mix names):</strong></p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 34%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr>
+<th>Product</th>
+<th>Audience</th>
+<th>One line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Genie Agents</strong> (formerly Genie Spaces)</td>
+<td>Business / analytics</td>
+<td>Conversational analytics on governed data</td>
+</tr>
+<tr>
+<td><strong>Genie One</strong></td>
+<td>Business teams</td>
+<td>Copilot-style colleague; office embed (module ④)</td>
+</tr>
+<tr>
+<td><strong>Genie Code</strong></td>
+<td>Data &amp; AI builders</td>
+<td>Full-page code Agent (Web Search Beta)</td>
+</tr>
+<tr>
+<td><strong>Agent Bricks</strong></td>
+<td>Platform / app builders</td>
+<td>Task-first managed Agents</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Two AI roles:</strong> - <strong>Supervisor:</strong> SDP/Jobs outputs and sensors → MLflow Tracing + scorers. - <strong>Advisor:</strong> <strong>Genie Agents</strong> over Metric Views + ontology Context → OKR loop review.</p>
+<p><strong>Promotion criteria:</strong> Gateway inference tables + MLflow on <strong>frequency × stability × risk</strong>; promote exploratory Q&amp;A to Lakeflow Jobs. That gate is the core craft of module ③.</p>
+<p><strong>Capability Contract lifecycle:</strong></p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 54%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr>
+<th>Step</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Define</strong></td>
+<td>Public capabilities as <strong>UC Functions (UC Tools) or Managed MCP tool defs</strong>; strongly typed <strong>JSON Schema</strong> I/O (align with Structured Outputs)</td>
+</tr>
+<tr>
+<td><strong>Publish</strong></td>
+<td>Governed catalog (e.g. <code>corp.agent_registry</code> or <code>published_tools</code> under a domain schema); tags <code>agent-capability</code>, <code>domain</code>, <code>version</code>, <code>risk_class</code></td>
+</tr>
+<tr>
+<td><strong>Authorize</strong></td>
+<td>Who may discover / invoke: UC grants + Gateway identity; default same-domain; cross-domain needs extra auth</td>
+</tr>
+<tr>
+<td><strong>Discover</strong></td>
+<td>Module ④ searches the registry by intent (§2.4)—no hardcoded Job/endpoint names</td>
+</tr>
+<tr>
+<td><strong>Change</strong></td>
+<td>Compatible (optional fields) can ship in-domain; breaking (required fields, semantics) hits the central gate and dual-runs at least one version window</td>
+</tr>
+<tr>
+<td><strong>Deprecate</strong></td>
+<td><code>deprecated</code> + sunset date; still findable; callers get a hard error, not silent failure</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="module-④-business-execution">2.4 Module ④ Business execution</h3>
+<p><strong>Internal:</strong></p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 44%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Component</th>
+<th>Fit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Email / formal record</td>
+<td><strong>Databricks Alerts / notifications</strong></td>
+<td>Low-frequency operating reports</td>
+</tr>
+<tr>
+<td>Interactive dept app</td>
+<td><strong>Databricks Apps</strong></td>
+<td>Feedback / approval / drill-down</td>
+</tr>
+<tr>
+<td>Office embed (sheets + IM)</td>
+<td><strong>Genie One Native Apps</strong> (Sheets / Excel / Slack / Teams, <strong>GA 2026-08</strong>)</td>
+<td>Lowest friction; Apps stay for custom UX</td>
+</tr>
+<tr>
+<td>PM tasks</td>
+<td><strong>Lark / Meegle</strong> (build: open APIs / webhooks; maybe Lark CLI)</td>
+<td>Recommendations become workflow items</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>External:</strong> - <strong>CustomerLake (Agentic CDP, Private Preview):</strong> infinity campaigns on customer context. - <strong>Fallback:</strong> activation Job (Model Serving → channel) until CustomerLake is usable.</p>
+<p><strong>Implementation notes:</strong> - Reuse the Genie Ontology org graph for people routing; always read latest. - Execution grades (full auto / human review / suggest-only) via Agent Framework HITL; money and external commitments default to human confirm. - Attach UC lineage to every recommendation. - Channel order: Genie One plugins → Apps (approval) → Meegle (tracking) → email (archive). - <strong>People vs capability routing:</strong> humans via org graph; department Agents via contract discovery—not one hardcoded table. - <strong>Agent Discovery (pattern; verify product names before you commit):</strong> do not hardcode cross-dept routes. Preferred order: (1) query UC Functions / MCP tools tagged <code>agent-capability</code> (<strong>most stable today</strong>); (2) if <strong>Agent Services (Beta)</strong> is on, use its tool-search for intent match; (3) Genie Agent APIs as assist only. <strong>Do not document Unity AI Gateway GA “Tool Search.”</strong> If discovery fails: notify the human only.</p>
+<h3 id="module-⑤-eval-feedback-learning">2.5 Module ⑤ Eval / feedback / learning</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>Need</th>
+<th>Component</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent/process quality (dev = prod)</td>
+<td><strong>MLflow 3 eval + monitoring</strong></td>
+<td><strong>CLEARS:</strong> Correctness, Latency, Execution, Adherence, Relevance, Safety</td>
+</tr>
+<tr>
+<td>End-to-end traces, long retention</td>
+<td><strong>MLflow Tracing → OTEL → UC tables</strong></td>
+<td>Serverless, governed observability</td>
+</tr>
+<tr>
+<td>Business feedback from automated actions</td>
+<td><strong>Inference Tables</strong> + CDP/CustomerLake</td>
+<td>Fast policy-layer signal</td>
+</tr>
+<tr>
+<td>Data/model drift</td>
+<td><strong>Lakehouse Monitoring</strong></td>
+<td>Infra-layer continuous signal</td>
+</tr>
+<tr>
+<td>Versioned, reversible learning</td>
+<td><strong>DABs + Git folders</strong></td>
+<td>Seatbelt on “learning”</td>
+</tr>
+<tr>
+<td>Pipeline tests before prod / hard-learning</td>
+<td><strong>Lakeflow Pipeline unit tests</strong> (Beta, 2026-07)</td>
+<td>Python/SQL tests with mocks for SDP / Auto CDC / Expectations; dual CI/CD with MLflow</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Implementation notes:</strong> - Three feedbacks → three layers: business data → policy; staff task feedback → knowledge/process; traces → infra. - <strong>Dual CI/CD:</strong> model/Agent changes through MLflow eval; SDP/Job changes through pipeline unit tests, then DABs. Hard learning must not skip green tests. - <strong>Rollback:</strong> MLflow drift/degrade → DABs + Git to last good. An action, not an incident. - <strong>Decoupled domain eval:</strong> CLEARS ⊥ domain KPIs (quality/safety/cost vs business outcome). - <strong>Local:</strong> MLflow 3 Custom Judges in the domain DAB (e.g. false-decline rate; ROI lift). - <strong>Central:</strong> Gateway on Inference Tables runs global CLEARS (esp. Safety, Latency, Cost) and drift—global compliance only. - <strong>Attribution:</strong> holdout / A/B on external reach. - <strong>Write-back:</strong> soft → Vector Search; hard → promote + green tests → Job / Agent version.</p>
+<h3 id="orchestration-governance">2.6 Orchestration / governance</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>Duty</th>
+<th>Component</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Schedule, trigger, deps, retry, rollback</td>
+<td><strong>Lakeflow Jobs / Workflows</strong></td>
+<td>Deterministic backbone</td>
+</tr>
+<tr>
+<td>Grants, lineage, egress (data stays in cloud)</td>
+<td><strong>Unity Catalog</strong></td>
+<td>Object governance</td>
+</tr>
+<tr>
+<td>API keys / credentials for Agents</td>
+<td><strong>UC Secrets (GA)</strong></td>
+<td>Same control plane as data</td>
+</tr>
+<tr>
+<td>AI traffic: route, throttle, guardrails, logs, cost</td>
+<td><strong>Unity AI Gateway</strong></td>
+<td>Core <strong>GA</strong> 2026-08-04; advanced policies / Agent Services <strong>Beta</strong></td>
+</tr>
+<tr>
+<td>Managed tool auth, logs, cost</td>
+<td><strong>Managed MCP ⊂ Gateway</strong></td>
+<td>Deep bind <strong>Beta</strong> 2026-08-06</td>
+</tr>
+<tr>
+<td>Observability</td>
+<td><strong>MLflow 3</strong></td>
+<td>Trace, eval, monitor</td>
+</tr>
+<tr>
+<td>CI/CD (models + pipelines)</td>
+<td><strong>DABs + Git</strong> + <strong>pipeline unit tests (Beta)</strong></td>
+<td>Dual gates</td>
+</tr>
+<tr>
+<td>Cost and quotas</td>
+<td><strong>System tables + budget alerts</strong></td>
+<td>Tag <code>domain</code> / <code>agent_id</code> / <code>env</code>; over threshold: Gateway <strong>throttle first</strong>, then alert—do not take down the control plane</td>
+</tr>
+<tr>
+<td>Workspace / tenancy</td>
+<td><strong>Default: one workspace + one catalog per domain</strong> (§4 decision 7)</td>
+<td>Catalog = what you see; workspace = failure domain and bill. Pattern B: registry stays in the central catalog</td>
+</tr>
+<tr>
+<td>Serving and job concurrency</td>
+<td><strong>Model Serving caps + cluster policy / serverless budgets + Gateway identity throttles</strong></td>
+<td>Three knobs below; no unbounded cross-domain fan-out</td>
+</tr>
+<tr>
+<td>Contract registry and discovery</td>
+<td><strong>UC Functions / MCP + tags</strong></td>
+<td>Lifecycle §2.3; discovery §2.4 (pattern)</td>
+</tr>
+<tr>
+<td>Cross-domain auth</td>
+<td><strong>UC grants + Gateway identity / Service Policies (advanced = Beta)</strong></td>
+<td>Auth first; retrieve layer injects filters</td>
+</tr>
+<tr>
+<td>Domain isolation</td>
+<td><strong>catalog.schema + Vector Search filters + domain Metric Views</strong></td>
+<td>From Phase 1; Phase 4 only adds cross-domain calls</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>Security side-effect lives here: UC for grants, egress, secrets; Gateway for AI traffic and managed tools. Federation does not weaken this: cross-domain emits <strong>contract-shaped conclusions</strong>, not raw peer Context.</p>
+</blockquote>
+<p><strong>Three runtime knobs (no capacity formulas—lock the control points):</strong></p>
+<ol type="1">
+<li><strong>Model Serving / Agent endpoints:</strong> one endpoint per domain (or per contract); <strong>provisioned concurrency cap</strong>; no unlimited shared endpoints. Suggest-only internal can scale-to-zero; approval flows and external reach keep a small provisioned floor (cold start). Cross-domain calls: Gateway throttle <strong>by caller identity</strong>.</li>
+<li><strong>Lakeflow Jobs / SDP:</strong> domain cluster policies or serverless budgets; hard-learning releases must not steal the pilot domain’s prod queue. Pipeline unit tests stay in CI.</li>
+<li><strong>Retrieve and SQL:</strong> Vector Search and DBSQL warehouses queued/warehoused <strong>per domain</strong>. Gateway throttle <em>is</em> the domain quota enforcer—do not build a second limiter.</li>
+</ol>
+<hr />
+<h2 id="phased-rollout-crawl-walk-run">3. Phased rollout (crawl → walk → run)</h2>
+<p>Foundation → knowledge → one Agent loop → multi-Agent expansion. Each phase has outputs and exit criteria.</p>
+<h3 id="phase-0-governance-foundation">Phase 0 — Governance foundation</h3>
+<ul>
+<li><strong>Goal:</strong> data trusted, governed, traceable; credentials and egress under control.</li>
+<li><strong>Components:</strong> Unity Catalog + <strong>UC Secrets (GA)</strong>, Lakeflow Connect + Auto Loader + SDP to bronze/silver, Unity AI Gateway core in place.</li>
+<li><strong>Output:</strong> governed lake + lineage + secrets in UC; <strong>workspace pattern A written down</strong> (one workspace, one catalog per domain; §4 decision 7).</li>
+<li><strong>Exit:</strong> core business data in-lake with lineage and tightened grants; Agent keys not in local/ungoverned config; tenancy policy recorded (default A, B upgrade triggers explicit).</li>
+</ul>
+<h3 id="phase-1-knowledge-layer">Phase 1 — Knowledge layer</h3>
+<ul>
+<li><strong>Goal:</strong> trusted knowledge + retrievable Context; <strong>domain tags and schema isolation from day one</strong> so Phase 4 is not isolating a dirty index.</li>
+<li><strong>Components:</strong> Metric Views (corporate schema + pilot domain schema), Vector Search (<code>domain</code> metadata, default filters), Genie Ontology; accept with <strong>Genie Agents</strong>.</li>
+<li><strong>Output:</strong> one metric definition per key KPI; Context retrievable; at least <code>corporate</code> + one business <code>domain</code> namespace.</li>
+<li><strong>Exit:</strong> Genie Agents answer correctly on governed data; in-domain retrieve does not hit other departments’ docs.</li>
+</ul>
+<h3 id="phase-2-first-agent-unit-narrow-pilot">Phase 2 — First Agent unit (narrow pilot)</h3>
+<ul>
+<li><strong>Goal:</strong> one high-value domain Agent, <strong>suggest-only</strong>.</li>
+<li><strong>Components:</strong> Agent Framework / Agent Bricks, Managed MCP via Gateway, Model Serving (<strong>concurrency cap</strong>), Gateway (route/throttle/cost/trace); register the pilot’s public capability in UC per §2.3 even if only same-domain calls for now.</li>
+<li><strong>Output:</strong> e.g. “conversion drop attribution and recommendations.”</li>
+<li><strong>Exit:</strong> stable useful suggestions on real data; full traces; no tools bypassing Gateway/MCP; at least one schema’d public contract; Serving capped and billed with <code>domain</code> tags.</li>
+</ul>
+<h3 id="phase-3-close-the-learning-loop">Phase 3 — Close the learning loop</h3>
+<ul>
+<li><strong>Goal:</strong> ③→④→⑤; the Agent can improve itself.</li>
+<li><strong>Components:</strong> MLflow 3 (global CLEARS + <strong>that domain’s Custom Judge</strong>), Inference Tables, Lakehouse Monitoring, DABs + Git, <strong>pipeline unit tests (Beta)</strong>, holdout/A-B.</li>
+<li><strong>Output:</strong> write-back to ②/③; promote/rollback live; hard-learning pipelines must test green.</li>
+<li><strong>Exit:</strong> one full “feedback → improve → holdout-validated effect”; both model and pipeline gates have actually passed <em>and</em> blocked.</li>
+</ul>
+<h3 id="phase-4-execution-multi-agent-federation">Phase 4 — Execution + multi-Agent (federation)</h3>
+<ul>
+<li><strong>Goal:</strong> internal/external delivery; <strong>Domain Federation connects already-isolated domains</strong>—this phase is <strong>discovery and cross-domain calls</strong>, not retrofitting isolation.</li>
+<li><strong>Components:</strong> Apps + Alerts + Genie One Native Apps; CustomerLake (PP, with fallback); <strong>UC contract registry + discovery pattern (§2.4)</strong>; per-dept MLflow evaluators; domain quotas and Gateway throttles.</li>
+<li><strong>Output:</strong> each dept owns Context namespace and eval rules; cross-dept work via MCP/UC contracts; macro network exists.</li>
+<li><strong>Exit:</strong> ≥3 domain Agents stable under isolation; ≥1 successful <strong>cross-domain capability call and write-back</strong> (fallback: notify human only); <strong>load the pilot domain to its QPS quota and other domains’ Serving stays up</strong> (noisy-neighbor test). Stay on pattern A unless §4 decision 7 upgrade triggers fire.</li>
+</ul>
+<hr />
+<h2 id="decisions-and-trade-offs">4. Decisions and trade-offs</h2>
+<ol type="1">
+<li><strong>Agent Bricks vs Agent Framework vs Genie family:</strong> task-first, low-ops → <strong>Agent Bricks</strong>; custom orchestration → <strong>Agent Framework</strong> (any harness); NL analytics → <strong>Genie Agents</strong>; in-office copilot → <strong>Genie One</strong>; builder assist → <strong>Genie Code</strong>. Mixable. Genie One ≠ Agent Bricks.</li>
+<li><strong>Tools only via Managed MCP (Gateway):</strong> UC Functions / Genie Agents / Vector Search / DBSQL as governed tools—no scatter-shot access. Auth, logs, cost on the Gateway plane.</li>
+<li><strong>Preview/Beta needs a fallback:</strong> CustomerLake still PP; MCP↔︎Gateway bind, pipeline tests, Genie Code Web Search, some Connect sources, advanced Gateway policies are Beta. Plan them in; keep activation Jobs, local/CI tests, kill-switch on web search.</li>
+<li><strong>Promotion is a mechanism:</strong> Gateway tables + MLflow quantify frequency/stability/risk; Job/SDP changes also need pipeline tests.</li>
+<li><strong>Governance first:</strong> UC + <strong>UC Secrets</strong> + AI Gateway before “data stays in cloud, conclusions leave.”</li>
+<li><strong>Central vs federated:</strong> keep central: secrets, Gateway identity, egress, global Safety/CLEARS, shared Metric Views. Push out: Context indexes, department specs, Custom Judges, in-domain Jobs. Discover via UC tagged registry—not a non-GA Gateway Tool Search.</li>
+<li><strong>Workspace tenancy:</strong> logical isolation is always Catalog. Split workspaces only for compute, billing, or compliance.</li>
+</ol>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 20%" />
+<col style="width: 27%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>When</th>
+<th>Upside</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. One workspace + one catalog per domain</strong> (default)</td>
+<td>Phases 0–3; few domains; small platform team; no mandated account split</td>
+<td>Simplest lineage, contracts, discovery; one Gateway</td>
+<td>Compute contention—quotas and the three knobs must hold</td>
+</tr>
+<tr>
+<td><strong>B. Hub workspace (gov) + domain workspaces (run)</strong></td>
+<td>One domain’s Jobs/Serving crowd others, or audit wants split bills</td>
+<td>Failure-domain split; budgets per workspace</td>
+<td>Cross-workspace identity, DAB <code>target</code>s, extra hop on discovery; registry stays <code>corp.agent_registry</code> in the hub catalog</td>
+</tr>
+<tr>
+<td><strong>C. One workspace per domain</strong></td>
+<td>Hard regulation, post-merger IT, mandated zero-trust between domains</td>
+<td>Smallest blast radius</td>
+<td>Registry / Ontology / Gateway need hub copies; ops cliff—<strong>do not pick by default</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>On B: same UC metastore + SCIM; domains host implementations, public contracts stay central; DABs use <code>gov</code> / <code>domain_x</code> targets—no incompatible bundle shapes per domain. Splitting workspaces <strong>does not</strong> redo Context namespaces.</p>
+<hr />
+<h2 id="risks-and-dependencies">5. Risks and dependencies</h2>
+<ul>
+<li><strong>Private Preview:</strong> CustomerLake timing is not yours → fallback required.</li>
+<li><strong>Beta still needs fallback:</strong> Gateway <em>core</em> is GA; advanced Service Policies / Agent Services, MCP deep bind, pipeline tests, Genie Code Web Search are not zero-risk prod deps.</li>
+<li><strong>Discovery productization:</strong> cross-dept tool search may be Agent Services (Beta) or a homegrown registry query; verify APIs; failure path is “notify human only.”</li>
+<li><strong>Contract sprawl / breaking changes:</strong> silent caller failures → §2.3 versioning and dual-run.</li>
+<li><strong>Over-wide cross-domain filters:</strong> “open all” kills namespaces → whitelist domains + audit.</li>
+<li><strong>Noisy neighbor:</strong> uncapped shared Serving/warehouses → Phase 4 quota-saturation drill; no broadcast fan-out.</li>
+<li><strong>Splitting workspaces too early:</strong> B/C before a central registry shatters discovery → A + quotas first; upgrade only on decision 7 triggers.</li>
+<li><strong>Custom integration:</strong> Lark/Meegle is build work; Genie One plugins reduce some channels, not PM-system integration.</li>
+<li><strong>Attribution must be designed in Phase 3</strong>, not bolted on later.</li>
+<li><strong>Labs:</strong> Ontobricks has no official SLA; have an alternative on the critical path.</li>
+<li><strong>Status freshness:</strong> ~August 2026; re-check docs before kickoff.</li>
+</ul>
+<hr />
+<h2 id="theory-map-essay-claims-databricks-including-gaps">6. Theory map: essay claims ↔︎ Databricks (including gaps)</h2>
+<p>Maps <em><a href="Enterprise_AI_thoughts_en.html">Topological Wiring of High-Dimensional Logic and Reality Anchors</a></em> onto platform capabilities, and <strong>marks what you must build yourself</strong>. This section is <em>why we govern this way</em>, not <em>which widget to click</em>.</p>
+<h3 id="scorecard">6.1 Scorecard</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 41%" />
+<col style="width: 41%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr>
+<th>Essay idea</th>
+<th>Databricks</th>
+<th>Fit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KG = explicit atomic facts (symbolic) vs embeddings = continuous similarity (connectionist), unified in Context</td>
+<td><strong>Genie Ontology / OntoRank</strong> (symbolic) + <strong>AI Search</strong> (vectors)</td>
+<td>⭐ Strong</td>
+</tr>
+<tr>
+<td>Context purification: hybrid retrieve + cross-entropy rerank</td>
+<td><strong>AI Search</strong> hybrid (lexical + ANN, RRF) + <strong>cross-encoder rerank</strong></td>
+<td>⭐ Strong</td>
+</tr>
+<tr>
+<td>Semantic quality red line / Gatekeeper</td>
+<td><strong>OntoRank authority scores</strong></td>
+<td>⭐ Strong</td>
+</tr>
+<tr>
+<td>Strong types: JSON Schema / Protobuf constrained decoding</td>
+<td><strong>Structured Outputs</strong> (constrained decoding)</td>
+<td>✅ Hit</td>
+</tr>
+<tr>
+<td>Deterministic skeleton (FSM / LangGraph) + LLM as local parser/router</td>
+<td><strong>Lakeflow Jobs</strong> + <strong>Agent Framework</strong> (LangGraph)</td>
+<td>✅ Hit</td>
+</tr>
+<tr>
+<td>Open-ended planning as real-world experiment loop</td>
+<td><strong>MLflow 3 + CLEARS</strong> + holdout / A/B</td>
+<td>✅ Hit</td>
+</tr>
+<tr>
+<td>Context roles (system prompt / RAG / observation / memory)</td>
+<td><strong>Agent Framework</strong> + <strong>Managed MCP</strong> + memory</td>
+<td>✅ Hit</td>
+</tr>
+<tr>
+<td>Pre-softmax / logit-level UQ + hard stop before first token</td>
+<td><strong>Not on hosted endpoints:</strong> FM API / Gateway-fronted external models expose <strong>sampled-token <code>logprobs</code></strong>, not full pre-softmax logits; generation is server-side</td>
+<td>🚫 Platform limit</td>
+</tr>
+<tr>
+<td>Dirichlet UQ, aleatoric/epistemic split, ECE, credal sets</td>
+<td><strong>Not on hosted endpoints:</strong> needs model-head access or full logits; only custom serving of open weights</td>
+<td>🚫 Platform limit</td>
+</tr>
+<tr>
+<td>Explicit renormalization-bias handling (UNK/OOD dump)</td>
+<td><strong>Partial:</strong> constrained decoding is platform; schema “spillway” is your design</td>
+<td>⚠️ Gap / build</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="strongest-fit-symbolic-connectionist-knowledge">6.2 Strongest fit: symbolic × connectionist knowledge</h3>
+<p>The essay’s Tractatus split—triples as pictures of facts vs embeddings as smoothed similarity—maps onto <strong>first-class complementary products</strong>: OntoRank as native Gatekeeper signal; AI Search as hybrid retrieve + rerank. You do not have to stitch that layer yourself. That is the theoretical landing of module ②.</p>
+<h3 id="hard-limit-logit-level-mechanisms">6.3 Hard limit: logit-level mechanisms</h3>
+<p>Hosted Foundation Model APIs and Gateway-fronted Claude/GPT expose <strong>output-token <code>logprobs</code></strong>, not the full pre-softmax vector. You cannot intercept before the first token. Dirichlet / ECE / credal sets need a custom head.</p>
+<p>The only path is <strong>self-hosted open weights</strong> (GPU + custom pyfunc). Cost: you give up managed FM convenience and you <strong>cannot</strong> do this on proprietary models. For an architecture that leans hosted + external models, treat logit-level UQ as <strong>out of scope</strong>.</p>
+<h3 id="behavioral-stand-ins-for-ood-silence">6.4 Behavioral stand-ins for “OOD → silence”</h3>
+<ul>
+<li><strong>Retrieve-confidence gate (most useful):</strong> max similarity below threshold → refuse. No logits; matches “whereof one cannot speak.”</li>
+<li><strong>Sequence <code>logprobs</code> heuristic:</strong> low confidence → review/refuse (coarse).</li>
+<li><strong>Semantic entropy / self-consistency:</strong> N samples, measure disagreement ≈ epistemic uncertainty.</li>
+<li><strong>Separate OOD classifier</strong> as a router step.</li>
+<li><strong>Gateway guardrails + CLEARS Safety</strong> as last output gate.</li>
+</ul>
+<blockquote>
+<p><strong>One line:</strong> logit internals are not implementable on Databricks hosted endpoints (unless you self-host open models, which miss Claude/GPT). The <em>intent</em>—refuse when out of distribution—can be approximated with <strong>retrieve gates + logprobs + semantic entropy</strong>. The platform gives fences and skeletons; taming probability inside the model is either self-host or a behavioral proxy.</p>
+</blockquote>
+<hr />
+<h2 id="appendix-sources">Appendix: sources</h2>
+<p>Checked against public docs and reporting (~<strong>August 2026</strong>):</p>
+<ul>
+<li>Databricks Blog — <em>Lakeflow: A new era of agentic data engineering</em> — https://www.databricks.com/blog/lakeflow-new-era-agentic-data-engineering</li>
+<li>Databricks Docs — <em>What is Lakeflow Spark Declarative Pipelines</em> — https://docs.databricks.com/aws/en/ldp/concepts</li>
+<li>Databricks Docs — <em>What is Auto Loader?</em> — https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/</li>
+<li>Databricks Blog — <em>Agent Bricks: Data + AI Summit 2026</em> — https://www.databricks.com/blog/agent-bricks-dais-2026</li>
+<li>Databricks Product — <em>Agent Bricks</em> — https://www.databricks.com/product/artificial-intelligence/agent-bricks</li>
+<li>Databricks Docs — <em>Evaluate and monitor AI agents (MLflow 3)</em> — https://docs.databricks.com/aws/en/mlflow3/genai/eval-monitor/</li>
+<li>Databricks Blog — <em>MLflow 3.0: Build, Evaluate, and Deploy Generative AI with Confidence</em> — https://www.databricks.com/blog/mlflow-30-unified-ai-experimentation-observability-and-governance</li>
+<li>Databricks Docs — <em>AI governance with Unity AI Gateway / AI Gateway-enabled inference tables</em> — https://docs.databricks.com/aws/en/ai-gateway/</li>
+<li>ITdaily — <em>Not pagerank, but ontorank: Databricks Genie Ontology</em> — https://itdaily.com/blogs/cloud/databricks-genie-ontology/</li>
+<li>GitHub — <em>databrickslabs/ontobricks</em> — https://github.com/databrickslabs/ontobricks</li>
+<li>Databricks Blog — <em>Introducing CustomerLake: The Agentic CDP embedded in Databricks</em> — https://www.databricks.com/blog/introducing-customerlake-agentic-cdp</li>
+<li>Databricks Docs — <em>AI Search retrieval quality guide (hybrid search &amp; reranking)</em> — https://docs.databricks.com/aws/en/vector-search/vector-search-retrieval-quality</li>
+<li>Databricks Docs — <em>Structured outputs on Databricks (constrained decoding)</em> — https://docs.databricks.com/aws/en/machine-learning/model-serving/structured-outputs</li>
+<li>Raphael Zhu — <em>Topological Wiring of High-Dimensional Logic and Reality Anchors</em> — https://zhuzp98.github.io/files/AI%20Thoughts/Enterprise_AI_thoughts_en.html</li>
+</ul>
+<p><strong>v1.4:</strong> Version aligned with the architecture doc. Workspace patterns A/B/C (default A); Serving / Jobs / retrieve knobs; domain billing tags and noisy-neighbor exit; Phase 0/2/4 gates.<br />
+<strong>v1.2:</strong> Domain Federation loop (contract lifecycle, UC registry discovery, Phase 1 isolation, control-plane registry/auth/quotas).<br />
+<strong>v1.1 product dates:</strong> Unity AI Gateway core GA (2026-08-04); Managed MCP under Gateway (Beta, 2026-08-06); SharePoint/GDrive Connect GA; OpenAI/PagerDuty Connect Beta; UC Secrets GA; Genie Spaces → Genie Agents; pipeline unit tests Beta (2026-07); Genie Code Web Search Beta (2026-08); Genie One Excel/Sheets plugins (2026-08). Re-check official docs before kickoff.</p>
+
+
+							</div>
+						</section>
+					</article>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="icons">
+							<li><a href="https://www.linkedin.com/in/zhipengzhu98/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+							<li><a href="https://github.com/zhuzp98" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+							<li><a href="https://www.hackerrank.com/jsyxzzp" class="icon brands fa-hackerrank"><span class="label">HackerRank</span></a></li>
+							<li><a href="https://www.zhihu.com/people/zhu-zhi-peng-92-43" class="icon brands fa-zhihu"><span class="label">知乎 ZhiHu</span></a></li>
+							<li><a href="https://www.behance.net/zhipengzhu" class="icon brands fa-behance"><span class="label">Behance</span></a></li>
+							<li><a href="https://www.instagram.com/egoistaseraph/" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+							<li><a href="mailto:raphael.z98@outlook.com" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+						</ul>
+						<ul class="copyright">
+							<li>&copy; Raphael Zhu</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</footer>
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../assets/js/jquery.min.js"></script>
+			<script src="../../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../assets/js/browser.min.js"></script>
+			<script src="../../assets/js/breakpoints.min.js"></script>
+			<script src="../../assets/js/util.js"></script>
+			<script src="../../assets/js/main.js"></script>
+
+	</body>
+</html>
+

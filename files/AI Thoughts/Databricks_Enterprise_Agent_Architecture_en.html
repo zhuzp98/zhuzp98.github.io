@@ -1,0 +1,744 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Databricks Enterprise-Grade Agent Architecture - Raphael Zhu</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../assets/css/noscript.css" /></noscript>
+
+		<style>
+			.inner table { font-size: 0.88em; }
+			.inner .table-wrapper { overflow-x: auto; margin-bottom: 2em; }
+			.lang-switch { font-size: 0.9em; }
+			.lang-switch a { margin: 0 0.25em; }
+			.context-flow {
+				margin: 0 0 2em 0;
+				border: 1px solid #dfdfdf;
+				border-radius: 6px;
+				background: rgba(0, 0, 0, 0.02);
+				overflow: hidden;
+			}
+			.context-flow__title {
+				padding: 0.85em 1.25em;
+				text-align: center;
+				font-weight: 600;
+				font-size: 0.95em;
+				color: #2E3842;
+				background: rgba(46, 56, 66, 0.08);
+				border-bottom: 1px solid #dfdfdf;
+			}
+			.context-flow__subtitle {
+				font-weight: 400;
+				color: #6a6570;
+			}
+			.context-flow__body {
+				padding: 1.5em 1.25em;
+			}
+			.context-flow__lane {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-wrap: wrap;
+				gap: 0.5em 0.75em;
+				margin-bottom: 1.25em;
+			}
+			.context-flow__lane:last-child {
+				margin-bottom: 0;
+			}
+			.context-flow__lane--stack {
+				flex-direction: column;
+				gap: 0.35em;
+			}
+			.context-node {
+				border: 1px solid #c8c8c8;
+				border-radius: 4px;
+				padding: 0.55em 0.85em;
+				background: #fff;
+				font-size: 0.82em;
+				line-height: 1.4;
+				text-align: center;
+				max-width: 100%;
+			}
+			.context-node--hub {
+				border-color: #2E3842;
+				background: rgba(46, 56, 66, 0.06);
+				font-weight: 600;
+			}
+			.context-node__note {
+				display: block;
+				margin-top: 0.35em;
+				font-size: 0.88em;
+				font-weight: 400;
+				color: #6a6570;
+			}
+			.context-arrow {
+				color: #8E8892;
+				font-size: 1.1em;
+				flex-shrink: 0;
+				line-height: 1;
+			}
+			.context-arrow--v {
+				font-size: 1.25em;
+				padding: 0.15em 0;
+			}
+			.context-arrow--bi::before {
+				content: "↔";
+			}
+			.loop-note {
+				margin: 1em 0 0 0;
+				text-align: center;
+				font-size: 0.82em;
+				color: #6a6570;
+			}
+			@media screen and (max-width: 736px) {
+				.context-flow__lane {
+					flex-direction: column;
+				}
+				.context-arrow--h {
+					transform: rotate(90deg);
+				}
+			}
+		</style>
+
+	</head>
+	<body class="is-preload">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="../../index.html">Home</a></h1>
+						<nav id="nav">
+							<ul>
+								<li class="special">
+									<a href="#menu" class="menuToggle"><span>Menu</span></a>
+									<div id="menu">
+										<ul>
+											<li><a href="../../index.html">Home</a></li>
+											<li><a href="../../cv.html">CV</a></li>
+											<li><a href="../../gallery.html">Gallery</a></li>
+											<li><a href="../../blog.html">Blog</a></li>
+											<li><a href="../../qanda.html">Q &amp; A</a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<article id="main">
+						<header>
+							<h2>Databricks Enterprise-Grade Agent Architecture</h2>
+							<p>The enterprise as a learning Agent: five-module loop, domain federation, and the control plane (v1.4)</p>
+							<p class="lang-switch"><a href="Databricks_Enterprise_Agent_Architecture.html">中文</a> · <a href="Databricks_Enterprise_Agent_Architecture_en.html">EN</a></p>
+						</header>
+						<section class="wrapper style5">
+							<div class="inner">
+<h2 id="core-idea-the-enterprise-as-a-learning-agent">1. Core idea: the enterprise as a learning Agent</h2>
+<p>Treat the whole enterprise as one large Agent and it must run as a <strong>closed loop</strong>, not a one-way pipeline from input to action. Five functional modules plus a cross-cutting <strong>orchestration / governance layer</strong> map to the classic cycle: perceive → remember → reason → act → learn.</p>
+<div class="context-flow">
+	<div class="context-flow__title">Orchestration / governance <span class="context-flow__subtitle">(control plane)</span></div>
+	<div class="context-flow__body">
+		<div class="context-flow__lane">
+			<div class="context-node">
+				① Dynamic inputs
+				<span class="context-node__note">Perception</span>
+			</div>
+			<span class="context-arrow context-arrow--h" aria-hidden="true">→</span>
+			<div class="context-node context-node--hub">
+				③ AI processing
+				<span class="context-node__note">Reasoning</span>
+			</div>
+			<span class="context-arrow context-arrow--h" aria-hidden="true">→</span>
+			<div class="context-node">
+				④ Business execution
+				<span class="context-node__note">Action</span>
+			</div>
+			<span class="context-arrow context-arrow--h" aria-hidden="true">→</span>
+			<div class="context-node">
+				People / customers
+			</div>
+		</div>
+		<div class="context-flow__lane context-flow__lane--stack">
+			<span class="context-arrow context-arrow--v" aria-hidden="true">↓</span>
+		</div>
+		<div class="context-flow__lane">
+			<div class="context-node">
+				② Knowledge &amp; memory
+				<span class="context-node__note">Feeds ① and ③</span>
+			</div>
+			<span class="context-arrow context-arrow--bi" aria-hidden="true"></span>
+			<div class="context-node context-node--hub">
+				⑤ Eval / feedback / learning
+				<span class="context-node__note">Writes ②; upgrades ③</span>
+			</div>
+		</div>
+		<p class="loop-note">Results flow back and update memory. A one-way chain is automation; ⑤ is what makes a learning Agent.</p>
+	</div>
+</div>
+<p><strong>The split that matters:</strong> a one-way chain is automation. <strong>Only the ⑤ feedback arrow makes the enterprise a learning, evolving Agent.</strong> That is what separates this design from a generic data-automation platform.</p>
+<h3 id="six-parts">Six parts</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 44%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr>
+<th>Part</th>
+<th>Agent analog</th>
+<th>One-line job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① Dynamic inputs</td>
+<td>Perception</td>
+<td>Continuously collect internal and external batch/stream signals</td>
+</tr>
+<tr>
+<td>② Knowledge &amp; memory</td>
+<td>Memory</td>
+<td>Distill raw input into trusted, retrievable knowledge</td>
+</tr>
+<tr>
+<td>③ AI processing</td>
+<td>Reasoning</td>
+<td>Abstract and automate processes; supervise and advise</td>
+</tr>
+<tr>
+<td>④ Business execution</td>
+<td>Action</td>
+<td>Route conclusions to the right people / customers; bridge to humans</td>
+</tr>
+<tr>
+<td>⑤ Eval / feedback / learning</td>
+<td>Learning</td>
+<td>Capture outcomes; write back knowledge; upgrade processes</td>
+</tr>
+<tr>
+<td>Orchestration / governance</td>
+<td>Control plane</td>
+<td>Scheduling, permissions, observability, cost—end to end</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="two-layers-agent-unit-vs-agent-network">Two layers: Agent unit vs Agent network</h3>
+<p>“Enterprise = one Agent” is a useful <strong>starting metaphor</strong>. A real company is closer to a <strong>multi-agent system</strong>—finance, supply chain, support, risk, marketing—each with its own ①–⑤. Keep the layers distinct so implementation granularity does not collapse:</p>
+<ul>
+<li><strong>Micro (Agent unit):</strong> sections 2–7—the five modules plus governance <strong>inside one domain Agent</strong>.</li>
+<li><strong>Macro (Agent network):</strong> collaboration, tasking, shared knowledge, and unified governance <strong>across</strong> domain Agents.</li>
+</ul>
+<p>The same five-module frame holds at both layers: the macro layer is an Agent made of Agents. That is why the abstraction scales.</p>
+<h3 id="macro-evolution-domain-isolation-and-capability-contracts-domain-federation">Macro evolution: domain isolation and capability contracts (Domain Federation)</h3>
+<p>When the company has dozens of departments with independent goals, the macro layer cannot scale by “adding more hardcoded routes.” Use <strong>domain-driven federation</strong>:</p>
+<ol type="1">
+<li><strong>Capability Contract:</strong> each department Agent publishes a standard I/O protocol and capability statement (think OpenAPI / MCP tools). Cross-department work is scheduled against contracts, not “call that team’s Job by name.”</li>
+<li><strong>Federated Governance:</strong> domains keep local goals and execution autonomy, while sharing the central control plane for safety gates, cost quotas, egress control, and baseline lineage—<strong>decentralized execution, centralized risk and security</strong>.</li>
+</ol>
+<p>People routing (org chart → the right human) and capability routing (contract → the right Agent) stay separate; see §5.2. In-domain learning can be fast; cross-domain contracts and global safety still hit the central gate; see §6.5.</p>
+<hr />
+<h2 id="module-①-dynamic-inputs-perception">2. Module ① Dynamic inputs (perception)</h2>
+<h3 id="two-data-shapes">2.1 Two data shapes</h3>
+<p>Everything that feeds the loop splits, roughly, into two processing classes. Boundaries are fuzzy (on-chain data and social graphs are semi-structured), but the cut is good enough for workstreams.</p>
+<p><strong>Structured data</strong>—tabular, tagged, queryable:</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 30%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr>
+<th>Subclass</th>
+<th>Content</th>
+<th>Character</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Product telemetry</td>
+<td>User behavior, page/feature interactions</td>
+<td>High frequency, streaming, large volume</td>
+</tr>
+<tr>
+<td>Downstream business events</td>
+<td>Transactions, top-ups, and similar commercial acts</td>
+<td>High-value signals, tied to revenue</td>
+</tr>
+<tr>
+<td>Upstream / external</td>
+<td>On-chain addresses, ad channels, traffic features, social graphs</td>
+<td>Semi-structured, external, needs cleaning and join keys</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Unstructured data</strong> is mostly <strong>enterprise Context</strong>—hard to land as tables: annual/quarterly OKRs and plans, how departments actually run, new products/features, internal project status, competitor intel, macro news. Time-sensitive public information that should <strong>not</strong> be pre-ingested can still enter as a perception-side supplement (implementation: Genie Code Web Search and similar). Label it separately from lake-governed Context for confidence and provenance.</p>
+<blockquote>
+<p>Value density differs: structured data answers <em>what happened</em>; unstructured Context answers <em>why, and in what setting</em>. The first drives real-time reaction; the second decides whether the judgment is even in the right frame.</p>
+</blockquote>
+<h3 id="landing-in-the-lake-and-how-it-is-organized">2.2 Landing in the lake and how it is organized</h3>
+<p><strong>Structured data</strong> is the easier path: tables, tags, and two ingest modes—<strong>streaming</strong> (telemetry, trades) vs <strong>batch</strong> (periodic aggregates).</p>
+<p><strong>Unstructured Context</strong> is the hard part and the design core of this module. Organize it as a <strong>topology / graph</strong>, not a flat table: each piece of Context is a node, edges are semantic or citation links, weights come from authority scores. Databricks <strong>OntoRank</strong> (the ranking behind Genie Ontology) is the natural fit.</p>
+<p>Two clarifications on OntoRank:</p>
+<ol type="1">
+<li><strong>It scores authority / trust, not narrow data quality.</strong> Like PageRank, but over heterogeneous enterprise assets (code, docs, tables, files). Signals include owner credibility, usage breadth, ties to certified assets, freshness. It answers “which definition should the Agent adopt?”—complementary to completeness/accuracy “quality.”</li>
+<li><strong>Org structure is already a signal.</strong> OntoRank already uses the <strong>org graph</strong> (who accesses what, how often, role). The real <strong>incremental dimension is workflow structure</strong>—where in a process a fact was born and which decision it feeds. Inject that and the node space goes from “org” to “org × process,” closer to how the company actually runs.</li>
+</ol>
+<h3 id="a-convergence-line">2.3 A convergence line</h3>
+<p>Structured tables and unstructured Context eventually <strong>meet in one ontology / knowledge graph</strong> (Ontobricks can materialize Unity Catalog tables as graph nodes). The two-shape split is a <strong>collect-and-process</strong> distinction; in module ② they become one governed, searchable graph. That line is how ① hands off to ②.</p>
+<blockquote>
+<p><strong>Without this layer:</strong> the Agent reasons from generic common sense and stale snapshots; business signals lag; departments duplicate collection and fight over definitions; nobody can say where a number came from.</p>
+</blockquote>
+<hr />
+<h2 id="module-②-knowledge-and-memory">3. Module ② Knowledge and memory</h2>
+<h3 id="job-from-input-to-trusted-knowledge">3.1 Job: from “input” to “trusted knowledge”</h3>
+<p>This module <strong>does not create new business/production data</strong>. It <strong>refines</strong> module ① inputs, with human review on the precise extracts, turning volume into knowledge an Agent can trust and retrieve. In Agent terms: long-term memory. ① is ingest; ② is remember <em>correctly</em>.</p>
+<blockquote>
+<p><strong>Clarification:</strong> runtime <strong>Memory, Trace, Evaluation</strong> metadata should also land back in the lake as fuel for ⑤. So: no new <strong>business</strong> data, but a continuous stream of <strong>data about the Agent’s own operation</strong>.</p>
+</blockquote>
+<p>Two memory subclasses, implemented differently:</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 18%" />
+<col style="width: 22%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr>
+<th>Subclass</th>
+<th>Nature</th>
+<th>Examples</th>
+<th>How it updates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Domain knowledge / rules</strong></td>
+<td>Governed; change needs approval</td>
+<td>Policy, SOP, business definitions, metric specs</td>
+<td>Human + approval</td>
+</tr>
+<tr>
+<td><strong>Experiential memory</strong></td>
+<td>Evolutionary; accumulates automatically</td>
+<td>Cases, feedback samples, wins/losses</td>
+<td>Written back from ⑤</td>
+</tr>
+</tbody>
+</table></div>
+<p>The first is the Agent’s “statute”; the second is “intuition.” Together they are judgment Context.</p>
+<h3 id="structured-data-a-traceable-map">3.2 Structured data: a traceable map</h3>
+<ul>
+<li><strong>Unity Catalog lineage</strong> is the identity card for every table and column: any number can be traced to source and transforms—the trust base.</li>
+<li>Humans govern raw/bronze against business definitions into <strong>silver</strong>, then <strong>Metric Views</strong> as the semantic metric layer.</li>
+<li>That <strong>medallion + Metric Views</strong> path is a traceable <strong>data → information → knowledge</strong> map.</li>
+<li><strong>Payoff:</strong> Metric Views are a <strong>single source of metric truth</strong>, so the Agent does not get conflicting definitions—the structured counterpart of OntoRank’s “adopt the authoritative definition.”</li>
+</ul>
+<h3 id="unstructured-prepare-sync-periodically-review">3.3 Unstructured: prepare, sync, periodically review</h3>
+<ul>
+<li><strong>Prepare:</strong> preprocess, chunk, embed, land as retrievable nodes.</li>
+<li><strong>Sync:</strong> keep pulling new ① information; incremental updates.</li>
+<li><strong>Periodic human review:</strong> keep the “new input → knowledge” pipeline honest so bad Context does not poison memory.</li>
+<li><strong>Not only add—change and retire:</strong> replaced knowledge needs <strong>versioning and expiry</strong>, or Context rots. Review also deprecates stale nodes.</li>
+</ul>
+<h3 id="review-stratify-by-authority-and-risk">3.4 Review: stratify by authority and risk</h3>
+<p>Human review does not scale to 100%. <strong>High-authority, high-risk knowledge gets close reading</strong>; the rest is AI pre-screen plus sampled audit. Reuse OntoRank <strong>authority scores</strong> as the queue so scarce humans sit on what must be trusted.</p>
+<h3 id="downstream-interface">3.5 Downstream interface</h3>
+<p>Module ③ consumes <strong>structured knowledge</strong> via Metric Views / SQL and <strong>unstructured knowledge</strong> via vector retrieval. Both can live on <strong>one governed ontology / graph</strong>—that is <em>physical</em> convergence after ingest.</p>
+<p><strong>Default consume semantics are not “search the whole graph.”</strong> The graph may be physically unified; retrieval must be <strong>logically isolated</strong> (§3.6). A department Agent sees <strong>its domain + corporate-shared knowledge</strong> by default. Cross-domain joint retrieval is an orchestration-layer exception after auth—not the default API of module ②.</p>
+<blockquote>
+<p><strong>Without this layer:</strong> raw ungoverned data drives decisions; hallucinations and wrong metric specs become “facts”; nothing compounds; audit is impossible. Highest <strong>risk and trust</strong> cost in the stack.</p>
+</blockquote>
+<h3 id="context-namespaces-for-many-departments-context-domains">3.6 Context namespaces for many departments (Context Domains)</h3>
+<p>In a large company with many independent departments, flattening all unstructured Context (OKRs, SOPs, project status) into one index <strong>destroys signal-to-noise</strong>. Same for metrics: if every team’s “conversion” and “active” share one semantic layer, the Advisor gets colliding definitions.</p>
+<ul>
+<li><strong>Domain partitioning:</strong> give departments/projects a <strong>Context Namespace</strong> (unstructured) and a <strong>Metric Scope</strong> (structured). Default retrieve: <strong>this domain + corporate-shared</strong> (HR policy, compliance, group-level Metric Views).</li>
+<li><strong>Authorized cross-domain retrieve:</strong> only when module ④ starts cross-function work, and only after the control plane checks permission. If two domains disagree on an authoritative definition: <strong>corporate-shared definition first, then OntoRank + requesting-domain priority</strong>—do not just open the filter.</li>
+<li><strong>Cross-domain read-only views:</strong> department metrics are not globally visible by default. Expose contract-shaped read-only metrics/conclusions, not “company-wide facts.”</li>
+</ul>
+<hr />
+<h2 id="module-③-ai-processing-reasoning">4. Module ③ AI processing (reasoning)</h2>
+<h3 id="stance-automate-the-work-do-not-unleash-the-model">4.1 Stance: automate the work, do not unleash the model</h3>
+<p>This module is <strong>not</strong> “let AI execute freely.” Start from <strong>how the business actually runs</strong>, abstract and modularize, then automate heavily. One line: <strong>deterministic work stays deterministic (workflows); judgment goes to AI (supervise and advise).</strong></p>
+<h3 id="three-paths-to-find-automation">4.2 Three paths to find automation</h3>
+<p>A complementary triangle: declared need + emergent build + observed use.</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 18%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr>
+<th>Path</th>
+<th>How</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① Top-down</td>
+<td>Talk to the business at <strong>dept / project / person</strong></td>
+<td>Processes people <strong>say</strong> they run</td>
+</tr>
+<tr>
+<td>② Middle-out</td>
+<td>Staff build <strong>skills</strong> via Databricks + Claude Q&amp;A, then distill to workflows</td>
+<td>Processes people <strong>built</strong></td>
+</tr>
+<tr>
+<td>③ Bottom-up</td>
+<td>Track Agent <strong>traces</strong> (Unity AI Gateway → UC inference tables)</td>
+<td>Processes people <strong>actually use</strong></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>The three rarely agree. <strong>Cross-checking</strong> said / built / used is the best filter for real vs fake demand.</p>
+</blockquote>
+<h3 id="from-exploratory-ai-use-to-production-automation-promotion-criteria">4.3 From exploratory AI use to production automation: promotion criteria</h3>
+<p>Identified automations become <strong>cron jobs</strong> or <strong>dependent DAGs</strong>—this is where employee workflow actually links to ① (data) and ② (knowledge).</p>
+<blockquote>
+<p><strong>Put a gate on it.</strong> When does a repeating AI Q&amp;A become a deterministic job? Define <strong>promotion criteria</strong>, e.g. <strong>frequency × stability × risk</strong>. That gate is the craft of turning skills/traces into production automation.</p>
+</blockquote>
+<h3 id="two-ai-roles-here">4.4 Two AI roles here</h3>
+<ul>
+<li><strong>Supervisor:</strong> watch each workflow pipeline—summarize / monitor / learn from <strong>outputs and sensors</strong> (business transforms of ①). How anomalies are <em>handled</em> belongs to orchestration; this module only defines <strong>how anomaly signals are produced and reported</strong>.</li>
+<li><strong>Advisor:</strong> loop-review tasks / objectives / OKRs against module ② Context; emit execution and commercial recommendations.</li>
+</ul>
+<h3 id="boundaries-with-neighbors">4.5 Boundaries with neighbors</h3>
+<ul>
+<li><strong>③:</strong> processed intelligence and review (what happened, what drifted, where to go).</li>
+<li><strong>④:</strong> wrap recommendations into executable, graded delivery.</li>
+<li><strong>⑤:</strong> after execution, write back outcomes.</li>
+</ul>
+<p>Analysis → action → retrospective. Do not swap jobs.</p>
+<blockquote>
+<p><strong>Without this layer:</strong> either endless manual toil, or unconstrained AI (unauditable). Automation never scales; AI stays a clever toy.</p>
+</blockquote>
+<hr />
+<h2 id="module-④-business-execution-action">5. Module ④ Business execution (action)</h2>
+<h3 id="job-get-intelligence-to-the-right-person-actionable-and-traceable">5.1 Job: get intelligence to the right person, actionable and traceable</h3>
+<p>Heavy dependence on <strong>enterprise Context</strong>: org chart, hierarchy, current Lark / Meegle (or equivalent PM) status. Route results to the <strong>department lead</strong> or <strong>owner</strong> for that problem.</p>
+<h3 id="two-routes-the-right-person-the-right-agent">5.2 Two routes: the right person ≠ the right Agent</h3>
+<p>At scale, “find a human” and “find a capability” are different maps. Do not share one hardcoded table.</p>
+<p><strong>People routing (org graph → human):</strong> consume the <strong>OntoRank org graph</strong> already maintained in ①/②. Do not rebuild a people map. Keep it <strong>fresh</strong>—reorgs turn “right person” into “wrong inbox.” Always read the latest graph from ②.</p>
+<p><strong>Capability routing (contract → Agent):</strong> a static org chart will not stay true with many departments. Cross-department tasks should <strong>discover</strong> the matching department Agent/API via the macro <strong>Capability Contract</strong> (<strong>Agent Discovery</strong>), then invoke published capabilities. The org graph answers <em>who to notify</em>; the contract answers <em>which Agent to call for what</em>.</p>
+<blockquote>
+<p>Fallback if discovery fails: notify the human only; do <strong>not</strong> auto-invoke the other Agent; do <strong>not</strong> fall back to a hardcoded Job name.</p>
+</blockquote>
+<h3 id="two-delivery-directions-internal-coordination-external-reach">5.3 Two delivery directions: internal coordination + external reach</h3>
+<p><strong>Internal</strong>—to staff and leads:</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 36%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Shape</th>
+<th>Fit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Email</strong> (Databricks alerts / notifications)</td>
+<td>One-way, formal, auditable</td>
+<td>Low-frequency archive (e.g. operating reports)</td>
+</tr>
+<tr>
+<td><strong>Databricks App</strong> (dept mini-app)</td>
+<td>Interactive</td>
+<td>Feedback / approval / drill-down</td>
+</tr>
+<tr>
+<td><strong>Genie One Native Apps</strong> (Google Sheets / Excel / Slack / Teams)</td>
+<td>Inside tools people already use</td>
+<td>Analysis and structured recommendations land in the spreadsheet or IM (Sheets/Excel native plugins GA as of Aug 2026)—lowest-friction internal path</td>
+</tr>
+<tr>
+<td><strong>Databricks × Lark/Meegle</strong> (open APIs / webhooks; maybe Lark CLI)</td>
+<td>Inside the PM system</td>
+<td>Recommendations become tasks</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>Channel rule:</strong> urgency × interactivity × auditability—push (mail/IM) vs pull (App / tasks / in-sheet collab). Prefer surfaces already open (sheets / Slack·Teams), then approval or project systems.</p>
+</blockquote>
+<p><strong>External</strong>—automated customer reach via <strong>Databricks CustomerLake (Agentic CDP)</strong>:</p>
+<ul>
+<li>Native agentic CDP on Databricks: identity, audiences, activation.</li>
+<li><strong>Infinity campaigns:</strong> a continuous agentic loop on customer context, instead of one-shot campaigns—much of what used to be a <strong>manual trigger</strong> can automate.</li>
+<li>Intelligence from ①–③ can drive CustomerLake directly.</li>
+</ul>
+<blockquote>
+<p><strong>Structural note:</strong> an infinity campaign <em>is</em> a miniature enterprise-Agent loop (perceive customer context → decide → activate → learn)—a prebuilt “customer-ops Agent” and a node in the macro network. Module ④’s external arm should <strong>orchestrate it, not rebuild it</strong>. <strong>Status:</strong> CustomerLake is <strong>Private Preview</strong>—plan it in, keep a fallback (activation Job / manual reach) until GA.</p>
+<p><strong>Product names (do not mix):</strong> business copilot = <strong>Genie One</strong> (incl. native apps); governed conversational analytics = <strong>Genie Agents</strong> (formerly Genie Spaces); builder/code = <strong>Genie Code</strong>; task-first platform Agents = <strong>Agent Bricks</strong>.</p>
+</blockquote>
+<h3 id="what-gets-delivered">5.4 What gets delivered</h3>
+<p>Including: operating reports, meeting briefs, project tracking, improvement points—<strong>cross-function</strong> to product / eng / ops. That coordination <em>is</em> macro multi-agent collaboration.</p>
+<h3 id="three-design-rules">5.5 Three design rules</h3>
+<ul>
+<li><strong>Execution grades live here:</strong> full auto / human review / suggest-only. Money and external commitments default to human confirm.</li>
+<li><strong>Channels are sensors:</strong> not fire-and-forget. Capture receipts (Meegle status, App approve/reject, mail response, sheet/IM traces, customer reaction) for ⑤.</li>
+<li><strong>Every recommendation carries lineage:</strong> sources and reasoning (Unity Catalog lineage from ②). Humans adopt what they can check.</li>
+</ul>
+<blockquote>
+<p><strong>Without this layer:</strong> insight dies in a dashboard (“analysis paralysis”); wrong inbox or no evidence → no adoption; missed real-time customer windows. Compute never becomes business outcome.</p>
+</blockquote>
+<hr />
+<h2 id="module-⑤-evaluation-feedback-learning-the-loop">6. Module ⑤ Evaluation / feedback / learning (the loop)</h2>
+<p>This closes ③→④→⑤ and upgrades automation into a <strong>learning Agent</strong>.</p>
+<h3 id="three-feedback-sources-three-learning-layers">6.1 Three feedback sources → three learning layers</h3>
+<p>Feedback is not one blob:</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 21%" />
+<col style="width: 38%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>Source</th>
+<th>Content</th>
+<th>Writes back to</th>
+<th>Cadence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>① Automated execution data</strong></td>
+<td>Reach tracking (CDP / CustomerLake)</td>
+<td><strong>Policy:</strong> ③ models, ④ reach strategy</td>
+<td>Fast (min–hours)</td>
+</tr>
+<tr>
+<td><strong>② Staff task feedback</strong></td>
+<td>Done on time? Written notes / docs</td>
+<td><strong>Knowledge + process:</strong> ② experiential memory; ③ workflows</td>
+<td>Medium (days–weeks)</td>
+</tr>
+<tr>
+<td><strong>③ Platform trace / CI</strong></td>
+<td>CI/CD + VCS; traces and logs</td>
+<td><strong>Infra:</strong> local module fixes</td>
+<td>Continuous</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>Match learning speed to signal speed: fast signals auto-tune; slow signals go through periodic human review (reuse ②’s review cadence).</p>
+</blockquote>
+<h4 id="heterogeneous-evaluation-domain-specific">Heterogeneous evaluation (domain-specific)</h4>
+<p>Risk cares about precision and compliance; growth cares about iteration speed and conversion. Do <strong>not</strong> score every Agent with one global KPI:</p>
+<ul>
+<li><strong>Local eval autonomy:</strong> each domain Agent defines <strong>Domain Evaluation Metrics</strong> (e.g. false-decline rate; ROI/conversion) that drive in-domain soft/hard learning.</li>
+<li><strong>Global eval roll-up:</strong> the center watches <strong>safety/compliance, cost quotas, drift alerts, and cross-domain success rate</strong>.</li>
+</ul>
+<p>The two sets are <strong>orthogonal</strong>: global (e.g. CLEARS) is quality, safety, cost; domain metrics are business outcomes. Neither substitutes for the other.</p>
+<h3 id="three-write-back-shapes">6.2 Three write-back shapes</h3>
+<ul>
+<li><strong>Update unstructured docs → soft learning:</strong> ② experiential memory (slow, accumulative, low risk).</li>
+<li><strong>Change a process step → hard learning:</strong> ③ workflows / models (fast, structural, risky).</li>
+<li><strong>Fix structured knowledge / metric specs:</strong> when feedback shows the <em>definition</em> is wrong, change ② domain knowledge / Metric Views—not only the prose.</li>
+</ul>
+<h3 id="cicd-vcs-the-seatbelt-on-learning">6.3 CI/CD + VCS: the seatbelt on “learning”</h3>
+<p><strong>Learning = changing production, and change is dangerous.</strong> CI/CD + VCS make continuous learning <strong>versioned and reversible</strong>.</p>
+<p>Two change surfaces, dual protection:</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 42%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th>Surface</th>
+<th>Gate before prod</th>
+<th>Typical tools</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Model / Agent</strong></td>
+<td>Eval bars, regressions, drift alerts</td>
+<td>MLflow Evaluation / Tracing / Monitoring + Asset Bundles</td>
+</tr>
+<tr>
+<td><strong>DAG / ETL</strong></td>
+<td>Unit tests (mock data for pipeline / CDC / expectations), then release</td>
+<td>Lakeflow Pipeline unit tests (SDP) + Asset Bundles + Git</td>
+</tr>
+</tbody>
+</table></div>
+<p>If hard learning changes the pipeline under a ③ workflow, <strong>model eval alone is not enough</strong>—pipeline tests must go green too.</p>
+<blockquote>
+<p><strong>Symmetric criteria:</strong> ③ has <strong>promote</strong>; ⑤ needs <strong>demote / rollback</strong>—alert and revert to last known good when quality drops. With VCS, rollback is an action, not an incident.</p>
+</blockquote>
+<h3 id="attribution-discipline-the-usual-hole">6.4 Attribution discipline (the usual hole)</h3>
+<p>Many things move at once. <strong>You cannot cleanly attribute “business got better” to “that decision.”</strong> Without attribution, “learning” chases correlation and drifts.</p>
+<blockquote>
+<p>On external reach, use <strong>experimental discipline</strong>—holdouts, A/B (CDPs usually support audience holdout). Only <strong>causal</strong> lift should write back.</p>
+</blockquote>
+<h3 id="close-the-loop-⑤-writes-②-and-③-gates-by-blast-radius">6.5 Close the loop: ⑤ writes ② and ③; gates by blast radius</h3>
+<p>The two back-arrows—<strong>into ② (memory)</strong> and <strong>into ③ (workflow/model)</strong>—are the loop. <strong>Learning and governance must both hold</strong>, but gates <strong>scale with blast radius</strong>, or federation dies under “everything needs central approval”:</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 37%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr>
+<th>Change</th>
+<th>Who gates</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>In-domain, low risk</strong></td>
+<td>Domain autonomy (still local CI/CD + rollback)</td>
+<td>Domain memory, Job params, Custom Judges</td>
+</tr>
+<tr>
+<td><strong>Cross-domain or global</strong></td>
+<td>Central orchestration gate + ③ promotion criteria</td>
+<td>Breaking contract changes, shared Metric Views, egress, global Safety, cross-domain retrieve auth</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>Without this layer:</strong> the system automates but does not evolve; ROI is unprovable; drift accumulates in the dark.</p>
+</blockquote>
+<hr />
+<h2 id="orchestration-governance-control-plane">7. Orchestration / governance (control plane)</h2>
+<p>Without an explicit control layer—<strong>who schedules, on what trigger, how failure rolls back</strong>—capability scatters. Six jobs:</p>
+<ol type="1">
+<li><strong>Orchestration:</strong> triggers, deps, retries, rollback.</li>
+<li><strong>AuthZ / security:</strong> which Agent may use which data and tools (least privilege); cross-domain retrieve and invoke must pass here.</li>
+<li><strong>Observability and evaluation:</strong> logs, traces, metrics, plus <strong>evaluation as a first-class peer of tracing</strong>—MLflow Evaluation / Trace so “was the decision <em>right</em>?” is measurable, not only “it happened.” Global CLEARS / Safety roll up here; domain business KPIs are not centrally scored.</li>
+<li><strong>Cost and quotas:</strong> monitor and throttle; in federation, <strong>per-domain</strong> quotas so one domain cannot blow the global bill.</li>
+<li><strong>Contract registry and discovery:</strong> publish, version, deprecate department capabilities; feed ④ Agent Discovery. Breaking changes hit the central gate.</li>
+<li><strong>Domain isolation policy:</strong> default Context Namespace / Metric Scope, and the exception path for cross-domain auth.</li>
+</ol>
+<p>Enterprise vs toy Agents is almost entirely this layer.</p>
+<p><strong>Side effect—data security:</strong> staff running a workflow <strong>do not need the raw underlying numbers</strong> (e.g. group revenue). Data <strong>stays in cloud</strong>, <strong>egress is tightly controlled</strong> (Unity Catalog + Unity AI Gateway): conclusions/actions leave; raw data does not. Less manual data wrangling, much higher safety—need-to-know.</p>
+<blockquote>
+<p><strong>Without this layer:</strong> leaks, runaway token bills, no replay, no accountability, no rollback—why toy Agents die in production.</p>
+</blockquote>
+<h3 id="deploy-boundary-logical-federation-shared-physical-warehouse">7.1 Deploy boundary: logical federation ≠ shared physical warehouse</h3>
+<p>Domain Federation answers <em>what you may see / whom you may call</em>. <strong>Workspaces and compute</strong> answer <em>who saturates the cluster / whose bill it is</em>. Do not mix them: <strong>catalog/schema = logical boundary; workspace/budget = failure domain and quota</strong>.</p>
+<p>Three principles; cut-over patterns live in the mapping doc:</p>
+<ol type="1">
+<li><strong>Shared control plane, isolated data plane:</strong> one UC metastore, Gateway, secrets, contract registry if possible; heavy Serving and job compute throttled or split by domain.</li>
+<li><strong>Verticalize one domain loop before horizontal fan-out:</strong> prove throughput and quotas on the pilot domain, then copy. Do not stand up N platforms on day one.</li>
+<li><strong>Cross-domain is sparse authorized calls, not broadcast:</strong> contracts already imply this; unbounded fan-out at peak will take down the callee domain.</li>
+</ol>
+<p>Splitting workspaces does <strong>not</strong> reinvent Context isolation—namespaces stay in Unity Catalog.</p>
+<hr />
+<h2 id="one-end-to-end-cycle">8. One end-to-end cycle</h2>
+<p>Example: conversion drop on a product line.</p>
+<ol type="1">
+<li><strong>① Perceive:</strong> streaming telemetry and transactions show a sustained drop; OKR Context says this line is a quarterly priority.</li>
+<li><strong>② Remember:</strong> Metric Views give one definition of “conversion”; lineage to the field; related cases retrieved from experiential memory.</li>
+<li><strong>③ Reason:</strong> supervisor flags the anomaly; advisor loop-reviews against OKRs → attribution + recommendations.</li>
+<li><strong>④ Act:</strong> people-route to the product owner (Meegle task, with lineage). If the fix depends on supply-chain inventory policy, <strong>discover</strong> that domain Agent via contract and invoke it—do not hardcode their Job. In parallel, CustomerLake win-back on the affected cohort. High-risk steps need human confirm.</li>
+<li><strong>⑤ Learn:</strong> task completion + write-ups + CustomerLake results (with holdout) flow back—domain experience into ②; proven playbooks promote into ③ under domain criteria; shared metrics or contract changes go through the central gate. Auditable, rollback-able.</li>
+</ol>
+<p>After one cycle the enterprise Agent “knows” this class of problem better.</p>
+<hr />
+<h2 id="design-principles">9. Design principles</h2>
+<ol type="1">
+<li><strong>Loop first:</strong> feedback is what makes a learning Agent; a chain is only automation.</li>
+<li><strong>Deterministic → workflow; judgment → AI.</strong></li>
+<li><strong>Automate real processes; do not unleash the model.</strong></li>
+<li><strong>Triangulate demand:</strong> said / built / used.</li>
+<li><strong>Data stays in cloud; only conclusions leave.</strong></li>
+<li><strong>Authority scores drive priority</strong> (review queues and routing).</li>
+<li><strong>Every change is versioned and reversible</strong> (dual gates: model eval + pipeline tests).</li>
+<li><strong>Attribution discipline</strong> (holdout / A/B).</li>
+<li><strong>Learning and governance together:</strong> in-domain low risk can be local; cross-domain contracts and global safety are central.</li>
+<li><strong>Reuse, don’t rebuild:</strong> org graph, CustomerLake, Genie One plugins.</li>
+<li><strong>Domain autonomy, central gates:</strong> default local Context / metrics / eval; cross-dept only via contracts—no hardcoded routes, no flattened search.</li>
+<li><strong>Logical federation ≠ shared warehouse:</strong> Catalog for what you see; workspace / domain quotas for compute and bill. Shared control plane, isolated data plane under load.</li>
+</ol>
+<hr />
+<h2 id="implementation-mapping">10. Implementation mapping</h2>
+<p>Component choices, availability, and phased rollout:</p>
+<p><strong><a href="Databricks_Enterprise_Agent_Implementation_en.html">Databricks Enterprise-Grade Agent Implementation Mapping</a></strong> (v1.4, August 2026)</p>
+<p>Chinese: <code>Databricks 企业级 Agent 落地映射与实施路径.md</code></p>
+<p>That document also maps this architecture to <em><a href="Enterprise_AI_thoughts_en.html">Topological Wiring of High-Dimensional Logic and Reality Anchors</a></em> and marks platform gaps. Update the mapping doc first when product status moves; update this doc when conceptual channels or loop principles change.</p>
+<p>Quick index (details in the mapping doc):</p>
+<ul>
+<li><strong>① Input:</strong> Delta Lake / Auto Loader / Lakeflow Connect / SDP (incl. file SaaS connectors); optional Genie Code Web Search</li>
+<li><strong>② Memory:</strong> Unity Catalog (lineage, governance, domain schemas) / Metric Views (corporate + domain scope) / Vector Search (<code>domain</code> filters) / Genie Ontology (OntoRank) / Ontobricks; Genie Agents on the business side</li>
+<li><strong>③ Reason:</strong> Jobs/DAG / Model Serving / Agent Framework / Agent Bricks / Managed MCP via Unity AI Gateway; department capabilities as UC Tools / MCP contracts</li>
+<li><strong>④ Act:</strong> Databricks Apps / alerts / <strong>Genie One Native Apps</strong> / Lark–Meegle / CustomerLake; people route via org graph, capability route via discovery</li>
+<li><strong>⑤ Learn:</strong> Lakehouse Monitoring / MLflow / Inference Tables / DABs + Git / <strong>pipeline unit tests</strong>; domain Custom Judges + central CLEARS</li>
+<li><strong>Control plane:</strong> UC + <strong>UC Secrets</strong> / Unity AI Gateway / contract registry and cross-domain auth / domain quotas and Serving caps / workspace strategy (default: one workspace, one catalog per domain)</li>
+</ul>
+<hr />
+<h2 id="appendix-sources">Appendix: sources</h2>
+<p>Product claims checked against public docs and reporting:</p>
+<ul>
+<li>ITdaily — <em>Not pagerank, but ontorank: Databricks Genie Ontology brings context and authority to AI</em> — https://itdaily.com/blogs/cloud/databricks-genie-ontology/</li>
+<li>Atlan — <em>What is Genie Ontology? Databricks’ Context Layer, Explained</em> — https://atlan.com/know/ai-agent/databricks/genie-ontology/</li>
+<li>GitHub — <em>databrickslabs/ontobricks</em> — https://github.com/databrickslabs/ontobricks</li>
+<li>Databricks Docs — <em>AI governance with Unity AI Gateway</em> / <em>AI Gateway-enabled inference tables</em> — https://docs.databricks.com/aws/en/ai-gateway/</li>
+<li>Databricks Blog — <em>Introducing CustomerLake: The Agentic CDP embedded in Databricks</em> — https://www.databricks.com/blog/introducing-customerlake-agentic-cdp</li>
+<li>Databricks Newsroom — <em>Databricks Enters the Marketing Industry with CustomerLake</em> — https://www.databricks.com/company/newsroom/press-releases/databricks-enters-marketing-industry-customerlake-agentic-customer</li>
+</ul>
+<p><strong>v1.4:</strong> §7.1 deploy boundary; principle 12. Cut-over and Serving knobs in the mapping doc.<br />
+<strong>v1.3:</strong> Domain Federation after the two-layer split; default retrieval isolation; people vs capability routing; scoped gates; contract registry on the control plane; principle 11.<br />
+<strong>v1.2:</strong> Genie One native office embed; dual CI/CD; pointer to the mapping doc.</p>
+
+
+							</div>
+						</section>
+					</article>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="icons">
+							<li><a href="https://www.linkedin.com/in/zhipengzhu98/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+							<li><a href="https://github.com/zhuzp98" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+							<li><a href="https://www.hackerrank.com/jsyxzzp" class="icon brands fa-hackerrank"><span class="label">HackerRank</span></a></li>
+							<li><a href="https://www.zhihu.com/people/zhu-zhi-peng-92-43" class="icon brands fa-zhihu"><span class="label">知乎 ZhiHu</span></a></li>
+							<li><a href="https://www.behance.net/zhipengzhu" class="icon brands fa-behance"><span class="label">Behance</span></a></li>
+							<li><a href="https://www.instagram.com/egoistaseraph/" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+							<li><a href="mailto:raphael.z98@outlook.com" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+						</ul>
+						<ul class="copyright">
+							<li>&copy; Raphael Zhu</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</footer>
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../assets/js/jquery.min.js"></script>
+			<script src="../../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../assets/js/browser.min.js"></script>
+			<script src="../../assets/js/breakpoints.min.js"></script>
+			<script src="../../assets/js/util.js"></script>
+			<script src="../../assets/js/main.js"></script>
+
+	</body>
+</html>
+

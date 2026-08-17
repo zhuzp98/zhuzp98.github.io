@@ -1,0 +1,744 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Databricks 企业级 Agent 架构设计 - Raphael Zhu</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../assets/css/noscript.css" /></noscript>
+
+		<style>
+			.inner table { font-size: 0.88em; }
+			.inner .table-wrapper { overflow-x: auto; margin-bottom: 2em; }
+			.lang-switch { font-size: 0.9em; }
+			.lang-switch a { margin: 0 0.25em; }
+			.context-flow {
+				margin: 0 0 2em 0;
+				border: 1px solid #dfdfdf;
+				border-radius: 6px;
+				background: rgba(0, 0, 0, 0.02);
+				overflow: hidden;
+			}
+			.context-flow__title {
+				padding: 0.85em 1.25em;
+				text-align: center;
+				font-weight: 600;
+				font-size: 0.95em;
+				color: #2E3842;
+				background: rgba(46, 56, 66, 0.08);
+				border-bottom: 1px solid #dfdfdf;
+			}
+			.context-flow__subtitle {
+				font-weight: 400;
+				color: #6a6570;
+			}
+			.context-flow__body {
+				padding: 1.5em 1.25em;
+			}
+			.context-flow__lane {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-wrap: wrap;
+				gap: 0.5em 0.75em;
+				margin-bottom: 1.25em;
+			}
+			.context-flow__lane:last-child {
+				margin-bottom: 0;
+			}
+			.context-flow__lane--stack {
+				flex-direction: column;
+				gap: 0.35em;
+			}
+			.context-node {
+				border: 1px solid #c8c8c8;
+				border-radius: 4px;
+				padding: 0.55em 0.85em;
+				background: #fff;
+				font-size: 0.82em;
+				line-height: 1.4;
+				text-align: center;
+				max-width: 100%;
+			}
+			.context-node--hub {
+				border-color: #2E3842;
+				background: rgba(46, 56, 66, 0.06);
+				font-weight: 600;
+			}
+			.context-node__note {
+				display: block;
+				margin-top: 0.35em;
+				font-size: 0.88em;
+				font-weight: 400;
+				color: #6a6570;
+			}
+			.context-arrow {
+				color: #8E8892;
+				font-size: 1.1em;
+				flex-shrink: 0;
+				line-height: 1;
+			}
+			.context-arrow--v {
+				font-size: 1.25em;
+				padding: 0.15em 0;
+			}
+			.context-arrow--bi::before {
+				content: "↔";
+			}
+			.loop-note {
+				margin: 1em 0 0 0;
+				text-align: center;
+				font-size: 0.82em;
+				color: #6a6570;
+			}
+			@media screen and (max-width: 736px) {
+				.context-flow__lane {
+					flex-direction: column;
+				}
+				.context-arrow--h {
+					transform: rotate(90deg);
+				}
+			}
+		</style>
+
+	</head>
+	<body class="is-preload">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="../../index.html">Home</a></h1>
+						<nav id="nav">
+							<ul>
+								<li class="special">
+									<a href="#menu" class="menuToggle"><span>Menu</span></a>
+									<div id="menu">
+										<ul>
+											<li><a href="../../index.html">Home</a></li>
+											<li><a href="../../cv.html">CV</a></li>
+											<li><a href="../../gallery.html">Gallery</a></li>
+											<li><a href="../../blog.html">Blog</a></li>
+											<li><a href="../../qanda.html">Q &amp; A</a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<article id="main">
+						<header>
+							<h2>Databricks 企业级 Agent 架构设计</h2>
+							<p>把企业看作一个会学习的 Agent：五模块闭环、域联邦与治理中枢（v1.4）</p>
+							<p class="lang-switch"><a href="Databricks_Enterprise_Agent_Architecture.html">中文</a> · <a href="Databricks_Enterprise_Agent_Architecture_en.html">EN</a></p>
+						</header>
+						<section class="wrapper style5">
+							<div class="inner">
+<h2 id="核心理念把企业看作一个会学习的-agent">1. 核心理念：把企业看作一个会学习的 Agent</h2>
+<p>如果把整个企业抽象成一个巨型 Agent，它的运转应当是一个<strong>闭环</strong>，而不是一条从输入到执行的单向流水线。核心由<strong>五个功能模块</strong>加一个贯穿全局的<strong>编排 / 治理层</strong>构成，对应 Agent 的经典循环：感知 → 记忆 → 推理 → 行动 → 学习。</p>
+<div class="context-flow">
+	<div class="context-flow__title">编排 / 治理层 <span class="context-flow__subtitle">（神经中枢）</span></div>
+	<div class="context-flow__body">
+		<div class="context-flow__lane">
+			<div class="context-node">
+				① 动态信息输入
+				<span class="context-node__note">感知</span>
+			</div>
+			<span class="context-arrow context-arrow--h" aria-hidden="true">→</span>
+			<div class="context-node context-node--hub">
+				③ AI 处理逻辑
+				<span class="context-node__note">推理</span>
+			</div>
+			<span class="context-arrow context-arrow--h" aria-hidden="true">→</span>
+			<div class="context-node">
+				④ 面向业务的执行策划
+				<span class="context-node__note">行动</span>
+			</div>
+			<span class="context-arrow context-arrow--h" aria-hidden="true">→</span>
+			<div class="context-node">
+				人 / 客户
+			</div>
+		</div>
+		<div class="context-flow__lane context-flow__lane--stack">
+			<span class="context-arrow context-arrow--v" aria-hidden="true">↓</span>
+		</div>
+		<div class="context-flow__lane">
+			<div class="context-node">
+				② 知识与记忆
+				<span class="context-node__note">长期记忆；向 ①③ 供数</span>
+			</div>
+			<span class="context-arrow context-arrow--bi" aria-hidden="true"></span>
+			<div class="context-node context-node--hub">
+				⑤ 评估 / 反馈 / 学习
+				<span class="context-node__note">回写 ②、升级 ③</span>
+			</div>
+		</div>
+		<p class="loop-note">结果回流，更新记忆。单向链只是自动化；加上 ⑤ 才成为会学习的 Agent。</p>
+	</div>
+</div>
+<p><strong>关键判断</strong>：单向链只是自动化；<strong>只有加上⑤这条回流线，企业才真正成为一个会学习、能进化的 Agent。</strong> 这是本架构区别于普通”数据自动化平台”的根本。</p>
+<h3 id="六个组成部分一览">六个组成部分一览</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 39%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr>
+<th>组成</th>
+<th>Agent 类比</th>
+<th>一句话职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 动态信息输入</td>
+<td>感知</td>
+<td>持续采集内外部实时/批量信号</td>
+</tr>
+<tr>
+<td>② 知识与记忆</td>
+<td>记忆</td>
+<td>把原始输入提炼为可信、可检索的知识</td>
+</tr>
+<tr>
+<td>③ AI 处理逻辑</td>
+<td>推理</td>
+<td>把流程抽象化、自动化，并做监督与决策</td>
+</tr>
+<tr>
+<td>④ 面向业务的执行策划</td>
+<td>行动</td>
+<td>把结论送对人 / 触达客户，并可与人力桥接</td>
+</tr>
+<tr>
+<td>⑤ 评估 / 反馈 / 学习</td>
+<td>学习</td>
+<td>采集执行结果，回写知识、升级流程</td>
+</tr>
+<tr>
+<td>编排 / 治理层</td>
+<td>神经中枢</td>
+<td>调度、权限、可观测性、成本，贯穿全局</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="两个层级agent-单元-vs-agent-网络">两个层级：Agent 单元 vs Agent 网络</h3>
+<p>“企业 = 一个 Agent”是有用的<strong>思维起点</strong>，但真实企业更像一个<strong>多 Agent 系统</strong>——财务、供应链、客服、风控、市场……每个领域都是一个独立 Agent，各自拥有自己的①~⑤。因此需明确区分两层，避免落地时颗粒度混乱：</p>
+<ul>
+<li><strong>微观层（Agent 单元）</strong>：本文第 2–7 节描述的五模块 + 编排层，刻画<strong>单个</strong>领域 Agent 的内部构造。</li>
+<li><strong>宏观层（Agent 网络）</strong>：多个领域 Agent 之间的协作、任务分派、共享知识与统一治理。</li>
+</ul>
+<p>同一套五模块框架在两层都成立——宏观层可视为”由 Agent 组成的 Agent”。这正是这套抽象的价值：可递归、可扩展。</p>
+<h3 id="宏观演进面向多部门的域隔离与能力契约domain-federation">宏观演进：面向多部门的域隔离与能力契约（Domain Federation）</h3>
+<p>当企业膨胀至数十个目标高度独立的部门时，宏观层不能靠「再加几个硬编码路由」扩容，而应走 <strong>域驱动（Domain-Driven）联邦</strong>：</p>
+<ol type="1">
+<li><strong>能力契约（Capability Contract）</strong>：每个部门 Agent 暴露标准的输入/输出协议与能力声明（类比 OpenAPI / MCP Tools）。跨部门协同按契约调度，而不是写死「找某某部门的某某 Job」。</li>
+<li><strong>联邦治理（Federated Governance）</strong>：各域保持目标与执行自治，同时共享中央编排层的安全门禁、成本配额、出口管控与基础血缘——<strong>去中心化敏捷执行，中心化风控与安全</strong>。</li>
+</ol>
+<p>人员路由（组织图 → 送对人）与能力路由（契约 → 调对 Agent）必须分开，详见 §5.2。域内学习可以快；跨域契约与全局安全仍走中央闸门，详见 §6.5。</p>
+<hr />
+<h2 id="模块①-动态信息输入感知">2. 模块① 动态信息输入（感知）</h2>
+<h3 id="两大数据形态">2.1 两大数据形态</h3>
+<p>所有持续输入闭环的信息，按处理方式大致分两类。边界确有模糊地带（链上数据、社交网络本身是半结构化的），但作为工作切分足够用。</p>
+<p><strong>结构化数据</strong>——可落表、可打 tag、可分类查询：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>子类</th>
+<th>内容</th>
+<th>特征</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>业务埋点数据</td>
+<td>用户行为、页面/功能交互</td>
+<td>高频、流式、量大</td>
+</tr>
+<tr>
+<td>业务后链路数据</td>
+<td>用户实际商业行为（交易、充值等）</td>
+<td>强价值信号，直接关联收入</td>
+</tr>
+<tr>
+<td>业务前链路数据</td>
+<td>链上地址信息、广告渠道、外部流量特征、社交媒体网络信息</td>
+<td>半结构化、外部来源、需清洗对齐</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>非结构化数据</strong>——更多是”企业上下文（Context）“，难以直接落表：企业年度/季度 OKR 与业务规划、各业务部门运转信息、新产品/功能信息、企业内项目进度、竞争对手信息、外部宏观社会信息等。其中，<strong>时效性强、不宜预先入湖的公开外部信息</strong>，也可作为感知侧补充通道（落地层对应 Genie Code Web Search 等实时检索能力），与已入湖的企业 Context 区分置信度与溯源。</p>
+<blockquote>
+<p>两类数据价值密度不同：结构化数据回答”发生了什么”，非结构化上下文回答”为什么、在什么背景下”。前者驱动实时反应，后者决定判断的准确性。</p>
+</blockquote>
+<h3 id="入湖与组织方式">2.2 入湖与组织方式</h3>
+<p><strong>结构化数据</strong>相对好处理：落成不同数据库/数据表，赋予不同 tag 分类，并区分<strong>流式</strong>（埋点、交易需即时反应）与<strong>批式</strong>（周期汇总）两条路径入湖。</p>
+<p><strong>非结构化数据（企业 Context）</strong>是难点，也是本模块设计核心。思路是用<strong>拓扑 / 图空间</strong>而非平表来组织：把每条上下文当作网状结构中的一个节点，节点间以语义与引用关系连边，再用权威性评分加权。这一步可直接借助 Databricks 的 <strong>OntoRank</strong> 算法（Genie Ontology 背后的排序算法）。</p>
+<p>关于 OntoRank 的两点澄清：</p>
+<ol type="1">
+<li><strong>它评估的是”权威性 / 可信度”而非狭义的数据质量。</strong> OntoRank 类比 PageRank，但排的是企业异构资产（代码、文档、结构化表、非结构化文件）的<strong>权威分</strong>，信号包括资产所有者可信度、使用广度、与已认证资产的关联、时效性等。它回答”哪条定义最可信、最该被 Agent 采纳”，与数据完整性/准确性意义上的”质量”互补而非等同。</li>
+<li><strong>组织结构 OntoRank 已部分内建。</strong> 它本身就把<strong>组织图</strong>作为权威性信号之一（谁访问什么、频率、组织角色）。因此真正的<strong>增量维度是”工作流程结构”</strong>——一条信息在什么流程节点产生、流向哪个决策环节。把它作为附加信号注入图空间，能让节点空间从”组织维”升到”组织 × 流程”的高维，更贴合企业真实运转结构。</li>
+</ol>
+<h3 id="一条收敛线索">2.3 一条收敛线索</h3>
+<p>结构化表与非结构化上下文，最终会<strong>汇入同一层本体（Ontology）/ 知识图谱</strong>（Databricks 的 Ontobricks 会把 Unity Catalog 的结构化表也物化成图节点）。也就是说，本模块”两类数据”的区分是<strong>采集与处理阶段</strong>的区分；到了模块②，它们统一成一张受治理、可检索的图。这条收敛线索把模块①接向模块②。</p>
+<blockquote>
+<p><strong>没有这一层会怎样</strong>：Agent 只能靠通用常识和过时快照做判断，业务信号严重滞后、决策脱离现实；各部门数据各自为政、重复采集、口径互相打架，且没人说得清数据从哪来。</p>
+</blockquote>
+<hr />
+<h2 id="模块②-知识与记忆记忆">3. 模块② 知识与记忆（记忆）</h2>
+<h3 id="本质从输入到可信知识的提炼层">3.1 本质：从”输入”到”可信知识”的提炼层</h3>
+<p>本模块<strong>不产生新的业务 / 生产数据</strong>——它对模块①的动态输入做<strong>提炼 + 人工复核的精确提取</strong>，把”海量原始数据”转化为”可被 Agent 信任、可检索的知识”。用 Agent 的话说，这是它的<strong>长期记忆</strong>：模块①解决”接进来”，模块②解决”记下来、且记得对”。</p>
+<blockquote>
+<p><strong>一点澄清</strong>：Agent 运转过程中会产生 <strong>Memory、Trace、Evaluation</strong> 等<strong>元数据</strong>，理想情况下这些也应沉淀回湖，成为后续学习的原料。所以更准确的说法是——本模块不产生新的<strong>业务数据</strong>，但会持续产出并沉淀<strong>关于自身运转的数据</strong>，而这部分正是模块⑤学习的燃料。</p>
+</blockquote>
+<p>记忆分两类本质不同的子类，落地方式完全不同：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th>子类</th>
+<th>性质</th>
+<th>例子</th>
+<th>更新方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>领域知识 / 规则</strong></td>
+<td>受治理、需审批才能改</td>
+<td>合规条款、SOP、业务定义、指标口径</td>
+<td>人工 + 审批流程</td>
+</tr>
+<tr>
+<td><strong>经验记忆</strong></td>
+<td>可演化、自动积累</td>
+<td>历史案例、反馈样本、成功/失败经验</td>
+<td>由⑤反馈自动回写</td>
+</tr>
+</tbody>
+</table></div>
+<p>前者是 Agent 的”制度与法律”，后者是它的”经验与直觉”。二者共同构成 Agent 判断时的上下文。</p>
+<h3 id="结构化数据一条可追溯的映射链路">3.2 结构化数据：一条可追溯的映射链路</h3>
+<ul>
+<li><strong>Unity Catalog 血缘（Lineage）= 每张表、每个字段列的”身份证”</strong>：任何数值都能回溯来源与加工过程，是知识可信度的底座。</li>
+<li><strong>人工按业务需求预先治理 raw 数据</strong>：对 bronze/ODS 层参考业务口径清洗建模，沉淀<strong>中间层（silver）</strong>，再在其上构建 <strong>Metric Views</strong> 作为指标语义层。</li>
+<li>这条 <strong>medallion + Metric Views</strong> 链路，给结构化数据一条 <strong>“海量数据 → 信息 → 知识”</strong> 的可追溯映射。</li>
+<li><strong>关键价值</strong>：Metric Views 提供<strong>指标的单一事实来源</strong>，避免 Agent 拿到互相打架的口径——正好承接模块① OntoRank”采纳最权威定义”的诉求。</li>
+</ul>
+<h3 id="非结构化数据预制-持续-sync-周期复核">3.3 非结构化数据：预制 + 持续 sync + 周期复核</h3>
+<ul>
+<li><strong>预制</strong>：对原始上下文做预处理、切分、嵌入，落成可检索的知识节点。</li>
+<li><strong>持续 sync</strong>：不断同步模块①的新信息，实现知识增量更新。</li>
+<li><strong>人工周期性复核</strong>：保证”更新输入 → 知识”的转化 pipeline 准确，防止错误上下文污染记忆。</li>
+<li><strong>不只是”加”，还要能”改 / 退役”</strong>：旧知识被取代时需<strong>版本与失效机制</strong>，否则上下文越积越脏。周期复核也要负责废弃过期知识。</li>
+</ul>
+<h3 id="复核策略按权威性-风险分层">3.4 复核策略：按权威性 / 风险分层</h3>
+<p>人工复核是瓶颈，不能全量。建议<strong>高权威、高风险的知识走人工精审</strong>，其余先 AI 预筛、再抽样人工把关——复用模块① OntoRank 的<strong>权威分</strong>作为复核优先级排序，让有限人力用在最该被信任的知识上。</p>
+<h3 id="对下游的接口">3.5 对下游的接口</h3>
+<p>模块③消费本层的方式：<strong>结构化知识</strong>经 Metric Views / SQL 调用，<strong>非结构化知识</strong>经向量检索获取。二者可以落在<strong>同一张受治理的本体 / 知识图谱</strong>上——这是采集阶段结束后的物理收敛。</p>
+<p><strong>默认消费语义不是「全图联合检索」。</strong> 图可以物理统一，检索必须<strong>逻辑隔离</strong>（见 §3.6）：部门 Agent 默认只看到本域知识 + 集团公共知识；跨域联合检索是编排层授权后的例外，不是模块②对外的缺省接口。</p>
+<blockquote>
+<p><strong>没有这一层会怎样</strong>：未经治理的原始数据直接进决策，幻觉与错误口径被当成事实；每次都从零开始、经验无法沉淀；合规与审计无从谈起——这是<strong>风险与信任成本最高</strong>的一层。</p>
+</blockquote>
+<h3 id="针对多部门的上下文命名空间context-domains">3.6 针对多部门的上下文命名空间（Context Domains）</h3>
+<p>在业务部门繁多且独立的巨型企业中，非结构化上下文（OKR、SOP、项目进度等）若全量打平检索，会导致极其严重的<strong>噪信比（Noise-to-Signal ratio）上升</strong>。结构化指标同样如此：各部门「转化率」「活跃」若混在同一语义层，Advisor 会拿到打架的口径。</p>
+<ul>
+<li><strong>域隔离（Domain Partitioning）</strong>：为不同部门/项目划定 <strong>Context Namespace</strong>（非结构化）与 <strong>Metric Scope</strong>（结构化）。默认情况下，部门 Agent 仅检索<strong>本域知识 + 集团级公共知识</strong>（如 HR 政策、合规条款、集团级 Metric Views）。</li>
+<li><strong>跨域授权检索</strong>：仅当模块④发起跨部门协作或涉及跨职能任务时，由编排层基于权限校验临时开启<strong>跨域图空间联合检索</strong>。若两域对同一概念的权威定义冲突，以<strong>集团公共定义优先，其次按 OntoRank 权威分 + 请求域优先级</strong>裁决，而不是简单把 Filter 打开。</li>
+<li><strong>跨域只读视图</strong>：部门指标不默认全局可见；对外只暴露契约化的只读 Metric / 结论，避免把域内口径泄漏成「全公司事实」。</li>
+</ul>
+<hr />
+<h2 id="模块③-ai-处理逻辑推理">4. 模块③ AI 处理逻辑（推理）</h2>
+<h3 id="核心立场先自动化改造而非放任-ai-执行">4.1 核心立场：先自动化改造，而非放任 AI 执行</h3>
+<p>本模块<strong>不是</strong>让 AI 大范围自由执行，而是先基于业务<strong>实际运转流程</strong>，把流程<strong>抽象化、模块化</strong>，做大量自动化改造。设计原则一句话：<strong>确定性的归确定性（工作流），判断性的归 AI（监督与决策）。</strong></p>
+<h3 id="识别自动化机会的三条路径">4.2 识别自动化机会的三条路径</h3>
+<p>三条路径构成互补三角，覆盖”声明的需求 + 涌现的行为 + 观测的真实使用”：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 27%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr>
+<th>路径</th>
+<th>方式</th>
+<th>拿到什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 自上而下</td>
+<td>与业务部门沟通，从<strong>部门/项目/个人</strong>三级获取工作流反馈，识别并拆解</td>
+<td>员工<strong>声明</strong>的流程</td>
+</tr>
+<tr>
+<td>② 自中而生</td>
+<td>员工通过 Databricks + Claude 问答<strong>自建 skills</strong>，再提炼为确定性工作流</td>
+<td>员工<strong>自己搭</strong>的流程</td>
+</tr>
+<tr>
+<td>③ 自下而上</td>
+<td>AI track 员工使用 Agent 的 <strong>trace</strong>（经 Unity AI Gateway 记录为 Unity Catalog inference table），识别潜在自动化点</td>
+<td>员工<strong>实际在用</strong>的流程</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>方法论要点</strong>：三条路径的产物往往<strong>不一致</strong>——员工”说的、搭的、用的”常有出入。三者<strong>交叉比对</strong>，是发现”真需求 vs 伪需求”的最佳方法。</p>
+</blockquote>
+<h3 id="从探索性-ai-用法到生产级自动化固化判据">4.3 从”探索性 AI 用法”到”生产级自动化”：固化判据</h3>
+<p>识别出的自动化，部署为一个个 <strong>cron job</strong> 或<strong>互相带依赖的 DAG</strong>——这一步把员工工作流与模块①（数据）、模块②（知识）真正链接起来。</p>
+<blockquote>
+<p><strong>必须设一道闸门</strong>：一个反复出现的 AI 问答，<strong>何时</strong>该被固化为确定性 job？建议明确 <strong>promotion criteria（晋升判据）</strong>，例如按 <strong>频率 × 稳定性 × 风险</strong> 评分达标才固化。这是把 skill/trace 沉淀为生产级自动化的核心工艺。</p>
+</blockquote>
+<h3 id="ai-在这一层的两个角色">4.4 AI 在这一层的两个角色</h3>
+<ul>
+<li><strong>监督者（Supervisor）</strong>：对每条 workflow pipeline 做监督——对其 <strong>output 与 sensor 信息</strong>做汇总 / 概括 / 监控 / 学习。这些 output 和 sensor，本质是对模块①数据输入的<strong>业务化处理与 transform</strong>。pipeline 出错或漂移时，异常信号如何上报应对接<strong>编排 / 治理层</strong>；本模块只需定义”异常信号的产生与上报口径”。</li>
+<li><strong>决策顾问（Advisor）</strong>：基于模块②的 context 及其核心逻辑，对企业的任务 / objective / OKR 做 <strong>loop review</strong>，输出业务执行建议与商业决策建议。</li>
+</ul>
+<h3 id="与相邻模块的分工边界">4.5 与相邻模块的分工边界</h3>
+<ul>
+<li><strong>模块③</strong>：产出<strong>加工后的情报与评审</strong>（发生了什么、偏离了什么、建议往哪走）。</li>
+<li><strong>模块④</strong>：把建议<strong>包装成可执行方案并分级交付</strong>。</li>
+<li><strong>模块⑤</strong>：执行之后<strong>回写</strong>成败与经验。</li>
+</ul>
+<p>三者是”分析 → 行动 → 复盘”的接力，不应互相越位。</p>
+<blockquote>
+<p><strong>没有这一层会怎样</strong>：要么员工继续手工重复劳动（人力成本高、易错、难扩展），要么放任 AI 自由执行（不可控、不可审计）；自动化收益无法规模化，AI 永远停在”聪明的玩具”。</p>
+</blockquote>
+<hr />
+<h2 id="模块④-面向业务的执行策划行动">5. 模块④ 面向业务的执行策划（行动）</h2>
+<h3 id="本质把情报送对人能行动可追溯">5.1 本质：把情报”送对人、能行动、可追溯”</h3>
+<p>本层大量依赖<strong>企业 Context</strong>：组织架构、部门层级、当前 Lark（Meegle）等项目管理进度。以此作背景，把处理结果<strong>路由</strong>到具体问题对应的<strong>部门 leader</strong> 或<strong>具体负责员工</strong>。</p>
+<h3 id="两条路由送对人-调对-agent">5.2 两条路由：送对人 ≠ 调对 Agent</h3>
+<p>规模化后，「找人」和「找能力」是两套映射，不能共用一张硬编码表。</p>
+<p><strong>人员路由（组织图 → 人）</strong>：用来「找对人」的组织架构，正是模块①/② 里 <strong>OntoRank 已维护的组织图</strong>。模块④应<strong>直接消费</strong>它，而非另建一套人员映射。路由必须<strong>保持新鲜</strong>——人员变动、部门重组会让「送对人」变成「送错人」。始终读模块②的最新组织图，而非硬编码。</p>
+<p><strong>能力路由（契约 → Agent）</strong>：当部门数量庞大时，仅靠组织架构图做静态映射会失真。跨部门任务应结合宏观层的 <strong>Capability Contract</strong>，按业务意图动态匹配并发现对应部门的 Agent / 服务接口（<strong>Agent Discovery</strong>），再调用其公开能力。组织图回答「通知谁」；契约回答「调用哪个 Agent 做什么」。</p>
+<blockquote>
+<p>发现失败时的降级：找不到匹配契约 → 只送人、不自动调对方 Agent；切勿回退到写死部门 Job 名。</p>
+</blockquote>
+<h3 id="交付有两个方向对内协调-对外触达">5.3 交付有两个方向：对内协调 + 对外触达</h3>
+<p><strong>对内</strong>——把建议送给员工与部门 leader，通道如下：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>通道</th>
+<th>形态</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>邮件</strong>（Databricks 通知 / alert 机制）</td>
+<td>单向、正式、留痕</td>
+<td>低频、需存档的正式传达（如经营报告）</td>
+</tr>
+<tr>
+<td><strong>Databricks App</strong>（部门级内部小应用）</td>
+<td>交互式</td>
+<td>需要接收方反馈 / 审批 / 下钻</td>
+</tr>
+<tr>
+<td><strong>Genie One Native Apps</strong>（Google Sheets / Microsoft Excel / Slack / Teams 插件）</td>
+<td>嵌入日常办公软件</td>
+<td>分析结论与结构化建议<strong>直接落入</strong>业务人员正在用的表格与 IM，无需离开现有办公软件（2026-08 起 Sheets / Excel 原生插件已正式发布）；摩擦力最低的对内触达面</td>
+</tr>
+<tr>
+<td><strong>Databricks × Lark/Meegle 集成</strong>（可能需 Lark CLI / 开放平台 API）</td>
+<td>嵌入现有项目管理工作流</td>
+<td>让建议直接落成项目管理系统里的任务</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>通道选择原则</strong>：由<strong>紧急度 × 交互性 × 可审计性</strong>决定——本质是 push（邮件/通知/IM）与 pull（App/任务系统/表格内协作）的取舍，服务于”接收方最可能采取行动”的路径。优先让结论出现在员工<strong>已经打开</strong>的界面（表格 / Slack·Teams），再落到需审批或项目跟踪的系统。</p>
+</blockquote>
+<p><strong>对外</strong>——直接对客户 / 用户做自动化触达与活动运营，可依托 <strong>Databricks CustomerLake（Agentic CDP）</strong>：</p>
+<ul>
+<li>CustomerLake 是原生构建在 Databricks 上的<strong>智能体化 CDP</strong>，统一客户数据、身份识别、受众构建与激活。</li>
+<li>其核心概念 <strong>“infinity campaigns”</strong>：用<strong>持续的 agentic loop 实时响应客户 context</strong>，取代一次性活动——很多原需<strong>人手动 trigger</strong> 的用户触达 / 运营反应因此可自动化。</li>
+<li>经前三个模块处理后的情报，可直接驱动 CustomerLake 做出自动反应。</li>
+</ul>
+<blockquote>
+<p><strong>结构洞察</strong>：CustomerLake 的 “infinity campaign” 本身就是一个<strong>微缩的企业 Agent 闭环</strong>（感知客户 context → 决策 → 激活 → 学习），相当于 Databricks 预置好的”客户运营 Agent”，正是宏观层”多 Agent 网络”里的一个节点。模块④对外这支应<strong>直接编排它，而非从零自建</strong>。 <strong>落地提醒</strong>：CustomerLake 目前处于 <strong>Private Preview</strong>，属”近期可期但受限”的组件——规划纳入，短期保留兜底方案（自建激活 job / 手动触达），待可用后切换。</p>
+<p><strong>产品矩阵提醒（通道选型时）</strong>：业务侧协同同事用 <strong>Genie One</strong>（含上述 Native Apps）；受治理对话分析用 <strong>Genie Agents</strong>（原 Genie Spaces）；开发侧代码/检索辅助用 <strong>Genie Code</strong>；平台构建 task-first Agent 用 <strong>Agent Bricks</strong>——勿混称。</p>
+</blockquote>
+<h3 id="交付内容">5.4 交付内容</h3>
+<p>包含但不限于：<strong>经营报告、会议建议、项目进度追踪与分析、业务改进点</strong>，并做<strong>全业务部门链路传达</strong>（产品 / 开发 / 运营等一并规划、通知）。这种”全链路传达”本质是<strong>跨职能协调</strong>，对应宏观层的<strong>多 Agent 协作</strong>。</p>
+<h3 id="三条设计要点">5.5 三条设计要点</h3>
+<ul>
+<li><strong>执行分级在这里落地</strong>：全自动 / 人工审核 / 仅建议三档。高风险动作（尤其触及资金、对外承诺）默认走人工确认。</li>
+<li><strong>交付通道同时是传感器</strong>：交付不是 fire-and-forget，要拿到<strong>回执 / 状态</strong>（Meegle 任务状态、App 的 approve/reject、邮件响应、表格/Slack·Teams 内协作痕迹、客户反应），这些都是模块⑤的反馈信号。</li>
+<li><strong>每条建议带”依据 / 血缘”</strong>：附上来源与推理依据（复用模块② Unity Catalog lineage）。人力桥接的前提是<strong>可解释</strong>——能核对、能信任，才会采纳。</li>
+</ul>
+<blockquote>
+<p><strong>没有这一层会怎样</strong>：再好的洞察也烂在报表里、无人行动（“分析瘫痪”）；信息送错人或说不清依据，员工不信任、不采纳；对外错失实时触达的商业机会——投入的算力最终没变成业务结果。</p>
+</blockquote>
+<hr />
+<h2 id="模块⑤-评估-反馈-学习闭环">6. 模块⑤ 评估 / 反馈 / 学习（闭环）</h2>
+<p>这是把 ③→④→⑤ 闭合、让企业从”自动化”升级为”会学习的 Agent”的最后一环。</p>
+<h3 id="三类反馈源-三个不同的学习层">6.1 三类反馈源 → 三个不同的学习层</h3>
+<p>反馈不是一团，它有明确的作用对象：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 17%" />
+<col style="width: 41%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr>
+<th>反馈源</th>
+<th>内容</th>
+<th>回流到哪一层</th>
+<th>节奏</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>① 自动化执行的业务数据</strong></td>
+<td>用户触达追踪反馈（可基于 CDP / CustomerLake）</td>
+<td><strong>策略层</strong>：模块③模型、模块④触达策略</td>
+<td>快（分钟~小时）</td>
+</tr>
+<tr>
+<td><strong>② 执行员工的任务反馈</strong></td>
+<td>Meegle 派任务后是否按时完成、有无文字反馈 / 文档总结</td>
+<td><strong>知识 + 流程层</strong>：员工总结沉淀为②经验记忆；完成情况反哺③工作流</td>
+<td>中（天~周）</td>
+</tr>
+<tr>
+<td><strong>③ 数据部门的流程 trace 监控</strong></td>
+<td>对整条流程做 CI/CD + VCS control，分析 trace/log 数据</td>
+<td><strong>基础设施层</strong>：对局部模块做人工干预与修正</td>
+<td>持续</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>三类信号<strong>到达速度不同</strong>，学习节奏应随之匹配——快信号驱动<strong>自动微调</strong>，慢信号走<strong>周期性人工评审</strong>（复用模块②周期复核机制）。</p>
+</blockquote>
+<h4 id="异构评估体系domain-specific-evaluation">异构评估体系（Domain-Specific Evaluation）</h4>
+<p>部门间业务性质差异巨大（如风控重「精确度与合规」，创新业务重「迭代速度与转化」），模块⑤的评估不可使用单一全局指标衡量：</p>
+<ul>
+<li><strong>局部评估自治</strong>：允许各部门 Agent 针对模块⑤定义域内专属的 <strong>Domain Evaluation Metrics</strong>（如风控的拒贷率/误伤率，营销的 ROI/转化率），独立驱动域内的软/硬学习。</li>
+<li><strong>全局评估收拢</strong>：中央治理层监控<strong>全局安全合规、算力成本配额、模型漂移告警以及跨部门协同成功率</strong>。</li>
+</ul>
+<p>这两套指标<strong>正交</strong>：全局侧（如 CLEARS）衡量质量、安全与成本；域内指标衡量业务结果。后者不能替代前者，前者也不能拿来给所有部门打业务分。</p>
+<h3 id="反馈的三种落地形态">6.2 反馈的三种落地形态</h3>
+<ul>
+<li><strong>更新非结构化文档</strong> → <strong>软学习</strong>：沉淀进模块②的<strong>经验记忆</strong>（慢、累积、低风险）。</li>
+<li><strong>直接升级流程中的某些环节</strong> → <strong>硬学习</strong>：改动模块③的<strong>工作流 / 模型</strong>（快、结构性、有风险）。</li>
+<li><strong>更新结构化知识与规则口径</strong> → 当反馈揭示某个指标定义或规则本身有误时，改模块②的<strong>领域知识 / Metric Views</strong>，而不仅是文档。</li>
+</ul>
+<h3 id="cicd-vcs让学习安全可回退的安全带">6.3 CI/CD + VCS：让”学习”安全可回退的安全带</h3>
+<p><strong>学习 = 对线上系统做改动，而改动是危险的。</strong> CI/CD + 版本控制（VCS）正是让持续学习<strong>可版本化、可回退</strong>的安全带。</p>
+<p>这层安全带应对齐<strong>两条改动面</strong>，形成双重保护：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 34%" />
+<col style="width: 46%" />
+</colgroup>
+<thead>
+<tr>
+<th>改动面</th>
+<th>进生产前门禁</th>
+<th>典型工具（落地层）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>模型 / Agent</strong></td>
+<td>评估门槛、回归用例、漂移告警</td>
+<td>MLflow Evaluation / Tracing / Monitoring + Asset Bundles</td>
+</tr>
+<tr>
+<td><strong>DAG / ETL 数据管道</strong></td>
+<td>单元测试（mock 数据校验 Pipeline / CDC / Expectations）、再发布</td>
+<td>Lakeflow Pipeline 单元测试（SDP）+ Asset Bundles + Git</td>
+</tr>
+</tbody>
+</table></div>
+<p>硬学习若改的是模块③工作流背后的管道，不得只过模型评估就上线——<strong>管道逻辑同样要绿通</strong>。回流升级前：模型变更好 + 数据管道仍正确，缺一不可。</p>
+<blockquote>
+<p><strong>对称判据</strong>：模块③有”晋升（promote）“判据；模块⑤应有对称的<strong>“降级 / 回滚（demote / rollback）”判据</strong>——某环节表现变差或漂移时，能自动告警并回退到上一个已知良好版本。有了 VCS，回滚才是一个动作而非一场事故。</p>
+</blockquote>
+<h3 id="归因纪律关键缺口">6.4 归因纪律（关键缺口）</h3>
+<p>持续运转的系统里很多东西同时在变，<strong>很难把”业务结果好坏”干净地归因到”某个决策”</strong>。不解决归因，“学习”就退化成追逐相关性、逐渐漂移。</p>
+<blockquote>
+<p><strong>建议</strong>：在对外触达 / 活动运营侧引入<strong>实验纪律</strong>——holdout 对照组、A/B 测试（CDP 通常原生支持受众 holdout）。只有能测出<strong>因果</strong>增量，回写才是”学习”而非”噪声固化”。</p>
+</blockquote>
+<h3 id="闭环合上⑤-回写-②-与-③治理层按范围守门">6.5 闭环合上：⑤ 回写 ② 与 ③，治理层按范围守门</h3>
+<p>模块⑤的两条回流箭头——<strong>回写模块②（知识与记忆）</strong> 和 <strong>升级模块③（工作流 / 模型）</strong>——正是那条把单向链变成闭环的<strong>回流线</strong>。<strong>会学习</strong>和<strong>受治理</strong>必须同时成立，但闸门按改动范围分级，否则联邦会被「所有改动都过中央审批」一句话收回去：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 45%" />
+<col style="width: 27%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr>
+<th>改动范围</th>
+<th>谁批</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>域内、低风险</strong></td>
+<td>部门自治（仍须本域 CI/CD + 可回滚）</td>
+<td>更新本域经验记忆、本域 Job 参数、本域 Custom Judge</td>
+</tr>
+<tr>
+<td><strong>跨域或全局</strong></td>
+<td>编排 / 治理层中央闸门 + 模块③晋升判据</td>
+<td>能力契约破坏性变更、共享 Metric Views、出口策略、全局 Safety、跨域检索授权</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>没有这一层会怎样</strong>：系统只会”自动化”、不会”进化”，同样的错误反复犯；无法证明 AI 到底创造了多少价值（ROI 不可测）；模型漂移无人察觉，风险在暗处累积。</p>
+</blockquote>
+<hr />
+<h2 id="编排-治理层神经中枢">7. 编排 / 治理层（神经中枢）</h2>
+<p>模块之间<strong>谁调度、按什么条件触发、失败如何回退</strong>，需要一个显式的控制层，否则能力散落各处、无法治理。它承担六件事：</p>
+<ol type="1">
+<li><strong>编排（Orchestration）</strong>：定义模块间的触发条件、依赖、重试与回退逻辑。</li>
+<li><strong>权限与安全</strong>：谁 / 哪个 Agent 能访问哪些数据与工具（最小权限）；跨域检索与调用必须经此授权。</li>
+<li><strong>可观测性与评估</strong>：全链路日志、追踪（Trace）、指标，外加<strong>对每一次决策质量的持续评估（Evaluation）</strong>。评估应与追踪<strong>并列为一等支柱</strong>——用 <strong>MLflow Evaluation / Trace</strong> 把”决策做得对不对”变成可量化、可回归、可回放的指标，而不只是记录”决策发生过”。没有评估，可观测性只能告诉你系统在动，却告诉不了你它在变好还是变坏。全局 CLEARS / Safety 在这一层收拢；域内业务指标不下放到中央打分。</li>
+<li><strong>成本与配额控制</strong>：算力 / 调用成本的监控与限流；联邦场景下按<strong>域</strong>设配额，避免一域打爆全局账单。</li>
+<li><strong>契约注册与发现</strong>：维护各部门公开能力的注册表（发布、版本、废弃）；为模块④的 Agent Discovery 提供可检索来源。破坏性变更走中央闸门。</li>
+<li><strong>域隔离策略</strong>：Context Namespace / Metric Scope 的默认边界，以及跨域授权的例外通道。</li>
+</ol>
+<p>企业级与玩具级 Agent 的差别，几乎全在这一层。</p>
+<p><strong>一个贯穿全架构的副产品——数据安全</strong>：员工执行工作流时<strong>不需要完整知道底层业务数据</strong>（如集团营收，本就该走严格权限）。数据<strong>留在云上</strong>、<strong>出口被严格管控</strong>（契合 Unity Catalog 权限 + Unity AI Gateway 出口管控），只让”结论 / 动作”流出、原始数据不流出。双重收益：既减少员工数据处理工时，又极大提高数据安全性——员工在”信息最小必要”原则下工作。</p>
+<blockquote>
+<p><strong>没有这一层会怎样</strong>：权限失控、数据泄露；算力与 token 账单失控；出了问题无法回放、无法追责、无法回退——这正是”玩具级 Agent”上不了生产、一上线就翻车的根本原因。<strong>企业级与玩具级的差别，几乎全在这一层。</strong></p>
+</blockquote>
+<h3 id="部署边界逻辑联邦-物理共仓">7.1 部署边界：逻辑联邦 ≠ 物理共仓</h3>
+<p>Domain Federation 解决的是「看见什么、能调谁」；<strong>工作区与算力</strong>解决的是「谁把集群打满、账单算到谁头上」。两层不要混：Catalog / schema 是逻辑边界，Workspace / 预算是故障与配额边界。</p>
+<p>三条原则即可，切法和旋钮见落地文档：</p>
+<ol type="1">
+<li><strong>共享控制面、隔离数据面</strong>：UC metastore、Gateway、Secrets、契约注册表尽量一套；重负载 Serving 与作业计算按域限流或拆开，避免一域拖死全家。</li>
+<li><strong>先垂直做实一个域的闭环，再水平加域</strong>：吞吐与配额先在试点域证明，再复制；不要按部门数一上来开 N 套平台。</li>
+<li><strong>跨域是经授权的少量调用，不是广播</strong>：发现与契约已经倾向这一点；运行时禁止无上限扇出，否则联邦会在峰值时把被调域打爆。</li>
+</ol>
+<p>切 Workspace 不重新发明 Context 隔离——Namespace 永远在 UC。</p>
+<hr />
+<h2 id="端到端闭环一个完整周期怎么转">8. 端到端闭环：一个完整周期怎么转</h2>
+<p>以”某产品线转化率下滑”为例，串一遍整套架构如何协同：</p>
+<ol type="1">
+<li><strong>①感知</strong>：埋点与交易数据（流式）显示某产品线转化率连续下滑；OKR 文档（Context）表明该产品线是本季度重点。</li>
+<li><strong>②记忆</strong>：经 Metric Views，“转化率”有唯一口径；血缘可回溯到具体字段。相关历史案例（经验记忆）被检索出来。</li>
+<li><strong>③推理</strong>：监督 pipeline 捕获异常信号并汇总；决策顾问结合 OKR 上下文做 loop review，产出”下滑归因 + 改进建议”。</li>
+<li><strong>④行动</strong>：人员路由到该产品线负责人（对内，经 Meegle 派任务，附依据与血缘）；若改进依赖供应链库存策略，则经<strong>能力契约发现</strong>对方部门 Agent 并调用其公开接口，而不是写死对方 Job。同时对受影响用户群启动 CustomerLake 挽回触达（对外）。高风险动作走人工确认。</li>
+<li><strong>⑤学习</strong>：Meegle 任务完成情况 + 员工总结 + CustomerLake 触达效果（带 holdout 对照）回流——本域经验回写②，验证有效的挽回流程经本域晋升判据固化进③；若涉及共享口径或跨域契约变更，走中央闸门。全程可审计、可回滚。</li>
+</ol>
+<p>一个周期结束，企业 Agent 比上一轮更”懂”这类问题。</p>
+<hr />
+<h2 id="设计原则总纲">9. 设计原则总纲</h2>
+<p>贯穿全架构的核心原则，可作为落地时的判断基准：</p>
+<ol type="1">
+<li><strong>闭环优先</strong>：反馈回流才是会学习的 Agent，单向链只是自动化。</li>
+<li><strong>确定性归工作流，判断归 AI</strong>：可标准化的固化为 job/DAG，需判断的交给 AI 监督与决策。</li>
+<li><strong>先自动化改造，而非放任 AI 执行</strong>：从真实流程出发，抽象、模块化、自动化。</li>
+<li><strong>三路径交叉识别需求</strong>：员工”说的 / 搭的 / 用的”交叉比对，筛出真需求。</li>
+<li><strong>数据留云上，只让结论流出</strong>：最小必要 + 出口管控，安全与效率兼得。</li>
+<li><strong>权威分驱动优先级</strong>：OntoRank 权威分用于知识复核排序与路由。</li>
+<li><strong>每个改动可版本化、可回退</strong>：VCS + CI/CD 是持续学习的安全带；模型/Agent 与 DAG/ETL 管道走<strong>双重门禁</strong>（评估 + 单元测试）。</li>
+<li><strong>归因纪律防漂移</strong>：holdout / A-B 让学习测的是因果而非相关。</li>
+<li><strong>会学习与受治理同时成立</strong>：结构性自我修改必过闸门；域内低风险可自治，跨域契约与全局安全走中央。</li>
+<li><strong>复用而非自建</strong>：组织图、CustomerLake、Genie One 办公插件等已有能力直接编排消费。</li>
+<li><strong>域自治、中央守门</strong>：默认本域 Context / 指标 / 评估；跨部门只通过能力契约协同，不靠硬编码路由或全量打平检索。</li>
+<li><strong>逻辑联邦 ≠ 物理共仓</strong>：看见什么用 Catalog；算力与账单用 Workspace / 域配额。控制面共享，数据面按负载隔离。</li>
+</ol>
+<hr />
+<h2 id="落地映射文档">10. 落地映射文档</h2>
+<p>概念架构至此完整。具体 Databricks 落地件、可用性状态与分阶段实施路径见：</p>
+<p><strong>《Databricks 企业级 Agent 落地映射与实施路径》</strong>（v1.4，2026-08）</p>
+<p>该文覆盖各模块组件对照、预览/Beta 兜底、以及与《高维逻辑的拓扑连线与现实锚点》的理论映射（含平台留白）。产品状态变更时优先更新落地文；本文仅在概念层通道与闭环原则变化时修订。</p>
+<p>概念层与落地层的粗映射（便于导航，细节以落地文为准）：</p>
+<ul>
+<li><strong>①输入</strong>：Delta Lake / Auto Loader / Lakeflow Connect / SDP（含文件类 SaaS Connector）；可选 Genie Code Web Search 补外部实时 Context</li>
+<li><strong>②记忆</strong>：Unity Catalog（血缘、治理、域 schema）/ Metric Views（集团级 + 域作用域）/ Vector Search（带 domain Filter）/ Genie Ontology（OntoRank）/ Ontobricks；业务侧对接 Genie Agents</li>
+<li><strong>③推理</strong>：Workflows（Jobs / DAG）/ Model Serving / Mosaic AI Agent Framework / Agent Bricks / Managed MCP（经 Unity AI Gateway）/ Unity AI Gateway；部门能力以 UC Tools / MCP 契约发布</li>
+<li><strong>④行动</strong>：Databricks Apps / 通知与 alert / <strong>Genie One Native Apps</strong> / Lark-Meegle 集成 / CustomerLake；人员路由走组织图，能力路由走契约发现</li>
+<li><strong>⑤学习</strong>：Lakehouse Monitoring / MLflow / Inference Tables / CI/CD（Asset Bundles）+ VCS / <strong>Pipeline 单元测试</strong>；域内 Custom Judges + 中央 CLEARS</li>
+<li><strong>编排/治理层</strong>：Unity Catalog 权限 + <strong>UC Secrets</strong> / Unity AI Gateway / 契约注册与跨域授权 / 域配额与 Serving 上限 / 工作区策略（默认单仓 + 一域一 Catalog） / 可观测性与成本治理</li>
+</ul>
+<hr />
+<h2 id="附录来源">附录：来源</h2>
+<p>以下关于 Databricks 产品与算法的说明基于公开文档与报道核实：</p>
+<ul>
+<li>ITdaily — <em>Not pagerank, but ontorank: Databricks Genie Ontology brings context and authority to AI</em> — https://itdaily.com/blogs/cloud/databricks-genie-ontology/</li>
+<li>Atlan — <em>What is Genie Ontology? Databricks’ Context Layer, Explained</em> — https://atlan.com/know/ai-agent/databricks/genie-ontology/</li>
+<li>GitHub — <em>databrickslabs/ontobricks</em> — https://github.com/databrickslabs/ontobricks</li>
+<li>Databricks Docs — <em>AI governance with Unity AI Gateway</em> / <em>AI Gateway-enabled inference tables</em> — https://docs.databricks.com/aws/en/ai-gateway/</li>
+<li>Databricks Blog — <em>Introducing CustomerLake: The Agentic CDP embedded in Databricks</em> — https://www.databricks.com/blog/introducing-customerlake-agentic-cdp</li>
+<li>Databricks Newsroom — <em>Databricks Enters the Marketing Industry with CustomerLake</em> — https://www.databricks.com/company/newsroom/press-releases/databricks-enters-marketing-industry-customerlake-agentic-customer</li>
+</ul>
+<p><strong>v1.4 增量</strong>：§7.1 部署边界（逻辑联邦 ≠ 物理共仓）；原则第 12 条。切法与 Serving 旋钮见落地文。</p>
+<p><strong>v1.3 增量</strong>：将 Domain Federation 挪到「微观/宏观两层」之后；明确检索默认逻辑隔离、人员路由与能力路由分离、域内/跨域分级闸门；编排层补契约注册与域隔离职责；原则第 11 条「域自治、中央守门」。</p>
+<p><strong>v1.2 增量</strong>：补充 Genie One 办公生态原生嵌入（Excel / Google Sheets / Slack / Teams）；模块⑤明确模型侧 MLflow 与管道侧单元测试的双重 CI/CD；第 10 节指向已成文的落地映射文档。</p>
+
+
+							</div>
+						</section>
+					</article>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="icons">
+							<li><a href="https://www.linkedin.com/in/zhipengzhu98/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+							<li><a href="https://github.com/zhuzp98" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+							<li><a href="https://www.hackerrank.com/jsyxzzp" class="icon brands fa-hackerrank"><span class="label">HackerRank</span></a></li>
+							<li><a href="https://www.zhihu.com/people/zhu-zhi-peng-92-43" class="icon brands fa-zhihu"><span class="label">知乎 ZhiHu</span></a></li>
+							<li><a href="https://www.behance.net/zhipengzhu" class="icon brands fa-behance"><span class="label">Behance</span></a></li>
+							<li><a href="https://www.instagram.com/egoistaseraph/" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+							<li><a href="mailto:raphael.z98@outlook.com" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+						</ul>
+						<ul class="copyright">
+							<li>&copy; Raphael Zhu</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</footer>
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../assets/js/jquery.min.js"></script>
+			<script src="../../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../assets/js/browser.min.js"></script>
+			<script src="../../assets/js/breakpoints.min.js"></script>
+			<script src="../../assets/js/util.js"></script>
+			<script src="../../assets/js/main.js"></script>
+
+	</body>
+</html>
+

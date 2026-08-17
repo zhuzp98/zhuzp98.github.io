@@ -1,0 +1,783 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Databricks 企业级 Agent 落地映射与实施路径 - Raphael Zhu</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../assets/css/noscript.css" /></noscript>
+
+		<style>
+			.inner table { font-size: 0.88em; }
+			.inner pre {
+				overflow-x: auto;
+				font-size: 0.72em;
+				line-height: 1.35;
+				background: rgba(0,0,0,0.03);
+				padding: 1em;
+				border-radius: 4px;
+			}
+			.inner .table-wrapper { overflow-x: auto; margin-bottom: 2em; }
+			.lang-switch { font-size: 0.9em; }
+			.lang-switch a { margin: 0 0.25em; }
+		</style>
+
+	</head>
+	<body class="is-preload">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="../../index.html">Home</a></h1>
+						<nav id="nav">
+							<ul>
+								<li class="special">
+									<a href="#menu" class="menuToggle"><span>Menu</span></a>
+									<div id="menu">
+										<ul>
+											<li><a href="../../index.html">Home</a></li>
+											<li><a href="../../cv.html">CV</a></li>
+											<li><a href="../../gallery.html">Gallery</a></li>
+											<li><a href="../../blog.html">Blog</a></li>
+											<li><a href="../../qanda.html">Q &amp; A</a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<article id="main">
+						<header>
+							<h2>Databricks 企业级 Agent 落地映射与实施路径</h2>
+							<p>模块对照、可用性、分阶段落地与平台留白（v1.4）</p>
+							<p class="lang-switch"><a href="Databricks_Enterprise_Agent_Implementation.html">中文</a> · <a href="Databricks_Enterprise_Agent_Implementation_en.html">EN</a></p>
+						</header>
+						<section class="wrapper style5">
+							<div class="inner">
+<blockquote>
+<p><strong>阅读提示</strong>：Databricks 的数据/AI 栈更新很快，本文所有组件都标注了<strong>可用性状态</strong>（GA = 已正式发布；Beta / Public Preview = 预览；Private Preview = 私有预览；Labs = Databricks Labs 社区项目，非官方 SLA）。凡标注 Preview / Beta / Labs 的组件，落地时都应准备<strong>兜底方案</strong>。状态以文末来源核实时点（约 <strong>2026-08</strong>）为准，正式立项前建议再核对一次官方文档。</p>
+</blockquote>
+<hr />
+<h2 id="总览模块-databricks-落地件对照表">1. 总览：模块 ↔︎ Databricks 落地件对照表</h2>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 63%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>模块</th>
+<th>核心 Databricks 落地件</th>
+<th>可用性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>① 动态信息输入</strong></td>
+<td>Lakeflow Connect（100+ 源接入，含 SharePoint / Google Drive 等）、Auto Loader（对象存储增量）、Lakeflow Spark Declarative Pipelines（流+批 ETL）、Lakeflow Jobs（编排）；可选：<strong>Genie Code Web Search</strong>（公共 Web 实时检索）</td>
+<td>Connect / Auto Loader / SDP / Jobs：<strong>GA</strong>；部分 Connect 源（如 OpenAI、PagerDuty）：<strong>Beta</strong>；Genie Code Web Search：<strong>Beta</strong>（2026-08）</td>
+</tr>
+<tr>
+<td><strong>② 知识与记忆</strong></td>
+<td>Unity Catalog（血缘/治理/<strong>域 schema</strong>）、Metric Views（集团级 + 域作用域）、Vector Search（<strong>metadata Filter</strong>）、Genie Ontology + OntoRank、Ontobricks；业务问答侧对接 <strong>Genie Agents</strong></td>
+<td>UC / Vector Search / Metric Views：<strong>GA</strong>；Genie Ontology 为 2026 新发布；Ontobricks：<strong>Labs</strong></td>
+</tr>
+<tr>
+<td><strong>③ AI 处理逻辑</strong></td>
+<td>Lakeflow Jobs / Workflows、Mosaic AI Agent Framework、Agent Bricks、<strong>Managed MCP（归 Unity AI Gateway）</strong>、Model Serving、Unity AI Gateway；部门能力以 <strong>UC Functions / MCP 契约</strong>发布</td>
+<td>Agent Framework：<strong>GA</strong>（2026 初）；Unity AI Gateway <strong>核心能力 GA</strong>（2026-08-04）；Managed MCP ↔︎ Gateway 深度集成：<strong>Beta</strong>（2026-08-06）；部分高级 Service Policies / Agent Services：<strong>Beta</strong></td>
+</tr>
+<tr>
+<td><strong>④ 面向业务的执行策划</strong></td>
+<td>对内：Databricks Apps、Alerts、<strong>Genie One Native Apps</strong>、Lark-Meegle；对外：CustomerLake；<strong>人员路由（组织图）+ 能力路由（契约发现，模式）</strong></td>
+<td>Apps / Alerts / Genie One 办公插件：<strong>GA</strong>；CustomerLake：<strong>Private Preview</strong>；发现机制见 §2.4（非 Gateway 既成 API）</td>
+</tr>
+<tr>
+<td><strong>⑤ 评估/反馈/学习</strong></td>
+<td>MLflow 3（CLEARS + <strong>域 Custom Judges</strong>）、Inference Tables、Lakehouse Monitoring、DABs + Git、<strong>Lakeflow Pipeline 单元测试</strong></td>
+<td>MLflow / Inference Tables / Monitoring / DABs：<strong>GA</strong>；Pipeline Unit Testing：<strong>Beta</strong>（2026-07）</td>
+</tr>
+<tr>
+<td><strong>编排 / 治理层</strong></td>
+<td>Unity Catalog + <strong>UC Secrets</strong>、Unity AI Gateway、Lakeflow Jobs、MLflow 3、DABs + Git、系统表/预算；<strong>契约注册表、跨域授权、域配额、工作区策略、Serving 上限</strong></td>
+<td>UC / UC Secrets / Gateway 核心 / Jobs / MLflow / DABs / Serving：<strong>GA</strong>；Gateway 高级策略与 Agent Services、Managed MCP 深度绑定部分：<strong>Beta</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="逐模块落地件详解">2. 逐模块落地件详解</h2>
+<h3 id="模块①-动态信息输入">2.1 模块① 动态信息输入</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>需求</th>
+<th>落地件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>接入 100+ 企业数据源（业务库、SaaS、外部源）</td>
+<td><strong>Lakeflow Connect</strong></td>
+<td>高性能托管接入，覆盖业务前/后链路的多数结构化源。<strong>2026-08</strong>：SharePoint Connector、Google Drive Connector 已转 <strong>GA</strong>（非结构化文件 / SaaS 入湖可靠度显著提升）；OpenAI Connector、PagerDuty Connector 为 <strong>Beta</strong></td>
+</tr>
+<tr>
+<td>对象存储文件的增量、幂等加载（埋点、链上导出等）</td>
+<td><strong>Auto Loader</strong></td>
+<td>incremental + idempotent，天然适合高频埋点</td>
+</tr>
+<tr>
+<td>流式 + 批式统一 ETL，落 bronze 层</td>
+<td><strong>Lakeflow Spark Declarative Pipelines (SDP)</strong></td>
+<td>声明式（SQL/Python），核心概念：streaming tables、materialized views、flows、sinks</td>
+</tr>
+<tr>
+<td>管道编排、调度、依赖</td>
+<td><strong>Lakeflow Jobs</strong></td>
+<td>原生编排引擎，承载 cron / DAG</td>
+</tr>
+<tr>
+<td>非技术人员搭简单管道</td>
+<td><strong>Lakeflow Designer</strong>（GA，2026-06）</td>
+<td>拖拽 + 自然语言的 no-code 管道，可让业务分析师自助接数据</td>
+</tr>
+<tr>
+<td>公共 Web 实时知识补充（外部非结构化）</td>
+<td><strong>Genie Code Web Search</strong>（Beta，2026-08）</td>
+<td>面向数据 / AI 开发的全页代码 Agent（Genie Code）可检索公共 Web，作为企业内源之外的<strong>实时外部 Context</strong>补充通道；勿与托管数据源入湖混淆，适合时效性强、不宜预先入湖的公开信息</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>落地要点</strong>： - <strong>流式 vs 批式两条路径</strong>在 SDP 里统一表达：埋点/交易走 streaming table，周期汇总走 materialized view。 - <strong>结构化数据</strong>直接落 Delta 表并在 Unity Catalog 打 tag；<strong>非结构化 Context</strong>（OKR、项目进度、竞品情报等）以文件 + 元数据入湖（SharePoint / Google Drive 等 GA Connector 可直连协作文档源），等待模块②做图化与嵌入。 - <strong>外部实时检索</strong>（Genie Code Web Search）与<strong>托管入湖</strong>（Connect / Auto Loader）分工：前者补”此刻公开可见”的缺口，后者补”受治理、可溯源”的企业资产；Agent 消费时二者需打不同置信度标签。</p>
+<h3 id="模块②-知识与记忆">2.2 模块② 知识与记忆</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>需求</th>
+<th>落地件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>每张表/字段的”身份证”、全链路血缘、权限、tag</td>
+<td><strong>Unity Catalog</strong></td>
+<td>知识可信度底座；也是后续”数据出口管控”的抓手</td>
+</tr>
+<tr>
+<td>bronze → silver 的治理与建模</td>
+<td><strong>SDP（medallion）</strong></td>
+<td>参考业务口径清洗、建中间层</td>
+</tr>
+<tr>
+<td>指标的<strong>单一事实来源</strong></td>
+<td><strong>Metric Views</strong></td>
+<td>指标语义层，避免 Agent 拿到打架的口径</td>
+</tr>
+<tr>
+<td>非结构化知识的语义检索</td>
+<td><strong>Vector Search</strong></td>
+<td>经验记忆、Context 文档的召回</td>
+</tr>
+<tr>
+<td>企业 Context 图化 + 权威性排序</td>
+<td><strong>Genie Ontology + OntoRank</strong></td>
+<td>用权威分（含组织图信号）为知识排序；驱动复核优先级与模块④路由</td>
+</tr>
+<tr>
+<td>把结构化表也物化成知识图谱节点</td>
+<td><strong>Ontobricks</strong>（Labs）</td>
+<td>让结构化/非结构化在同一张图上被联合检索；Labs 项目，注意支持级别</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>两类记忆的落地区分</strong>： - <strong>领域知识 / 规则</strong>（合规、SOP、指标口径）→ Metric Views + Unity Catalog 受治理对象，改动走审批。 - <strong>经验记忆</strong>（案例、反馈样本）→ Vector Search 索引，由模块⑤自动回写。</p>
+<p><strong>复核策略落地</strong>： - 用 OntoRank 权威分排序，高权威/高风险知识人工精审，其余 AI 预筛 + 抽样。</p>
+<p><strong>多部门 Context Namespace（域隔离）落地机制</strong>（Phase 1 即启用，不要等到多 Agent 再补）： - <strong>表</strong>：各部门结构化对象按 Unity Catalog <code>catalog.schema</code> 划界；行级敏感用 <strong>ABAC / Row Filter / Column Mask</strong>。 - <strong>文件 / Volume</strong>：用 schema 权限隔离，而不是把行级过滤套到文件上。 - <strong>向量</strong>：索引带 <code>domain</code> 等 metadata；检索默认加 <strong>Filter Expression</strong>（如 <code>domain = 'supply_chain' OR domain = 'corporate'</code>）。 - <strong>指标</strong>：集团级 Metric Views 放公共 schema；部门口径放域 schema，跨域只暴露契约化只读视图。 - <strong>跨域检索</strong>：编排层先做身份与授权（Gateway / UC 权限）；<strong>授权通过后，由 Agent 检索调用注入跨域 Filter 组合</strong>——Filter 在检索层，不在 Gateway 控制面「传入」。两域定义冲突时：集团公共定义优先，其次 OntoRank + 请求域优先级。</p>
+<h3 id="模块③-ai-处理逻辑">2.3 模块③ AI 处理逻辑</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>角色</th>
+<th>落地件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>确定性工作流（cron / 带依赖 DAG）</td>
+<td><strong>Lakeflow Jobs / Workflows + SDP</strong></td>
+<td>把可标准化流程固化为 Job；进生产前可用 Lakeflow Editor 的 <strong>Pipeline 单元测试</strong>（Beta）校验逻辑</td>
+</tr>
+<tr>
+<td>构建 Agent（复杂/自定义）</td>
+<td><strong>Mosaic AI Agent Framework</strong>（GA，2026 初）</td>
+<td>可用 LangGraph / CrewAI / Claude Agent SDK 等任意 harness；MLflow 记录、UC 注册、Model Serving 部署</td>
+</tr>
+<tr>
+<td>构建 Agent（task-first、少运维）</td>
+<td><strong>Agent Bricks</strong></td>
+<td>serverless（经 Databricks Apps）部署，原生支持 MCP；偏<strong>开发者 / 平台团队</strong>的 task-first 构建面，与业务侧 Genie One、开发侧 Genie Code 互补</td>
+</tr>
+<tr>
+<td>把 UC Functions / Genie Agents / Vector Search / DBSQL 作为<strong>受治理工具</strong>暴露给 Agent</td>
+<td><strong>Managed MCP servers</strong>（经 <strong>Unity AI Gateway</strong>）</td>
+<td><strong>2026-08-06</strong>：托管 MCP connectors（含供 Genie One / Genie Code 使用的连接器）已迁移并集成入 Unity AI Gateway（绑定部分为 <strong>Beta</strong>），集中化权限、访问日志与成本治理——工具接入不再散接，而归 Gateway <strong>原生托管工具治理</strong></td>
+</tr>
+<tr>
+<td>部署 Agent / 模型</td>
+<td><strong>Model Serving</strong></td>
+<td>统一服务端点</td>
+</tr>
+<tr>
+<td>统一 AI 控制面（路由、限流、成本、guardrails、trace）</td>
+<td><strong>Unity AI Gateway</strong></td>
+<td><strong>核心功能于 2026-08-04 正式 GA</strong>（路由、限流、成本治理、统一控制面、inference tables）；部分高级 <strong>Service Policies</strong> 与 <strong>Agent Services</strong> 仍为 <strong>Beta</strong></td>
+</tr>
+<tr>
+<td>记录员工 AI 问答 trace（识别自动化机会·路径三）</td>
+<td><strong>Unity AI Gateway → Inference Tables</strong></td>
+<td>请求/响应自动落 Unity Catalog Delta 表</td>
+</tr>
+<tr>
+<td>Agent 生命周期、追踪、评估</td>
+<td><strong>MLflow 3</strong></td>
+<td>GenAI-native 追踪与评估骨干</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Genie 产品矩阵（命名对齐，避免混称）</strong>：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>产品</th>
+<th>受众</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Genie Agents</strong>（原 Genie Spaces）</td>
+<td>业务 / 分析场景</td>
+<td>受治理数据上的对话式分析 Agent（空间/工作区语义统一改称 Agents）</td>
+</tr>
+<tr>
+<td><strong>Genie One</strong></td>
+<td>业务团队</td>
+<td>全能协同同事型 Agent，可嵌入办公生态（见模块④）</td>
+</tr>
+<tr>
+<td><strong>Genie Code</strong></td>
+<td>数据与 AI 开发</td>
+<td>全页代码 Agent（含 Web Search Beta）</td>
+</tr>
+<tr>
+<td><strong>Agent Bricks</strong></td>
+<td>平台 / 应用构建</td>
+<td>task-first 受管 Agent 构建与部署</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>两个 AI 角色的落地</strong>： - <strong>监督者</strong>：SDP/Jobs 产出 output 与 sensor 指标 → MLflow Tracing + scorers 汇总、监控、发现异常。 - <strong>决策顾问</strong>：基于 <strong>Genie Agents</strong>（over Metric Views）+ Ontology 上下文做 OKR loop review，产出建议。</p>
+<p><strong>“固化判据”怎么落地</strong>： - 用 Unity AI Gateway 的 inference table + MLflow 分析某类 AI 问答的<strong>频率 × 稳定性 × 风险</strong>，达标者从”探索性用法”晋升（promote）为 Lakeflow Job。这道闸门是模块③的核心工艺。</p>
+<p><strong>能力契约（Capability Contract）生命周期</strong>：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>步骤</th>
+<th>做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定义</strong></td>
+<td>每个部门 Agent 的公开能力写成 <strong>Unity Catalog Functions（UC Tools）或 Managed MCP Tool Definitions</strong>，I/O 必须是强类型 <strong>JSON Schema</strong>（可与 Structured Outputs 对齐）。</td>
+</tr>
+<tr>
+<td><strong>发布</strong></td>
+<td>写入受治理 catalog（建议 <code>corp.agent_registry</code> 或域 schema 下的 <code>published_tools</code>），打标签如 <code>agent-capability</code>、<code>domain</code>、<code>version</code>、<code>risk_class</code>。</td>
+</tr>
+<tr>
+<td><strong>鉴权</strong></td>
+<td>谁可发现、谁可调用，走 UC 权限 + Gateway 身份；默认本域可调，跨域需授权。</td>
+</tr>
+<tr>
+<td><strong>发现</strong></td>
+<td>模块④按意图检索注册表（见 §2.4），不写死 Job / 端点名。</td>
+</tr>
+<tr>
+<td><strong>变更</strong></td>
+<td>兼容变更（加可选字段）域内发布；破坏性变更（改必填、改语义）走中央闸门，双跑至少一个版本窗口。</td>
+</tr>
+<tr>
+<td><strong>废弃</strong></td>
+<td>标记 <code>deprecated</code> + 截止日期；注册表仍可查到，调用方收到明确错误而非静默失败。</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="模块④-面向业务的执行策划">2.4 模块④ 面向业务的执行策划</h3>
+<p><strong>对内（送给员工/leader）</strong>：</p>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>通道</th>
+<th>落地件</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>邮件 / 正式留痕</td>
+<td><strong>Databricks Alerts / 通知</strong></td>
+<td>经营报告等低频正式传达</td>
+</tr>
+<tr>
+<td>交互式部门小应用</td>
+<td><strong>Databricks Apps</strong></td>
+<td>需反馈 / 审批 / 下钻</td>
+</tr>
+<tr>
+<td>办公软件内嵌（表格 + IM）</td>
+<td><strong>Genie One Native Apps</strong>（Google Sheets / Microsoft Excel / Slack / Teams，<strong>2026-08 GA</strong>）</td>
+<td>分析结论与结构化建议直接落入业务日常表格与 IM，无需离开现有办公软件；与 Apps 互补（后者适合定制交互，前者适合零迁移触达）</td>
+</tr>
+<tr>
+<td>落成项目管理任务</td>
+<td><strong>Lark / Meegle 集成</strong>（自研：开放平台 API / webhook，可能需 Lark CLI）</td>
+<td>建议直接进 Meegle 工作流</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>对外（触达客户）</strong>： - <strong>CustomerLake（Agentic CDP，Private Preview）</strong>：以 “infinity campaigns” 持续响应客户 context，把手动 trigger 的触达自动化。 - <strong>兜底</strong>：在 CustomerLake 可用前，用自建激活 Job（Model Serving 输出 → 触达渠道）替代。</p>
+<p><strong>落地要点</strong>： - <strong>路由复用</strong>模块② Genie Ontology 的组织图，别重建；始终读最新组织结构防”送错人”。 - <strong>执行分级</strong>（全自动 / 人工审核 / 仅建议）用 Agent Framework 的 human-in-the-loop / approval 机制实现；高风险（资金、对外承诺）默认人工确认。 - <strong>每条建议附血缘</strong>：复用 Unity Catalog lineage，保证可解释、可核对。 - <strong>通道优先序建议</strong>：能落表格 / Slack·Teams 的先走 Genie One 插件（摩擦力最低）→ 需审批下钻走 Apps → 需项目跟踪走 Meegle → 正式存档走邮件。 - <strong>人员路由 vs 能力路由</strong>：找人复用 Ontology 组织图；找部门 Agent 走契约发现，二者不要写进同一张硬编码表。 - <strong>动态发现（Agent Discovery，落地模式，产品名需立项前核对）</strong>：跨部门调度时不写死路由。推荐实现顺序：① 查 UC 中带 <code>agent-capability</code> 标签的 Functions / MCP 工具（<strong>当前最稳</strong>）；② 若已开通 <strong>Agent Services（Beta）</strong>，再用其工具检索能力做意图匹配；③ Genie Agent / 相关 API 仅作辅助，<strong>不要写成 Unity AI Gateway 已 GA 的「Tool Search」API</strong>。发现失败则只送人、不自动调用对方 Agent。</p>
+<h3 id="模块⑤-评估-反馈-学习">2.5 模块⑤ 评估 / 反馈 / 学习</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>需求</th>
+<th>落地件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent/流程质量评估（开发 + 生产一致）</td>
+<td><strong>MLflow 3 评估 + 监控</strong>（built-in / custom LLM judges &amp; scorers）</td>
+<td><strong>CLEARS 六维</strong>：Correctness、Latency、Execution、Adherence、Relevance、Safety</td>
+</tr>
+<tr>
+<td>全链路追踪、长期留存</td>
+<td><strong>MLflow Tracing → OTEL → Unity Catalog 表</strong></td>
+<td>serverless 落表，治理化的可观测数据</td>
+</tr>
+<tr>
+<td>自动化执行的业务数据反馈</td>
+<td><strong>Inference Tables</strong> + CDP/CustomerLake 追踪</td>
+<td>策略层快信号</td>
+</tr>
+<tr>
+<td>数据/模型漂移监控</td>
+<td><strong>Lakehouse Monitoring</strong></td>
+<td>基础设施层持续信号</td>
+</tr>
+<tr>
+<td>版本化、可回退的持续学习</td>
+<td><strong>Databricks Asset Bundles（DABs）+ Git folders</strong></td>
+<td>CI/CD + VCS，是”学习”的安全带</td>
+</tr>
+<tr>
+<td>DAG / ETL 管道进生产前与硬学习改动时的自动化测试</td>
+<td><strong>Lakeflow Pipeline 单元测试</strong>（Beta，2026-07）</td>
+<td>Lakeflow Editor 可对 Spark Declarative Pipelines（SDP）编写 Python/SQL 单元测试，用 mock 数据验证 Pipeline / Auto CDC / Expectations；为模块③确定性工作流与模块⑤硬学习改动提供<strong>数据管道侧</strong>安全带，与模型侧 MLflow 评估形成双重 CI/CD</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>落地要点</strong>： - <strong>三类反馈 → 三层</strong>：业务数据（MLflow/Inference Tables）→ 策略层；员工任务反馈（Meegle 回执 + 文档）→ 知识/流程层；trace 监控（Lakehouse Monitoring + DABs）→ 基础设施层。 - <strong>双重 CI/CD</strong>：模型/Agent 改动过 MLflow 评估门禁；SDP / Job 管道改动过 Pipeline 单元测试门禁，再经 DABs 发布。硬学习（改 Job / 管道）不得跳过测试绿通。 - <strong>回滚判据</strong>：MLflow 监控发现漂移/劣化 → 经 DABs + Git 回退到上一个良好版本，回滚是一个动作而非事故。 - <strong>解耦的异构评估（Domain Evaluation）</strong>：CLEARS 与域内 KPI <strong>正交</strong>——前者是质量/安全/成本，后者是业务结果，不能互相替代。 - <strong>部门局部评估</strong>：各部门基于 <strong>MLflow 3 Custom Judges</strong> 编写域内指标（如风控「拒贷误伤率」，营销「ROI 提升度」），在部门专属 DABs 管道中跑评估，驱动域内软/硬学习。 - <strong>中央治理评估</strong>：Unity AI Gateway 统一在 <strong>Inference Tables</strong> 上挂载全局 CLEARS（尤其 Safety、Latency、Cost）与漂移告警，只拦截全局合规与模型风险。 - <strong>归因纪律</strong>：对外触达用 <strong>holdout / A-B</strong>（CDP 通常原生支持受众 holdout），确保学到的是<strong>因果</strong>增量。 - <strong>回写路径</strong>：软学习 → 更新 Vector Search 索引（经验记忆）；硬学习 → 经晋升判据 + 单元测试绿通改 Lakeflow Job / Agent 版本。</p>
+<h3 id="编排-治理层神经中枢">2.6 编排 / 治理层（神经中枢）</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>职责</th>
+<th>落地件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编排、触发、依赖、重试、回退</td>
+<td><strong>Lakeflow Jobs / Workflows</strong></td>
+<td>确定性调度骨干</td>
+</tr>
+<tr>
+<td>权限、血缘、数据出口管控（数据留云上、只让结论流出）</td>
+<td><strong>Unity Catalog</strong></td>
+<td>数据与对象治理底座</td>
+</tr>
+<tr>
+<td>Agent / 工具调用的 API Key 与凭据治理</td>
+<td><strong>Unity Catalog Secrets（UC Secrets，GA）</strong></td>
+<td>在 UC 中直接管理与治理 Agent 调用凭据，权限/审计与数据资产同一控制面——安全与权限治理的基石</td>
+</tr>
+<tr>
+<td>模型/Agent 流量的统一控制面：路由、限流、guardrails、日志、成本</td>
+<td><strong>Unity AI Gateway</strong></td>
+<td>核心功能 <strong>GA</strong>（2026-08-04）；高级 Service Policies / Agent Services 部分仍为 <strong>Beta</strong></td>
+</tr>
+<tr>
+<td>托管工具的权限、访问日志与成本</td>
+<td><strong>Managed MCP servers ⊂ Unity AI Gateway 控制面</strong></td>
+<td>深度绑定 <strong>Beta</strong>（2026-08-06）；含 Genie One / Genie Code 所用托管 MCP connectors</td>
+</tr>
+<tr>
+<td>全链路可观测性</td>
+<td><strong>MLflow 3</strong></td>
+<td>追踪、评估、监控</td>
+</tr>
+<tr>
+<td>CI/CD + 版本控制（模型 + 管道）</td>
+<td><strong>Databricks Asset Bundles + Git</strong> + <strong>Pipeline 单元测试（Beta）</strong></td>
+<td>模型侧与数据管道侧双重门禁</td>
+</tr>
+<tr>
+<td>成本与配额</td>
+<td><strong>系统表（system tables）+ 预算/告警</strong></td>
+<td>按 <code>domain</code> / <code>agent_id</code> / <code>env</code> 打标签；超阈先经 Gateway <strong>限流</strong>再告警，不先停治理面</td>
+</tr>
+<tr>
+<td>工作区 / 租户</td>
+<td><strong>默认：单 Workspace + 一域一 Catalog</strong>（切法见 §4 决策 7）</td>
+<td>Catalog 管看见什么；Workspace 管故障域与账单。升 B 时契约注册表仍留中心 Catalog</td>
+</tr>
+<tr>
+<td>Serving 与作业并发</td>
+<td><strong>Model Serving 配额 + Cluster Policy / Serverless 预算 + Gateway 按身份限流</strong></td>
+<td>三旋钮见本节下文；跨域禁止无上限扇出</td>
+</tr>
+<tr>
+<td>契约注册与发现</td>
+<td><strong>UC Functions / MCP 工具 + 标签（<code>agent-capability</code> / <code>domain</code> / <code>version</code>）</strong></td>
+<td>发布、鉴权、废弃见 §2.3；发现实现见 §2.4（模式，非 Gateway GA API）</td>
+</tr>
+<tr>
+<td>跨域授权</td>
+<td><strong>UC 权限 + Gateway 身份 / Service Policies（高级策略部分 Beta）</strong></td>
+<td>先授权，再由检索层注入 Filter；授权失败不得联合检索</td>
+</tr>
+<tr>
+<td>域隔离策略</td>
+<td><strong>catalog.schema + Vector Search Filter + 域 Metric Views</strong></td>
+<td>Phase 1 即落地，Phase 4 只增加跨域调用</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>数据安全副产品正落在这一层：Unity Catalog 管权限、出口与 <strong>Secrets</strong> + Unity AI Gateway 管 AI 流量与托管工具，共同保证员工在”信息最小必要”下工作。联邦不改变这条原则：跨域只流出契约化结论，不默认打开对方原始 Context。</p>
+</blockquote>
+<p><strong>运行时三旋钮（不写容量公式，只锁定执行点）</strong>：</p>
+<ol type="1">
+<li><strong>Model Serving / Agent 端点</strong>：一域一 endpoint（或一契约一 endpoint），设 <strong>provisioned concurrency 上限</strong>；禁止无上限共享端点。对内「仅建议」可 scale-to-zero；审批流与对外触达保留最小 provisioned，避免冷启动误事。跨域调用经 Gateway <strong>按调用方身份限流</strong>。</li>
+<li><strong>Lakeflow Jobs / SDP</strong>：域级 Cluster Policy 或 Serverless 预算；硬学习发布不得挤占试点域生产队列。Pipeline 单元测试留在 CI，不占生产并发。</li>
+<li><strong>检索与 SQL</strong>：Vector Search 与 DBSQL 仓库按域分队列/仓，避免全公司共一个 warehouse。Gateway 限流就是域配额的执行点，不另建限流服务。</li>
+</ol>
+<hr />
+<h2 id="分阶段实施路径爬-走-跑">3. 分阶段实施路径（爬 → 走 → 跑）</h2>
+<p>按”先地基、再知识、后单 Agent 闭环、最后多 Agent 扩展”推进，每阶段有明确产出与退出标准。</p>
+<h3 id="phase-0-治理底座地基">Phase 0 — 治理底座（地基）</h3>
+<ul>
+<li><strong>目标</strong>：数据可信、可治理、可追溯；凭据与出口受控。</li>
+<li><strong>关键组件</strong>：Unity Catalog（权限/血缘/tag）+ <strong>UC Secrets（GA）</strong>、Lakeflow Connect + Auto Loader + SDP（入湖到 bronze/silver）、Unity AI Gateway 核心面就位（为后续 Agent 流量预留）。</li>
+<li><strong>产出</strong>：受治理的数据底座 + 全链路血缘 + 凭据入 UC 治理；<strong>书面锁定工作区切法 A</strong>（单 Workspace + 一域一 Catalog，见 §4 决策 7）。</li>
+<li><strong>退出标准</strong>：核心业务数据已入湖、有血缘、权限收敛（数据出口开始受控）；Agent 相关密钥不落本地/非治理配置；租户策略已记录（默认 A，升级 B 的触发条件写清）。</li>
+</ul>
+<h3 id="phase-1-知识层把数据变知识">Phase 1 — 知识层（把数据变知识）</h3>
+<ul>
+<li><strong>目标</strong>：可信知识 + 可检索 Context；<strong>域标签与 schema 隔离从第一天就有</strong>，避免 Phase 4 在脏索引上补隔离。</li>
+<li><strong>关键组件</strong>：Metric Views（集团公共 schema + 试点域 schema）、Vector Search（索引必带 <code>domain</code> metadata，默认 Filter）、Genie Ontology（权威分/组织图）；业务问答侧用 <strong>Genie Agents</strong> 验收。</li>
+<li><strong>产出</strong>：指标口径统一 + 企业 Context 可被 Agent 检索；至少一套 <code>corporate</code> + 一个业务 <code>domain</code> 的 Namespace 约定。</li>
+<li><strong>退出标准</strong>：关键指标有唯一定义；Genie Agents 能基于治理数据正确回答业务问题；本域检索不会命中无关部门文档。</li>
+</ul>
+<h3 id="phase-2-首个-agent-单元窄场景-pilot">Phase 2 — 首个 Agent 单元（窄场景 pilot）</h3>
+<ul>
+<li><strong>目标</strong>：跑通一个高价值窄场景的领域 Agent（先只做”仅建议”档）。</li>
+<li><strong>关键组件</strong>：Mosaic AI Agent Framework / Agent Bricks（构建）、Managed MCP via Unity AI Gateway（受治理工具）、Model Serving（部署，<strong>带 concurrency 上限</strong>）、Unity AI Gateway（路由/限流/成本/trace）；试点部门将其公开能力按 §2.3 <strong>先注册进 UC</strong>（即使暂时只有本域调用）。</li>
+<li><strong>产出</strong>：一个能产出建议的领域 Agent（如”转化率异常归因与改进建议”）。</li>
+<li><strong>退出标准</strong>：Agent 在真实数据上稳定产出可用建议，全程 trace 可查；工具调用经 Gateway/MCP，无散接绕过；该 Agent 至少有一条带 Schema 的公开契约（可供后续被发现）；Serving 端点有上限且账单带 <code>domain</code> 标签。</li>
+</ul>
+<h3 id="phase-3-闭合闭环让它会学习">Phase 3 — 闭合闭环（让它会学习）</h3>
+<ul>
+<li><strong>目标</strong>：③→④→⑤ 闭环，Agent 能自我改进。</li>
+<li><strong>关键组件</strong>：MLflow 3（评估/监控：全局 CLEARS + <strong>该域 Custom Judge</strong>）、Inference Tables、Lakehouse Monitoring、DABs + Git（CI/CD + 回滚）、<strong>Lakeflow Pipeline 单元测试（Beta）</strong>、holdout/A-B。</li>
+<li><strong>产出</strong>：反馈回写模块②③；晋升/回滚判据生效；硬学习改管道前强制单测绿通。</li>
+<li><strong>退出标准</strong>：至少一次”反馈 → 改进 → 效果验证（带 holdout）“完整闭环跑通；模型门禁与管道门禁均曾真实触发并放行/拦截过。</li>
+</ul>
+<h3 id="phase-4-执行落地与多-agent-扩展联邦化演进">Phase 4 — 执行落地与多 Agent 扩展（联邦化演进）</h3>
+<ul>
+<li><strong>目标</strong>：接通对内/对外执行，并以 <strong>Domain Federation</strong> 把已隔离的域连成网络——本阶段做<strong>发现与跨域调用</strong>，而不是从零补隔离。</li>
+<li><strong>关键组件</strong>：Databricks Apps + Alerts + Genie One Native Apps（对内）、CustomerLake（对外，Private Preview，带兜底）、<strong>UC 契约注册表 + 发现模式（§2.4）</strong>、分部门 MLflow Evaluators、域配额与 Gateway 限流。</li>
+<li><strong>产出</strong>：各部门拥有自治的 Context Namespace 与评估规则；跨部门协同通过 MCP/UC 契约动态完成；宏观层「多 Agent 网络」成形。</li>
+<li><strong>退出标准</strong>：至少 3 个独立部门的 Agent 在各自 Context 隔离下稳定运行，且能通过注册表发现机制成功完成至少一次<strong>跨部门能力调用与结果回流</strong>（发现失败有降级：只送人）；<strong>人为把试点域 QPS 打到配额后，其他域 Serving 仍可用</strong>（noisy-neighbor 验收）。仍停留在切法 A，除非已触发 §4 决策 7 的升级条件。</li>
+</ul>
+<hr />
+<h2 id="关键落地决策与取舍">4. 关键落地决策与取舍</h2>
+<ol type="1">
+<li><strong>Agent Bricks vs Agent Framework vs Genie 家族</strong>：task-first、少运维的场景用 <strong>Agent Bricks</strong>；需要复杂自定义编排的用 <strong>Agent Framework</strong>（可挂 Claude Agent SDK 等 harness）；业务自然语言分析用 <strong>Genie Agents</strong>，办公内嵌协同用 <strong>Genie One</strong>，开发侧辅助用 <strong>Genie Code</strong>。四者可混用，勿把 Genie One 与 Agent Bricks 当成同一产品。</li>
+<li><strong>工具接入统一走 Managed MCP（经 Unity AI Gateway）</strong>：把 UC Functions / Genie Agents / Vector Search / DBSQL 作为受治理工具暴露，避免 Agent 散接数据、绕过治理；权限、访问日志与成本计入 Gateway 控制面。</li>
+<li><strong>Preview / Beta 组件必设兜底</strong>：CustomerLake 仍为 Private Preview；Managed MCP ↔︎ Gateway 深度绑定、Pipeline 单元测试、Genie Code Web Search、部分 Connect 源与 Gateway 高级策略为 Beta——规划纳入，但关键路径准备降级方案（自建激活 Job、本地/CI 单测脚本、关闭 Web 检索通道等）。</li>
+<li><strong>固化判据要有机制而非拍脑袋</strong>：用 Gateway inference table + MLflow 量化频率/稳定性/风险，作为 promote 到 Job 的客观闸门；Job/SDP 改动再过 Pipeline 单元测试门禁。</li>
+<li><strong>治理先行</strong>：数据安全副产品依赖 Unity Catalog + <strong>UC Secrets</strong> + AI Gateway 先就位；治理不到位，“数据留云上、只让结论流出”就不成立。</li>
+<li><strong>中央 vs 联邦</strong>：Secrets、Gateway 身份、出口、全局 Safety/CLEARS、共享 Metric Views 保持中央；Context 索引、部门口径、Custom Judges、域内 Job 下放到域。发现用 UC 标签注册表，不把未 GA 的 Gateway Tool Search 当关键路径。</li>
+<li><strong>工作区切法（租户）</strong>：逻辑隔离永远用 Catalog；Workspace 只在算力/账单/合规需要时再拆。默认与升级条件如下。</li>
+</ol>
+<div class="table-wrapper">
+<table class="alt">
+<thead>
+<tr>
+<th>模式</th>
+<th>何时用</th>
+<th>优点</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. 单 Workspace + 一域一 Catalog</strong>（默认）</td>
+<td>Phase 0–3；域数量不大、平台团队小、合规未强制分账号</td>
+<td>血缘、契约、发现最简单，一套 Gateway</td>
+<td>计算可能争抢，需靠配额与三旋钮兜住</td>
+</tr>
+<tr>
+<td><strong>B. 中心 Workspace（治理）+ 域 Workspace（运行）</strong></td>
+<td>单域 Jobs/Serving 已挤占别人，或审计要求分账</td>
+<td>故障域分离，预算可按 workspace 打</td>
+<td>跨空间身份、DABs <code>target</code>、发现多一跳；契约注册表仍放中心 Catalog <code>corp.agent_registry</code></td>
+</tr>
+<tr>
+<td><strong>C. 一域一 Workspace</strong></td>
+<td>强监管、并购后独立 IT、或域间零信任被点名</td>
+<td>爆炸半径最小</td>
+<td>注册表/Ontology/Gateway 都要中心副本，运维陡升——<strong>默认不选</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>升 B 时：同一 UC metastore + SCIM；域侧只放实现，公开契约仍在中心；DABs 用 <code>gov</code> / <code>domain_x</code> 两套 target，禁止每域一份互不兼容的 Bundle 结构。切 Workspace <strong>不</strong>重做 Context Namespace。</p>
+<hr />
+<h2 id="风险与依赖">5. 风险与依赖</h2>
+<ul>
+<li><strong>Private Preview 依赖</strong>：CustomerLake 的可用时点不完全可控 → 兜底方案必备。</li>
+<li><strong>Beta 面扩大但仍需兜底</strong>：Unity AI Gateway 核心已 GA，但高级 Service Policies / Agent Services、Managed MCP 深度绑定、Pipeline 单元测试、Genie Code Web Search 等仍为 Beta，不可当作零风险生产依赖。</li>
+<li><strong>发现能力产品化程度</strong>：跨部门 Tool Search 若依赖 Agent Services（Beta）或自建注册表查询；立项前核对官方 API，失败路径是「只送人」。</li>
+<li><strong>契约蔓延与破坏性变更</strong>：部门私自改 Schema 会导致调用方静默出错 → 必须走 §2.3 版本与双跑。</li>
+<li><strong>跨域 Filter 过宽</strong>：授权一旦变成「全打开」，Namespace 形同虚设 → 跨域只加白名单 domain，并记录审计。</li>
+<li><strong>noisy neighbor</strong>：共享 Serving / warehouse 无上限时，一域峰值拖死全家 → Phase 4 必须做配额打满演练；跨域调用禁止广播扇出。</li>
+<li><strong>过早切多 Workspace</strong>：在契约注册表未中心化前升 B/C，联邦会碎成 N 套发现 → 先 A + 配额，触发 §4 决策 7 再升。</li>
+<li><strong>自研集成成本</strong>：Lark / Meegle 集成需自建（开放平台 API / webhook / Lark CLI），排期要留出开发量；Genie One 原生办公插件可覆盖部分通道，减少自研面，但不能替代项目管理系统集成。</li>
+<li><strong>归因纪律要前置</strong>：holdout / A-B 必须在 Phase 3 设计阶段就规划，事后补做难度大。</li>
+<li><strong>Labs 组件支持级别</strong>：Ontobricks 为 Databricks Labs 项目，无官方 SLA，关键路径上需评估替代或自建。</li>
+<li><strong>组件状态时效</strong>：本文状态以约 <strong>2026-08</strong> 核实时点为准，正式立项前请再核对官方文档最新可用性。</li>
+</ul>
+<hr />
+<h2 id="理论映射文章理念-databricks-能力含留白">6. 理论映射：文章理念 ↔︎ Databricks 能力（含留白）</h2>
+<blockquote>
+<p>本节把《高维逻辑的拓扑连线与现实锚点》（企业级 Agent 的贝叶斯本质与工程治理）中的核心主张，对到具体 Databricks 能力，并<strong>诚实标出平台留白</strong>——即文章最锋利、但需要在推理层自建的部分。本节回答的不是”用什么搭”，而是”<strong>为什么这么治理</strong>”，为整套架构补上理论依据。</p>
+</blockquote>
+<h3 id="对照总表">6.1 对照总表</h3>
+<div class="table-wrapper"><table class="alt">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 51%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>文章理念</th>
+<th>Databricks 落地件</th>
+<th>契合度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>知识图谱=显式原子事实（符号/离散）vs 向量嵌入=连续语义相似度（联结/概率），统一于 Context</td>
+<td><strong>Genie Ontology / OntoRank</strong>（符号侧、权威知识图谱）+ <strong>AI Search</strong>（联结侧、向量相似度）</td>
+<td>⭐ 突出</td>
+</tr>
+<tr>
+<td>Context 提纯：混合检索（Keyword + Vector）+ 交叉熵重排（Reranking）</td>
+<td><strong>AI Search</strong> hybrid（全文 + 向量 ANN、RRF 融合）+ <strong>cross-encoder 重排</strong></td>
+<td>⭐ 突出</td>
+</tr>
+<tr>
+<td>语义质量红线 / Gatekeeper：给知识按权威性打分、可信才入库</td>
+<td><strong>OntoRank 权威分</strong>（原生量化”哪条定义可信”）</td>
+<td>⭐ 突出</td>
+</tr>
+<tr>
+<td>强类型逻辑围栏：JSON Schema / Protobuf 约束解码</td>
+<td><strong>Structured Outputs</strong>（由 constrained decoding 驱动，保证符合 schema）</td>
+<td>✅ 命中</td>
+</tr>
+<tr>
+<td>确定性骨架（FSM / LangGraph 状态图）+ LLM 降格为局部意图解析器与条件路由</td>
+<td><strong>Lakeflow Jobs / Workflows</strong>（确定性 DAG）+ <strong>Agent Framework</strong>（支持 LangGraph）</td>
+<td>✅ 命中</td>
+</tr>
+<tr>
+<td>开放式规划的”现实实验闭环”：假说→执行→客观新证据→贝叶斯更新→收敛</td>
+<td><strong>MLflow 3 评估/追踪/监控 + CLEARS 六维</strong> + holdout / A-B</td>
+<td>✅ 命中</td>
+</tr>
+<tr>
+<td>Context 角色分化（System Prompt / RAG / Observation / Memory）</td>
+<td><strong>Agent Framework</strong> 上下文管理 + <strong>Managed MCP</strong> 工具（检索/工具返回）+ Memory</td>
+<td>✅ 命中</td>
+</tr>
+<tr>
+<td>Logit 级 / Softmax 前不确定性监控 + 首 token 前”架构级硬拦截”</td>
+<td><strong>端点不可实施</strong>：托管 FM API / 外部模型（经 Gateway）只暴露<strong>输出 token 的 logprobs</strong>，不给完整 pre-softmax logit 向量，且生成在服务端——无法在首 token 前插拦截</td>
+<td>🚫 平台受限</td>
+</tr>
+<tr>
+<td>Dirichlet UQ、aleatoric/epistemic 拆分、ECE 校准、Credal Set</td>
+<td><strong>端点不可实施</strong>：需改模型头 / 拿全量 logits，托管与外部端点均不开放；仅自托管开源模型 + 自定义 serving 才可能</td>
+<td>🚫 平台受限</td>
+</tr>
+<tr>
+<td>Renormalization Bias 的显式处理（UNK/OOD 泄洪、概率流失补偿）</td>
+<td><strong>部分</strong>：constrained decoding 是平台能力，但 schema 泄洪设计是架构智慧</td>
+<td>⚠️ 留白·需自建</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="最突出的一处符号-联结的知识统一">6.2 最突出的一处：符号 × 联结的知识统一</h3>
+<p>文章第一节的核心区分——KG 三元组是维特根斯坦意义上的”原子事实图像”（离散/符号/确定），向量嵌入是”分布式语义相似度”（连续/联结/概率）——Databricks 恰好把两者做成<strong>互补的一等组件</strong>：</p>
+<ul>
+<li><strong>Genie Ontology / OntoRank</strong> 提供权威的显式知识图谱（符号侧）。其”权威分”直接把文章第五节的”语义质量红线 / Gatekeeper Agent”变成<strong>平台原生的量化信号</strong>——它本就是给知识节点按权威性打分、决定”哪条定义可信”。</li>
+<li><strong>AI Search</strong> 提供连续语义相似度（联结侧），原生支持 hybrid 检索（全文 + 向量 ANN 并行、RRF 融合）与 cross-encoder 重排，正对应文章的”混合检索 + 交叉熵重排提纯”。</li>
+</ul>
+<p>也就是说，文章里”符号 vs 联结统一于 Context”的抽象，在 Databricks 有对应的一等组件，而非要自己拼装。这也正是本落地文档模块② 的理论落点。</p>
+<h3 id="平台硬约束logit-级机制在托管-外部端点上不可实施">6.3 平台硬约束：logit 级机制在托管 / 外部端点上不可实施</h3>
+<p>文章最锋利的两个主张——<strong>logit 级不确定性拦截</strong>与 <strong>Dirichlet / UQ 校准</strong>——在 Databricks 的实际端点上<strong>无法落地</strong>，原因是接口层面的硬约束，而非”没做”：</p>
+<ul>
+<li><strong>托管 Foundation Model API 与经 AI Gateway 调用的外部模型（Claude、GPT 等）只暴露输出 token 的 <code>logprobs</code></strong>——即已采样 token 的对数概率，<strong>不是</strong>全词表的 pre-softmax logit 向量。文章要的”原始 logit 绝对强度、方差、epistemic 拆分”拿不到。</li>
+<li><strong>生成过程在服务端</strong>，调用方无法在”自回归首个 token 产生前”插入架构级硬拦截。</li>
+<li>Dirichlet 建模、ECE 校准、Credal Set 都需要<strong>改模型头或拿全量 logits</strong>，托管与外部端点都不开放这个层级。</li>
+</ul>
+<p><strong>唯一可能的路径</strong>是自托管开源权重模型（GPU + 自定义 pyfunc serving），此时你拥有 forward pass，可加 evidential/Dirichlet 头、算 epistemic uncertainty、在 emit 前硬拒绝。但代价是：放弃托管 FM API 的便利、自担模型运维与 UQ 研究工作，且<strong>对专有模型（Claude/GPT）完全不适用</strong>。对于本架构主要依赖托管 + 外部模型的现实，这两项应视为<strong>超出实施范围</strong>。</p>
+<h3 id="可落地的替代用行为级手段逼近文章的ood-即沉默意图">6.4 可落地的替代：用行为级手段逼近文章的”OOD 即沉默”意图</h3>
+<p>虽然 logit 级机制做不了，但文章的<strong>治理意图</strong>（分布外 / 不确定时硬拒绝、保持沉默）可以用端点确实提供的能力逼近——只是作用在<strong>输出级 / 行为级</strong>，而非模型内部表征：</p>
+<ul>
+<li><strong>检索置信度门控（最实用）</strong>：若 AI Search / Genie 召回的最高相似度低于阈值，直接判定”围栏外 = OOD”并硬拒绝。这不需要任何 logits，且直接对应文章”边界之外即不可言说”。</li>
+<li><strong>输出 <code>logprobs</code> 启发式</strong>：用已采样 token 的 logprobs 做序列级置信度估计，低置信触发复核 / 拒绝（粗粒度，但可用）。</li>
+<li><strong>语义熵 / 自一致性</strong>：对同一输入采样 N 次，测输出分歧度，近似 epistemic uncertainty——无需模型内部信息。</li>
+<li><strong>独立 OOD / 不确定性分类器</strong>：作为 Agent 前置路由步，判定是否放行。</li>
+<li><strong>AI Gateway guardrails + CLEARS Safety</strong>：输出层最后一道拦截。</li>
+</ul>
+<blockquote>
+<p><strong>一句话</strong>：文章的 logit 级内核在 Databricks 端点上<strong>不可实施</strong>（除非自托管开源模型，成本高且不覆盖专有模型）；但其”OOD 即沉默”的治理意图，可用<strong>检索置信度门控 + 输出 logprobs + 语义熵</strong>在行为级实现。Databricks 提供的是产品级的”围栏与骨架”，模型内部的”概率驯服”要么自托管自建、要么退而用行为级代理。</p>
+</blockquote>
+<hr />
+<h2 id="附录来源">附录：来源</h2>
+<p>以下关于 Databricks 产品与算法的说明基于公开文档与报道核实（组件状态复核时点约 <strong>2026-08</strong>）：</p>
+<ul>
+<li>Databricks Blog — <em>Lakeflow: A new era of agentic data engineering</em> — https://www.databricks.com/blog/lakeflow-new-era-agentic-data-engineering</li>
+<li>Databricks Docs — <em>What is Lakeflow Spark Declarative Pipelines</em> — https://docs.databricks.com/aws/en/ldp/concepts</li>
+<li>Databricks Docs — <em>What is Auto Loader?</em> — https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/</li>
+<li>Databricks Blog — <em>Agent Bricks: Data + AI Summit 2026</em> — https://www.databricks.com/blog/agent-bricks-dais-2026</li>
+<li>Databricks Product — <em>Agent Bricks</em> — https://www.databricks.com/product/artificial-intelligence/agent-bricks</li>
+<li>Databricks Docs — <em>Evaluate and monitor AI agents (MLflow 3)</em> — https://docs.databricks.com/aws/en/mlflow3/genai/eval-monitor/</li>
+<li>Databricks Blog — <em>MLflow 3.0: Build, Evaluate, and Deploy Generative AI with Confidence</em> — https://www.databricks.com/blog/mlflow-30-unified-ai-experimentation-observability-and-governance</li>
+<li>Databricks Docs — <em>AI governance with Unity AI Gateway / AI Gateway-enabled inference tables</em> — https://docs.databricks.com/aws/en/ai-gateway/</li>
+<li>ITdaily — <em>Not pagerank, but ontorank: Databricks Genie Ontology</em> — https://itdaily.com/blogs/cloud/databricks-genie-ontology/</li>
+<li>GitHub — <em>databrickslabs/ontobricks</em> — https://github.com/databrickslabs/ontobricks</li>
+<li>Databricks Blog — <em>Introducing CustomerLake: The Agentic CDP embedded in Databricks</em> — https://www.databricks.com/blog/introducing-customerlake-agentic-cdp</li>
+<li>Databricks Docs — <em>AI Search retrieval quality guide（hybrid search &amp; reranking）</em> — https://docs.databricks.com/aws/en/vector-search/vector-search-retrieval-quality</li>
+<li>Databricks Docs — <em>Structured outputs on Databricks（constrained decoding）</em> — https://docs.databricks.com/aws/en/machine-learning/model-serving/structured-outputs</li>
+<li>Raphael Zhu — <em>高维逻辑的拓扑连线与现实锚点</em> — https://zhuzp98.github.io/files/AI%20Thoughts/Enterprise_AI_thoughts.html</li>
+</ul>
+<p><strong>v1.4 增量</strong>：版本号与概念架构对齐为 v1.4。内容：工作区切法 A/B/C（默认 A）；Serving / Jobs / 检索三旋钮；域预算标签与 noisy-neighbor 验收；Phase 0/2/4 门禁。</p>
+<p><strong>v1.2 增量</strong>：Domain Federation 落地闭环（契约生命周期、发现降调为 UC 注册表模式、Phase 1 即域隔离、编排层补注册表/跨域授权/域配额）；风险补契约蔓延与 Filter 过宽。</p>
+<p><strong>v1.1 增量同步说明（产品公告时点）</strong>：Unity AI Gateway 核心 GA（2026-08-04）；Managed MCP connectors 归入 Unity AI Gateway 控制面（Beta，2026-08-06）；Lakeflow Connect 的 SharePoint / Google Drive Connector GA，OpenAI / PagerDuty Connector Beta（2026-08）；UC Secrets GA；Genie Spaces 统一更名为 Genie Agents，并与 Genie One / Genie Code 形成矩阵；Lakeflow Pipeline 单元测试 Beta（2026-07）；Genie Code Web Search Beta（2026-08）；Genie One Excel / Google Sheets 原生插件发布（2026-08）。正式立项前请以官方文档为准复核。</p>
+
+
+							</div>
+						</section>
+					</article>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="icons">
+							<li><a href="https://www.linkedin.com/in/zhipengzhu98/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+							<li><a href="https://github.com/zhuzp98" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+							<li><a href="https://www.hackerrank.com/jsyxzzp" class="icon brands fa-hackerrank"><span class="label">HackerRank</span></a></li>
+							<li><a href="https://www.zhihu.com/people/zhu-zhi-peng-92-43" class="icon brands fa-zhihu"><span class="label">知乎 ZhiHu</span></a></li>
+							<li><a href="https://www.behance.net/zhipengzhu" class="icon brands fa-behance"><span class="label">Behance</span></a></li>
+							<li><a href="https://www.instagram.com/egoistaseraph/" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+							<li><a href="mailto:raphael.z98@outlook.com" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+						</ul>
+						<ul class="copyright">
+							<li>&copy; Raphael Zhu</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</footer>
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../assets/js/jquery.min.js"></script>
+			<script src="../../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../assets/js/browser.min.js"></script>
+			<script src="../../assets/js/breakpoints.min.js"></script>
+			<script src="../../assets/js/util.js"></script>
+			<script src="../../assets/js/main.js"></script>
+
+	</body>
+</html>
+
