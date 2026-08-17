@@ -163,7 +163,12 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>落地要点</strong>： - <strong>流式 vs 批式两条路径</strong>在 SDP 里统一表达：埋点/交易走 streaming table，周期汇总走 materialized view。 - <strong>结构化数据</strong>直接落 Delta 表并在 Unity Catalog 打 tag；<strong>非结构化 Context</strong>（OKR、项目进度、竞品情报等）以文件 + 元数据入湖（SharePoint / Google Drive 等 GA Connector 可直连协作文档源），等待模块②做图化与嵌入。 - <strong>外部实时检索</strong>（Genie Code Web Search）与<strong>托管入湖</strong>（Connect / Auto Loader）分工：前者补”此刻公开可见”的缺口，后者补”受治理、可溯源”的企业资产；Agent 消费时二者需打不同置信度标签。</p>
+<p><strong>落地要点</strong>：</p>
+<ul>
+<li><strong>流式 vs 批式两条路径</strong>在 SDP 里统一表达：埋点/交易走 streaming table，周期汇总走 materialized view。</li>
+<li><strong>结构化数据</strong>直接落 Delta 表并在 Unity Catalog 打 tag；<strong>非结构化 Context</strong>（OKR、项目进度、竞品情报等）以文件 + 元数据入湖（SharePoint / Google Drive 等 GA Connector 可直连协作文档源），等待模块②做图化与嵌入。</li>
+<li><strong>外部实时检索</strong>（Genie Code Web Search）与<strong>托管入湖</strong>（Connect / Auto Loader）分工：前者补”此刻公开可见”的缺口，后者补”受治理、可溯源”的企业资产；Agent 消费时二者需打不同置信度标签。</li>
+</ul>
 <h3 id="模块②-知识与记忆">2.2 模块② 知识与记忆</h3>
 <div class="table-wrapper"><table class="alt">
 <colgroup>
@@ -211,9 +216,23 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>两类记忆的落地区分</strong>： - <strong>领域知识 / 规则</strong>（合规、SOP、指标口径）→ Metric Views + Unity Catalog 受治理对象，改动走审批。 - <strong>经验记忆</strong>（案例、反馈样本）→ Vector Search 索引，由模块⑤自动回写。</p>
-<p><strong>复核策略落地</strong>： - 用 OntoRank 权威分排序，高权威/高风险知识人工精审，其余 AI 预筛 + 抽样。</p>
-<p><strong>多部门 Context Namespace（域隔离）落地机制</strong>（Phase 1 即启用，不要等到多 Agent 再补）： - <strong>表</strong>：各部门结构化对象按 Unity Catalog <code>catalog.schema</code> 划界；行级敏感用 <strong>ABAC / Row Filter / Column Mask</strong>。 - <strong>文件 / Volume</strong>：用 schema 权限隔离，而不是把行级过滤套到文件上。 - <strong>向量</strong>：索引带 <code>domain</code> 等 metadata；检索默认加 <strong>Filter Expression</strong>（如 <code>domain = 'supply_chain' OR domain = 'corporate'</code>）。 - <strong>指标</strong>：集团级 Metric Views 放公共 schema；部门口径放域 schema，跨域只暴露契约化只读视图。 - <strong>跨域检索</strong>：编排层先做身份与授权（Gateway / UC 权限）；<strong>授权通过后，由 Agent 检索调用注入跨域 Filter 组合</strong>——Filter 在检索层，不在 Gateway 控制面「传入」。两域定义冲突时：集团公共定义优先，其次 OntoRank + 请求域优先级。</p>
+<p><strong>两类记忆的落地区分</strong>：</p>
+<ul>
+<li><strong>领域知识 / 规则</strong>（合规、SOP、指标口径）→ Metric Views + Unity Catalog 受治理对象，改动走审批。</li>
+<li><strong>经验记忆</strong>（案例、反馈样本）→ Vector Search 索引，由模块⑤自动回写。</li>
+</ul>
+<p><strong>复核策略落地</strong>：</p>
+<ul>
+<li>用 OntoRank 权威分排序，高权威/高风险知识人工精审，其余 AI 预筛 + 抽样。</li>
+</ul>
+<p><strong>多部门 Context Namespace（域隔离）落地机制</strong>（Phase 1 即启用，不要等到多 Agent 再补）：</p>
+<ul>
+<li><strong>表</strong>：各部门结构化对象按 Unity Catalog <code>catalog.schema</code> 划界；行级敏感用 <strong>ABAC / Row Filter / Column Mask</strong>。</li>
+<li><strong>文件 / Volume</strong>：用 schema 权限隔离，而不是把行级过滤套到文件上。</li>
+<li><strong>向量</strong>：索引带 <code>domain</code> 等 metadata；检索默认加 <strong>Filter Expression</strong>（如 <code>domain = 'supply_chain' OR domain = 'corporate'</code>）。</li>
+<li><strong>指标</strong>：集团级 Metric Views 放公共 schema；部门口径放域 schema，跨域只暴露契约化只读视图。</li>
+<li><strong>跨域检索</strong>：编排层先做身份与授权（Gateway / UC 权限）；<strong>授权通过后，由 Agent 检索调用注入跨域 Filter 组合</strong>——Filter 在检索层，不在 Gateway 控制面「传入」。两域定义冲突时：集团公共定义优先，其次 OntoRank + 请求域优先级。</li>
+</ul>
 <h3 id="模块③-ai-处理逻辑">2.3 模块③ AI 处理逻辑</h3>
 <div class="table-wrapper"><table class="alt">
 <colgroup>
@@ -308,8 +327,15 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>两个 AI 角色的落地</strong>： - <strong>监督者</strong>：SDP/Jobs 产出 output 与 sensor 指标 → MLflow Tracing + scorers 汇总、监控、发现异常。 - <strong>决策顾问</strong>：基于 <strong>Genie Agents</strong>（over Metric Views）+ Ontology 上下文做 OKR loop review，产出建议。</p>
-<p><strong>“固化判据”怎么落地</strong>： - 用 Unity AI Gateway 的 inference table + MLflow 分析某类 AI 问答的<strong>频率 × 稳定性 × 风险</strong>，达标者从”探索性用法”晋升（promote）为 Lakeflow Job。这道闸门是模块③的核心工艺。</p>
+<p><strong>两个 AI 角色的落地</strong>：</p>
+<ul>
+<li><strong>监督者</strong>：SDP/Jobs 产出 output 与 sensor 指标 → MLflow Tracing + scorers 汇总、监控、发现异常。</li>
+<li><strong>决策顾问</strong>：基于 <strong>Genie Agents</strong>（over Metric Views）+ Ontology 上下文做 OKR loop review，产出建议。</li>
+</ul>
+<p><strong>“固化判据”怎么落地</strong>：</p>
+<ul>
+<li>用 Unity AI Gateway 的 inference table + MLflow 分析某类 AI 问答的<strong>频率 × 稳定性 × 风险</strong>，达标者从”探索性用法”晋升（promote）为 Lakeflow Job。这道闸门是模块③的核心工艺。</li>
+</ul>
 <p><strong>能力契约（Capability Contract）生命周期</strong>：</p>
 <div class="table-wrapper"><table class="alt">
 <colgroup>
@@ -387,8 +413,20 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>对外（触达客户）</strong>： - <strong>CustomerLake（Agentic CDP，Private Preview）</strong>：以 “infinity campaigns” 持续响应客户 context，把手动 trigger 的触达自动化。 - <strong>兜底</strong>：在 CustomerLake 可用前，用自建激活 Job（Model Serving 输出 → 触达渠道）替代。</p>
-<p><strong>落地要点</strong>： - <strong>路由复用</strong>模块② Genie Ontology 的组织图，别重建；始终读最新组织结构防”送错人”。 - <strong>执行分级</strong>（全自动 / 人工审核 / 仅建议）用 Agent Framework 的 human-in-the-loop / approval 机制实现；高风险（资金、对外承诺）默认人工确认。 - <strong>每条建议附血缘</strong>：复用 Unity Catalog lineage，保证可解释、可核对。 - <strong>通道优先序建议</strong>：能落表格 / Slack·Teams 的先走 Genie One 插件（摩擦力最低）→ 需审批下钻走 Apps → 需项目跟踪走 Meegle → 正式存档走邮件。 - <strong>人员路由 vs 能力路由</strong>：找人复用 Ontology 组织图；找部门 Agent 走契约发现，二者不要写进同一张硬编码表。 - <strong>动态发现（Agent Discovery，落地模式，产品名需立项前核对）</strong>：跨部门调度时不写死路由。推荐实现顺序：① 查 UC 中带 <code>agent-capability</code> 标签的 Functions / MCP 工具（<strong>当前最稳</strong>）；② 若已开通 <strong>Agent Services（Beta）</strong>，再用其工具检索能力做意图匹配；③ Genie Agent / 相关 API 仅作辅助，<strong>不要写成 Unity AI Gateway 已 GA 的「Tool Search」API</strong>。发现失败则只送人、不自动调用对方 Agent。</p>
+<p><strong>对外（触达客户）</strong>：</p>
+<ul>
+<li><strong>CustomerLake（Agentic CDP，Private Preview）</strong>：以 “infinity campaigns” 持续响应客户 context，把手动 trigger 的触达自动化。</li>
+<li><strong>兜底</strong>：在 CustomerLake 可用前，用自建激活 Job（Model Serving 输出 → 触达渠道）替代。</li>
+</ul>
+<p><strong>落地要点</strong>：</p>
+<ul>
+<li><strong>路由复用</strong>模块② Genie Ontology 的组织图，别重建；始终读最新组织结构防”送错人”。</li>
+<li><strong>执行分级</strong>（全自动 / 人工审核 / 仅建议）用 Agent Framework 的 human-in-the-loop / approval 机制实现；高风险（资金、对外承诺）默认人工确认。</li>
+<li><strong>每条建议附血缘</strong>：复用 Unity Catalog lineage，保证可解释、可核对。</li>
+<li><strong>通道优先序建议</strong>：能落表格 / Slack·Teams 的先走 Genie One 插件（摩擦力最低）→ 需审批下钻走 Apps → 需项目跟踪走 Meegle → 正式存档走邮件。</li>
+<li><strong>人员路由 vs 能力路由</strong>：找人复用 Ontology 组织图；找部门 Agent 走契约发现，二者不要写进同一张硬编码表。</li>
+<li><strong>动态发现（Agent Discovery，落地模式，产品名需立项前核对）</strong>：跨部门调度时不写死路由。推荐实现顺序：① 查 UC 中带 <code>agent-capability</code> 标签的 Functions / MCP 工具（<strong>当前最稳</strong>）；② 若已开通 <strong>Agent Services（Beta）</strong>，再用其工具检索能力做意图匹配；③ Genie Agent / 相关 API 仅作辅助，<strong>不要写成 Unity AI Gateway 已 GA 的「Tool Search」API</strong>。发现失败则只送人、不自动调用对方 Agent。</li>
+</ul>
 <h3 id="模块⑤-评估-反馈-学习">2.5 模块⑤ 评估 / 反馈 / 学习</h3>
 <div class="table-wrapper"><table class="alt">
 <colgroup>
@@ -436,7 +474,17 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>落地要点</strong>： - <strong>三类反馈 → 三层</strong>：业务数据（MLflow/Inference Tables）→ 策略层；员工任务反馈（Meegle 回执 + 文档）→ 知识/流程层；trace 监控（Lakehouse Monitoring + DABs）→ 基础设施层。 - <strong>双重 CI/CD</strong>：模型/Agent 改动过 MLflow 评估门禁；SDP / Job 管道改动过 Pipeline 单元测试门禁，再经 DABs 发布。硬学习（改 Job / 管道）不得跳过测试绿通。 - <strong>回滚判据</strong>：MLflow 监控发现漂移/劣化 → 经 DABs + Git 回退到上一个良好版本，回滚是一个动作而非事故。 - <strong>解耦的异构评估（Domain Evaluation）</strong>：CLEARS 与域内 KPI <strong>正交</strong>——前者是质量/安全/成本，后者是业务结果，不能互相替代。 - <strong>部门局部评估</strong>：各部门基于 <strong>MLflow 3 Custom Judges</strong> 编写域内指标（如风控「拒贷误伤率」，营销「ROI 提升度」），在部门专属 DABs 管道中跑评估，驱动域内软/硬学习。 - <strong>中央治理评估</strong>：Unity AI Gateway 统一在 <strong>Inference Tables</strong> 上挂载全局 CLEARS（尤其 Safety、Latency、Cost）与漂移告警，只拦截全局合规与模型风险。 - <strong>归因纪律</strong>：对外触达用 <strong>holdout / A-B</strong>（CDP 通常原生支持受众 holdout），确保学到的是<strong>因果</strong>增量。 - <strong>回写路径</strong>：软学习 → 更新 Vector Search 索引（经验记忆）；硬学习 → 经晋升判据 + 单元测试绿通改 Lakeflow Job / Agent 版本。</p>
+<p><strong>落地要点</strong>：</p>
+<ul>
+<li><strong>三类反馈 → 三层</strong>：业务数据（MLflow/Inference Tables）→ 策略层；员工任务反馈（Meegle 回执 + 文档）→ 知识/流程层；trace 监控（Lakehouse Monitoring + DABs）→ 基础设施层。</li>
+<li><strong>双重 CI/CD</strong>：模型/Agent 改动过 MLflow 评估门禁；SDP / Job 管道改动过 Pipeline 单元测试门禁，再经 DABs 发布。硬学习（改 Job / 管道）不得跳过测试绿通。</li>
+<li><strong>回滚判据</strong>：MLflow 监控发现漂移/劣化 → 经 DABs + Git 回退到上一个良好版本，回滚是一个动作而非事故。</li>
+<li><strong>解耦的异构评估（Domain Evaluation）</strong>：CLEARS 与域内 KPI <strong>正交</strong>——前者是质量/安全/成本，后者是业务结果，不能互相替代。</li>
+<li><strong>部门局部评估</strong>：各部门基于 <strong>MLflow 3 Custom Judges</strong> 编写域内指标（如风控「拒贷误伤率」，营销「ROI 提升度」），在部门专属 DABs 管道中跑评估，驱动域内软/硬学习。</li>
+<li><strong>中央治理评估</strong>：Unity AI Gateway 统一在 <strong>Inference Tables</strong> 上挂载全局 CLEARS（尤其 Safety、Latency、Cost）与漂移告警，只拦截全局合规与模型风险。</li>
+<li><strong>归因纪律</strong>：对外触达用 <strong>holdout / A-B</strong>（CDP 通常原生支持受众 holdout），确保学到的是<strong>因果</strong>增量。</li>
+<li><strong>回写路径</strong>：软学习 → 更新 Vector Search 索引（经验记忆）；硬学习 → 经晋升判据 + 单元测试绿通改 Lakeflow Job / Agent 版本。</li>
+</ul>
 <h3 id="编排-治理层神经中枢">2.6 编排 / 治理层（神经中枢）</h3>
 <div class="table-wrapper"><table class="alt">
 <colgroup>

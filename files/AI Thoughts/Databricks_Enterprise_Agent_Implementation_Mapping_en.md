@@ -43,6 +43,7 @@
 | Public web as live unstructured supplement | **Genie Code Web Search** (Beta, 2026-08) | Full-page code Agent for data/AI builders; **not** a substitute for governed ingest; for time-sensitive public facts that should not sit in the lake first |
 
 **Implementation notes:**
+
 - Express stream vs batch in SDP: telemetry/trades → streaming tables; periodic rollups → materialized views.
 - Structured data → Delta + UC tags. Unstructured Context (OKRs, project status, competitive intel) → files + metadata (SharePoint / Drive GA connectors). Graph + embed in module ②.
 - **Live web search** vs **governed ingest:** the former fills “visible on the public web *now*”; the latter is traceable enterprise assets. Tag confidence differently when Agents consume both.
@@ -59,12 +60,14 @@
 | Tables as graph nodes | **Ontobricks** (Labs) | Joint structured/unstructured retrieve; no official SLA |
 
 **Two memory classes:**
+
 - **Domain knowledge / rules** (policy, SOP, metric specs) → Metric Views + governed UC objects; changes go through approval.
 - **Experiential memory** (cases, samples) → Vector Search indexes, written back from ⑤.
 
 **Review:** OntoRank-ranked; high authority/risk gets humans; rest AI pre-screen + sample.
 
 **Context Namespace (turn on in Phase 1—do not retrofit a dirty index in Phase 4):**
+
 - **Tables:** `catalog.schema` per domain; row/column sensitivity via **ABAC / row filters / column masks**.
 - **Files / Volumes:** schema grants—do not pretend row filters apply to files.
 - **Vectors:** `domain` (etc.) metadata; default **filter expressions** such as `domain = 'supply_chain' OR domain = 'corporate'`.
@@ -94,6 +97,7 @@
 | **Agent Bricks** | Platform / app builders | Task-first managed Agents |
 
 **Two AI roles:**
+
 - **Supervisor:** SDP/Jobs outputs and sensors → MLflow Tracing + scorers.
 - **Advisor:** **Genie Agents** over Metric Views + ontology Context → OKR loop review.
 
@@ -122,10 +126,12 @@
 | PM tasks | **Lark / Meegle** (build: open APIs / webhooks; maybe Lark CLI) | Recommendations become workflow items |
 
 **External:**
+
 - **CustomerLake (Agentic CDP, Private Preview):** infinity campaigns on customer context.
 - **Fallback:** activation Job (Model Serving → channel) until CustomerLake is usable.
 
 **Implementation notes:**
+
 - Reuse the Genie Ontology org graph for people routing; always read latest.
 - Execution grades (full auto / human review / suggest-only) via Agent Framework HITL; money and external commitments default to human confirm.
 - Attach UC lineage to every recommendation.
@@ -145,6 +151,7 @@
 | Pipeline tests before prod / hard-learning | **Lakeflow Pipeline unit tests** (Beta, 2026-07) | Python/SQL tests with mocks for SDP / Auto CDC / Expectations; dual CI/CD with MLflow |
 
 **Implementation notes:**
+
 - Three feedbacks → three layers: business data → policy; staff task feedback → knowledge/process; traces → infra.
 - **Dual CI/CD:** model/Agent changes through MLflow eval; SDP/Job changes through pipeline unit tests, then DABs. Hard learning must not skip green tests.
 - **Rollback:** MLflow drift/degrade → DABs + Git to last good. An action, not an incident.

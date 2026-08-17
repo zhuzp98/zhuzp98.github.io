@@ -42,6 +42,7 @@
 | 公共 Web 实时知识补充（外部非结构化） | **Genie Code Web Search**（Beta，2026-08） | 面向数据 / AI 开发的全页代码 Agent（Genie Code）可检索公共 Web，作为企业内源之外的**实时外部 Context**补充通道；勿与托管数据源入湖混淆，适合时效性强、不宜预先入湖的公开信息 |
 
 **落地要点**：
+
 - **流式 vs 批式两条路径**在 SDP 里统一表达：埋点/交易走 streaming table，周期汇总走 materialized view。
 - **结构化数据**直接落 Delta 表并在 Unity Catalog 打 tag；**非结构化 Context**（OKR、项目进度、竞品情报等）以文件 + 元数据入湖（SharePoint / Google Drive 等 GA Connector 可直连协作文档源），等待模块②做图化与嵌入。
 - **外部实时检索**（Genie Code Web Search）与**托管入湖**（Connect / Auto Loader）分工：前者补"此刻公开可见"的缺口，后者补"受治理、可溯源"的企业资产；Agent 消费时二者需打不同置信度标签。
@@ -58,13 +59,16 @@
 | 把结构化表也物化成知识图谱节点 | **Ontobricks**（Labs） | 让结构化/非结构化在同一张图上被联合检索；Labs 项目，注意支持级别 |
 
 **两类记忆的落地区分**：
+
 - **领域知识 / 规则**（合规、SOP、指标口径）→ Metric Views + Unity Catalog 受治理对象，改动走审批。
 - **经验记忆**（案例、反馈样本）→ Vector Search 索引，由模块⑤自动回写。
 
 **复核策略落地**：
+
 - 用 OntoRank 权威分排序，高权威/高风险知识人工精审，其余 AI 预筛 + 抽样。
 
 **多部门 Context Namespace（域隔离）落地机制**（Phase 1 即启用，不要等到多 Agent 再补）：
+
 - **表**：各部门结构化对象按 Unity Catalog `catalog.schema` 划界；行级敏感用 **ABAC / Row Filter / Column Mask**。
 - **文件 / Volume**：用 schema 权限隔离，而不是把行级过滤套到文件上。
 - **向量**：索引带 `domain` 等 metadata；检索默认加 **Filter Expression**（如 `domain = 'supply_chain' OR domain = 'corporate'`）。
@@ -95,10 +99,12 @@
 | **Agent Bricks** | 平台 / 应用构建 | task-first 受管 Agent 构建与部署 |
 
 **两个 AI 角色的落地**：
+
 - **监督者**：SDP/Jobs 产出 output 与 sensor 指标 → MLflow Tracing + scorers 汇总、监控、发现异常。
 - **决策顾问**：基于 **Genie Agents**（over Metric Views）+ Ontology 上下文做 OKR loop review，产出建议。
 
 **"固化判据"怎么落地**：
+
 - 用 Unity AI Gateway 的 inference table + MLflow 分析某类 AI 问答的**频率 × 稳定性 × 风险**，达标者从"探索性用法"晋升（promote）为 Lakeflow Job。这道闸门是模块③的核心工艺。
 
 **能力契约（Capability Contract）生命周期**：
@@ -124,10 +130,12 @@
 | 落成项目管理任务 | **Lark / Meegle 集成**（自研：开放平台 API / webhook，可能需 Lark CLI） | 建议直接进 Meegle 工作流 |
 
 **对外（触达客户）**：
+
 - **CustomerLake（Agentic CDP，Private Preview）**：以 "infinity campaigns" 持续响应客户 context，把手动 trigger 的触达自动化。
 - **兜底**：在 CustomerLake 可用前，用自建激活 Job（Model Serving 输出 → 触达渠道）替代。
 
 **落地要点**：
+
 - **路由复用**模块② Genie Ontology 的组织图，别重建；始终读最新组织结构防"送错人"。
 - **执行分级**（全自动 / 人工审核 / 仅建议）用 Agent Framework 的 human-in-the-loop / approval 机制实现；高风险（资金、对外承诺）默认人工确认。
 - **每条建议附血缘**：复用 Unity Catalog lineage，保证可解释、可核对。
@@ -147,6 +155,7 @@
 | DAG / ETL 管道进生产前与硬学习改动时的自动化测试 | **Lakeflow Pipeline 单元测试**（Beta，2026-07） | Lakeflow Editor 可对 Spark Declarative Pipelines（SDP）编写 Python/SQL 单元测试，用 mock 数据验证 Pipeline / Auto CDC / Expectations；为模块③确定性工作流与模块⑤硬学习改动提供**数据管道侧**安全带，与模型侧 MLflow 评估形成双重 CI/CD |
 
 **落地要点**：
+
 - **三类反馈 → 三层**：业务数据（MLflow/Inference Tables）→ 策略层；员工任务反馈（Meegle 回执 + 文档）→ 知识/流程层；trace 监控（Lakehouse Monitoring + DABs）→ 基础设施层。
 - **双重 CI/CD**：模型/Agent 改动过 MLflow 评估门禁；SDP / Job 管道改动过 Pipeline 单元测试门禁，再经 DABs 发布。硬学习（改 Job / 管道）不得跳过测试绿通。
 - **回滚判据**：MLflow 监控发现漂移/劣化 → 经 DABs + Git 回退到上一个良好版本，回滚是一个动作而非事故。

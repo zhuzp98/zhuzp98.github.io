@@ -163,7 +163,12 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>Implementation notes:</strong> - Express stream vs batch in SDP: telemetry/trades → streaming tables; periodic rollups → materialized views. - Structured data → Delta + UC tags. Unstructured Context (OKRs, project status, competitive intel) → files + metadata (SharePoint / Drive GA connectors). Graph + embed in module ②. - <strong>Live web search</strong> vs <strong>governed ingest:</strong> the former fills “visible on the public web <em>now</em>”; the latter is traceable enterprise assets. Tag confidence differently when Agents consume both.</p>
+<p><strong>Implementation notes:</strong></p>
+<ul>
+<li>Express stream vs batch in SDP: telemetry/trades → streaming tables; periodic rollups → materialized views.</li>
+<li>Structured data → Delta + UC tags. Unstructured Context (OKRs, project status, competitive intel) → files + metadata (SharePoint / Drive GA connectors). Graph + embed in module ②.</li>
+<li><strong>Live web search</strong> vs <strong>governed ingest:</strong> the former fills “visible on the public web <em>now</em>”; the latter is traceable enterprise assets. Tag confidence differently when Agents consume both.</li>
+</ul>
 <h3 id="module-②-knowledge-and-memory">2.2 Module ② Knowledge and memory</h3>
 <div class="table-wrapper"><table class="alt">
 <colgroup>
@@ -211,9 +216,20 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>Two memory classes:</strong> - <strong>Domain knowledge / rules</strong> (policy, SOP, metric specs) → Metric Views + governed UC objects; changes go through approval. - <strong>Experiential memory</strong> (cases, samples) → Vector Search indexes, written back from ⑤.</p>
+<p><strong>Two memory classes:</strong></p>
+<ul>
+<li><strong>Domain knowledge / rules</strong> (policy, SOP, metric specs) → Metric Views + governed UC objects; changes go through approval.</li>
+<li><strong>Experiential memory</strong> (cases, samples) → Vector Search indexes, written back from ⑤.</li>
+</ul>
 <p><strong>Review:</strong> OntoRank-ranked; high authority/risk gets humans; rest AI pre-screen + sample.</p>
-<p><strong>Context Namespace (turn on in Phase 1—do not retrofit a dirty index in Phase 4):</strong> - <strong>Tables:</strong> <code>catalog.schema</code> per domain; row/column sensitivity via <strong>ABAC / row filters / column masks</strong>. - <strong>Files / Volumes:</strong> schema grants—do not pretend row filters apply to files. - <strong>Vectors:</strong> <code>domain</code> (etc.) metadata; default <strong>filter expressions</strong> such as <code>domain = 'supply_chain' OR domain = 'corporate'</code>. - <strong>Metrics:</strong> corporate Metric Views in a shared schema; department specs in domain schemas; cross-domain only via contract-shaped read-only views. - <strong>Cross-domain retrieve:</strong> control plane authenticates first (Gateway / UC). <strong>After auth, the Agent retrieve call injects the filter mix</strong>—filters live on the retrieve path, not as a Gateway “pass-through.” Definition conflicts: corporate-shared first, then OntoRank + requesting-domain priority.</p>
+<p><strong>Context Namespace (turn on in Phase 1—do not retrofit a dirty index in Phase 4):</strong></p>
+<ul>
+<li><strong>Tables:</strong> <code>catalog.schema</code> per domain; row/column sensitivity via <strong>ABAC / row filters / column masks</strong>.</li>
+<li><strong>Files / Volumes:</strong> schema grants—do not pretend row filters apply to files.</li>
+<li><strong>Vectors:</strong> <code>domain</code> (etc.) metadata; default <strong>filter expressions</strong> such as <code>domain = 'supply_chain' OR domain = 'corporate'</code>.</li>
+<li><strong>Metrics:</strong> corporate Metric Views in a shared schema; department specs in domain schemas; cross-domain only via contract-shaped read-only views.</li>
+<li><strong>Cross-domain retrieve:</strong> control plane authenticates first (Gateway / UC). <strong>After auth, the Agent retrieve call injects the filter mix</strong>—filters live on the retrieve path, not as a Gateway “pass-through.” Definition conflicts: corporate-shared first, then OntoRank + requesting-domain priority.</li>
+</ul>
 <h3 id="module-③-ai-processing">2.3 Module ③ AI processing</h3>
 <div class="table-wrapper"><table class="alt">
 <colgroup>
@@ -308,7 +324,11 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>Two AI roles:</strong> - <strong>Supervisor:</strong> SDP/Jobs outputs and sensors → MLflow Tracing + scorers. - <strong>Advisor:</strong> <strong>Genie Agents</strong> over Metric Views + ontology Context → OKR loop review.</p>
+<p><strong>Two AI roles:</strong></p>
+<ul>
+<li><strong>Supervisor:</strong> SDP/Jobs outputs and sensors → MLflow Tracing + scorers.</li>
+<li><strong>Advisor:</strong> <strong>Genie Agents</strong> over Metric Views + ontology Context → OKR loop review.</li>
+</ul>
 <p><strong>Promotion criteria:</strong> Gateway inference tables + MLflow on <strong>frequency × stability × risk</strong>; promote exploratory Q&amp;A to Lakeflow Jobs. That gate is the core craft of module ③.</p>
 <p><strong>Capability Contract lifecycle:</strong></p>
 <div class="table-wrapper"><table class="alt">
@@ -387,8 +407,20 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>External:</strong> - <strong>CustomerLake (Agentic CDP, Private Preview):</strong> infinity campaigns on customer context. - <strong>Fallback:</strong> activation Job (Model Serving → channel) until CustomerLake is usable.</p>
-<p><strong>Implementation notes:</strong> - Reuse the Genie Ontology org graph for people routing; always read latest. - Execution grades (full auto / human review / suggest-only) via Agent Framework HITL; money and external commitments default to human confirm. - Attach UC lineage to every recommendation. - Channel order: Genie One plugins → Apps (approval) → Meegle (tracking) → email (archive). - <strong>People vs capability routing:</strong> humans via org graph; department Agents via contract discovery—not one hardcoded table. - <strong>Agent Discovery (pattern; verify product names before you commit):</strong> do not hardcode cross-dept routes. Preferred order: (1) query UC Functions / MCP tools tagged <code>agent-capability</code> (<strong>most stable today</strong>); (2) if <strong>Agent Services (Beta)</strong> is on, use its tool-search for intent match; (3) Genie Agent APIs as assist only. <strong>Do not document Unity AI Gateway GA “Tool Search.”</strong> If discovery fails: notify the human only.</p>
+<p><strong>External:</strong></p>
+<ul>
+<li><strong>CustomerLake (Agentic CDP, Private Preview):</strong> infinity campaigns on customer context.</li>
+<li><strong>Fallback:</strong> activation Job (Model Serving → channel) until CustomerLake is usable.</li>
+</ul>
+<p><strong>Implementation notes:</strong></p>
+<ul>
+<li>Reuse the Genie Ontology org graph for people routing; always read latest.</li>
+<li>Execution grades (full auto / human review / suggest-only) via Agent Framework HITL; money and external commitments default to human confirm.</li>
+<li>Attach UC lineage to every recommendation.</li>
+<li>Channel order: Genie One plugins → Apps (approval) → Meegle (tracking) → email (archive).</li>
+<li><strong>People vs capability routing:</strong> humans via org graph; department Agents via contract discovery—not one hardcoded table.</li>
+<li><strong>Agent Discovery (pattern; verify product names before you commit):</strong> do not hardcode cross-dept routes. Preferred order: (1) query UC Functions / MCP tools tagged <code>agent-capability</code> (<strong>most stable today</strong>); (2) if <strong>Agent Services (Beta)</strong> is on, use its tool-search for intent match; (3) Genie Agent APIs as assist only. <strong>Do not document Unity AI Gateway GA “Tool Search.”</strong> If discovery fails: notify the human only.</li>
+</ul>
 <h3 id="module-⑤-eval-feedback-learning">2.5 Module ⑤ Eval / feedback / learning</h3>
 <div class="table-wrapper"><table class="alt">
 <colgroup>
@@ -436,7 +468,17 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>Implementation notes:</strong> - Three feedbacks → three layers: business data → policy; staff task feedback → knowledge/process; traces → infra. - <strong>Dual CI/CD:</strong> model/Agent changes through MLflow eval; SDP/Job changes through pipeline unit tests, then DABs. Hard learning must not skip green tests. - <strong>Rollback:</strong> MLflow drift/degrade → DABs + Git to last good. An action, not an incident. - <strong>Decoupled domain eval:</strong> CLEARS ⊥ domain KPIs (quality/safety/cost vs business outcome). - <strong>Local:</strong> MLflow 3 Custom Judges in the domain DAB (e.g. false-decline rate; ROI lift). - <strong>Central:</strong> Gateway on Inference Tables runs global CLEARS (esp. Safety, Latency, Cost) and drift—global compliance only. - <strong>Attribution:</strong> holdout / A/B on external reach. - <strong>Write-back:</strong> soft → Vector Search; hard → promote + green tests → Job / Agent version.</p>
+<p><strong>Implementation notes:</strong></p>
+<ul>
+<li>Three feedbacks → three layers: business data → policy; staff task feedback → knowledge/process; traces → infra.</li>
+<li><strong>Dual CI/CD:</strong> model/Agent changes through MLflow eval; SDP/Job changes through pipeline unit tests, then DABs. Hard learning must not skip green tests.</li>
+<li><strong>Rollback:</strong> MLflow drift/degrade → DABs + Git to last good. An action, not an incident.</li>
+<li><strong>Decoupled domain eval:</strong> CLEARS ⊥ domain KPIs (quality/safety/cost vs business outcome).</li>
+<li><strong>Local:</strong> MLflow 3 Custom Judges in the domain DAB (e.g. false-decline rate; ROI lift).</li>
+<li><strong>Central:</strong> Gateway on Inference Tables runs global CLEARS (esp. Safety, Latency, Cost) and drift—global compliance only.</li>
+<li><strong>Attribution:</strong> holdout / A/B on external reach.</li>
+<li><strong>Write-back:</strong> soft → Vector Search; hard → promote + green tests → Job / Agent version.</li>
+</ul>
 <h3 id="orchestration-governance">2.6 Orchestration / governance</h3>
 <div class="table-wrapper"><table class="alt">
 <colgroup>
