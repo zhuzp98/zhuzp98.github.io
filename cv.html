@@ -83,8 +83,8 @@
 								<h3>Skills</h3>
 									<ul type="square">
 										<li><b>Programming:</b> Python, SQL, R, Pine Script, Java and C++; PowerShell, Zsh, Bash and Git.</li>
-										<li><b>Data Science:</b> Azure, LangChain, Databricks, Snowflake, Spark, Hive, Superset.</li>
-										<li><b>Field Knowledge:</b> Market Microstructure, Order Book Dynamics, Web3 Data (Spot/Earn/DEX), Data Engineering, Machine Learning, Sales Growth Analysis, and User Behavior Analysis.</li>
+										<li><b>Data &amp; AI platforms:</b> Databricks (Unity Catalog, Genie, Databricks Apps, Spark), Azure, LangChain, Snowflake, Hive, Superset; Lark Open Platform.</li>
+										<li><b>Field Knowledge:</b> Enterprise Agent architecture and governance, Market Microstructure, Order Book Dynamics, Web3 Data (Spot/Earn/DEX), Data Engineering, Machine Learning, Sales Growth Analysis, and User Behavior Analysis.</li>
 									</ul>
 								<hr />
 								<!--Experience-->
@@ -102,7 +102,8 @@
 										<div>
 											<ul type="square">
 												<li><b>Data Infrastructure: </b> Leading the end-to-end migration from traditional Data Warehouse to Databricks Lakehouse; establishing enterprise-wide data governance and optimized data architectures. </li>
-												<li><b>Generative AI: </b> Engineering specialized Supervisor Agents using optimized Databricks Genie and Knowledge Assistants to automate complex analytical workflows for Finance and Business units.</li>
+												<li><b>Generative AI: </b> Engineering specialized Supervisor Agents using Databricks Genie and Knowledge Assistants to automate complex analytical workflows for Finance and Business units.</li>
+												<li><b>Lark × Databricks: </b> Shipped the Lark Bridge in production—Databricks → Lark outbound Text / Files / Cards, plus automated Lark Sheet sync into Unity Catalog (the IM and spreadsheet plane of the later open-source integration).</li>
 												<li><b>Quantitative Research: </b> Designing algorithmic solutions for the Quantitative Liquidity department, including Real-time Liquidity Monitoring and Market Impact Recovery models.</li>
 											</ul>
 										</div>
@@ -304,16 +305,33 @@
 										</div>
 									</p>
 								<hr />
+								<!--Writing-->
+								<h3>Writing</h3>
+									<ul type="square">
+										<li><b><a href="files/AI Thoughts/Enterprise_AI_thoughts_en.html">Topological Wiring of High-Dimensional Logic and Reality Anchors</a></b> · <a href="files/AI Thoughts/Enterprise_AI_thoughts.html">中文</a> — Bayesian essence, Context roles, and engineering governance of enterprise Agents (Jul 2026).</li>
+										<li><b><a href="files/AI Thoughts/Databricks_Enterprise_Agent_Architecture_en.html">Databricks Enterprise-Grade Agent Architecture</a></b> · <a href="files/AI Thoughts/Databricks_Enterprise_Agent_Architecture.html">中文</a> — The enterprise as a learning Agent: five-module loop, domain federation, and the control plane (Aug 2026).</li>
+										<li><b><a href="files/AI Thoughts/Databricks_Enterprise_Agent_Implementation_en.html">Databricks Enterprise-Grade Agent Implementation Mapping</a></b> · <a href="files/AI Thoughts/Databricks_Enterprise_Agent_Implementation.html">中文</a> — Component map, availability, phased rollout, and platform gaps (Aug 2026).</li>
+									</ul>
+								<hr />
 								<!--Activities-->
 								<h3>Activities</h3>
 									<p>
+										<div>
+											<div style="float:left"><b><a href="https://github.com/zhuzp98/lark-databricks-genie-bot">Lark × Databricks Genie Bot</a></b> | Open Source (MIT)</div>
+											<div style="float:right">Aug 2026</div>
+										</div><br />
+										<ul type="square">
+											<li><b>Governed IM channel: </b> Published a Lark (Feishu) WebSocket bot hosted as a Databricks App that calls Genie One / Genie as the end user (OBO), so Unity Catalog grants, deep links, and RLS follow the real person rather than a shared service principal. Extends the BitMart-shipped Lark Bridge (outbound Text / Files / Cards and Lark Sheet → Unity Catalog sync) with an interactive Genie Q&amp;A path.</li>
+											<li><b>Ops on Free Edition: </b> Overnight keep-alive Jobs against the ~24h App pause; Unity Catalog tables for sessions and short-lived OBO tokens; job-failure alerts, RuntimeLock, token-redacting JSON logs; bot copy auto-switches zh/en from the user message.</li>
+										</ul>
+
 										<div>
 											<div style="float:left"><b>Enterprise Databricks LakeHouse & Multi-Agent Platform</b> | BitMart, Remote</div>
 											<div style="float:right">Feb 2026 - Present</div>
 										</div><br />
 										<ul type="square">
 											<li><b>Lakehouse Migration & Medallion Modeling: </b> Spearheaded the architectural migration from legacy HDFS-Hive-Doris pipelines to AWS S3 and Databricks Unity Catalog; re-governed the DWD layer as the Bronze foundation and remodeled comprehensive Silver/Gold layers.</li>
-											<li><b>Multi-BU Genie Space & Data Integration: </b> Developed specialized Databricks Genie Spaces across core BUs (Spot, Futures, Earn, Fiat, Growth); engineered dedicated data models for Finance while designing integration frameworks for ERP and CRM datasets.ive Silver/Gold layers.</li>
+											<li><b>Multi-BU Genie Agents & Data Integration: </b> Developed specialized Databricks Genie Agents across core BUs (Spot, Futures, Earn, Fiat, Growth); engineered dedicated data models for Finance while designing integration frameworks for ERP and CRM datasets.</li>
 											<li><b>Automated Knowledge Pipelines: </b> Built automated pipelines to ingest and synchronize corporate documentation into vector knowledge bases, establishing multi-domain Knowledge Assistants to optimize internal workflows.</li>
 											<li><b>Proactive Agentic Framework: </b> Designed and deployed enterprise-level Proactive and Supervisor Agent workflows, architecting a secure, data-driven AI framework anchored on Okta SSO and multi-tier access controls.</li>
 										</ul>
