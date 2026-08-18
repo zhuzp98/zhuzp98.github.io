@@ -1,0 +1,275 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Deedy CV/Resume
+% XeLaTeX Template
+% Version 1.0 (5/5/2014)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Debarghya Das (http://www.debarghyadas.com)
+% With extensive modifications by:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+% Important notes:
+% This template needs to be compiled with XeLaTeX.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[letterpaper]{deedy-resume} 
+
+\begin{document}
+\hypersetup{%
+    pdfborder = {0 0 0}
+}
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+
+
+\namesection{Zhipeng}{Zhu}{
+Vancouver, BC $|$ \href{mailto:raphael.z98@outlook.com}{raphael.z98@outlook.com} $|$ +1 604.834.0061 \\
+\href{https://www.linkedin.com/in/zhipengzhu98/}{linkedin.com/in/zhipengzhu98} $|$ \href{https://zhuzp98.github.io/}{zhuzp98.github.io}
+}
+
+%----------------------------------------------------------------------------------------
+%	LEFT COLUMN
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}[t]{0.33\textwidth} % The left column takes up 33% of the text width of the page
+
+%------------------------------------------------
+% Skills
+%------------------------------------------------
+
+\section{Skills}
+\vspace{1mm}
+
+\subsection{Programming}
+Python, R, SQL, Git, Shell
+
+\sectionspace % Some white space after the section
+
+\subsection{Platform \& Governance}
+Databricks, Unity Catalog, Delta Lake \\
+Vector Search, Spark / PySpark \\
+AWS (S3), Azure Data Factory \\
+Lakeflow, Metric Views \\
+Hive, Doris, Medallion / ETL
+
+\sectionspace % Some white space after the section
+
+\subsection{Agents \& Runtime}
+Genie Agents, Genie One, Genie Ontology \\
+Knowledge Assistants, Databricks Apps \\
+Lark Open Platform, OBO identity \\
+Okta SSO, MLflow tracing
+
+\sectionspace % Some white space after the section
+
+\subsection{Domain}
+Enterprise Agent architecture \\
+Governed memory vs experiential RAG \\
+Eval / write-back loops, HITL execution 
+
+\sectionspace % Some white space after the section
+
+%------------------------------------------------
+% Education
+%------------------------------------------------
+
+\section{Education} 
+\vspace{1mm}
+
+\subsection{MSc, Stats / Data Science}
+\descript{University of British Columbia}
+\location{May 2022 | Vancouver, BC}
+Project \& Co-op Double Track
+
+\sectionspace % Some white space after the section
+
+\subsection{BSc, Physics / Math \& Stats}
+\descript{Ohio State University}
+\location{May 2020 | Columbus, OH}
+Magna Cum Laude
+
+\sectionspace % Some white space after the section
+
+%------------------------------------------------
+% Coursework
+%------------------------------------------------
+
+\section{Contribution}
+\vspace{1mm}
+\subsection{Distplyr \& Distionary}
+\descript{R / probaverse}
+Create distribution objects (\texttt{dst\_*}); dplyr-style verbs to shift, mix, and maximize them.
+
+\sectionspace
+
+\subsection{Writing}
+\descript{zhuzp98.github.io}
+First-principles Agent notes (Context, OOD silence). \\
+Five-module enterprise Agent loop. \\
+Databricks implementation map (GA/Beta, phases).
+
+\sectionspace % Some white space after the section
+
+%------------------------------------------------
+
+%------------------------------------------------
+% Links
+%------------------------------------------------
+
+% \section{Links} 
+% \vspace{1mm}
+% LinkedIn: {\bf in/zhipengzhu98} \\
+% GitHub: {\bf zhuzp98} 
+
+% \sectionspace % Some white space after the section
+
+%----------------------------------------------------------------------------------------
+
+\end{minipage} % The end of the left column
+\hfill
+%
+%----------------------------------------------------------------------------------------
+%	RIGHT COLUMN
+%----------------------------------------------------------------------------------------
+%
+\begin{minipage}[t]{0.66\textwidth} % The right column takes up 66% of the text width of the page
+
+%------------------------------------------------
+% Experience
+%------------------------------------------------
+
+\section{Experience}
+\vspace{1mm}
+
+\runsubsection{Data Scientist / AI Architect}
+\descript{| BitMart}
+\location{Feb 2025 - July 2026 | Remote}
+
+\textbf{Control plane:} Led warehouse$\to$Databricks Lakehouse with Unity Catalog governance and Okta multi-tier access. \\
+\textbf{Production Agents:} Genie Agents, Knowledge Assistants, and Genie One Agents (formerly Supervisor) live across 9 BUs. Finance on daily/weekly/monthly production sync and runs. Ad-hoc for Genie-adopting teams: up to 2-day lag $\to$ $\sim$1--2 hours. Finance recurring reports: 1--2 days manual $\to$ fully automated. \\
+\textbf{Lark Bridge:} Databricks$\to$Lark Text/Files/Cards plus Sheet$\to$UC sync; largely replaced Superset CSV sends---100+ file jobs/day, 40+ Sheets synced.
+
+\sectionspace % Some white space after the section
+
+\runsubsection{Data Engineer}
+\descript{| Budweiser APAC}
+\location{Jul 2024 - Dec 2024 | Shanghai}
+
+\textbf{Data Engineering \& Databricks:} Architected middle-platform solutions, rebuilt ODS-DW-ADS task dependencies to reduce redundancy, and optimized Databricks cluster efficiency and Azure Data Factory ETL performance.\\
+\textbf{Data Governance \& BI:} Enforced multi-environment data governance frameworks. Partnered with supply chain and sales teams to model DWS layer indicators and preprocess data, directly supporting risk order inspections and business insights.
+
+\sectionspace % Some white space after the section
+
+% \runsubsection{Data Analyst}
+% \descript{| City of Burnaby}
+% \location{Sep 2022 - Jun 2024 | Vancouver}
+
+% \textbf{Data Analysis:} Conducted in-depth analysis and delivered visualized reports through Azure Databricks. Supported municipal and community projects with information extraction and processing, performed comprehensive data analysis, and provided actionable strategic recommendations. 
+
+% \runsubsection{Data Scientist}
+% \descript{| Lightyear Health}
+% \location{Aug 2021 – Jan 2022 | Vancouver}
+
+% \textbf{Data Migration \& Governance:} Spearheaded the architectural migration to a Snowflake-based data lakehouse, establishing enterprise data standards, schema documentation, and access control governance during the transition \\
+% \textbf{Business Insights:} Developed operational BI dashboards via Mode Analytics (SQL/Python) and engineered machine learning recommendation models to provide executive decision support for sales growth and investments. \\
+
+% \sectionspace % Some whitespace after the section
+
+%----------------------------------------------------------------------------------------
+
+%------------------------------------------------
+% Project
+%------------------------------------------------
+
+\section{Project}
+\vspace{1mm}
+
+\runsubsection{}
+\descript{\href{https://github.com/zhuzp98/lark-databricks-genie-bot}{Lark $\times$ Databricks Genie Bot}}
+\location{Aug 2026 | Open Source (MIT)}
+Lark bot on Databricks Apps calling Genie as the end user (OBO) so UC grants, deep links, and RLS follow the person. Keep-alive Jobs, UC session/token tables, RuntimeLock. Extends the BitMart-shipped Bridge.
+
+\sectionspace
+
+\runsubsection{}
+\descript{Enterprise Databricks Lakehouse \& Multi-Agent Platform}
+\location{Feb 2026 - July 2026 | BitMart} 
+\textbf{Medallion \& multi-BU data:} HDFS--Hive--Doris $\to$ S3 + Unity Catalog; DWD as Bronze; Silver/Gold remodel; Finance models plus ERP/CRM integration (Spot, Futures, Earn, Fiat, Growth). \\
+\textbf{Knowledge \& identity:} Corporate docs synced into vector KBs; Okta SSO and multi-tier access on retrieve. \\
+\textbf{Learning loop:} Specified ingest $\to$ governed memory $\to$ processing $\to$ Lark execution $\to$ eval/write-back---a closed Agent system, not a one-way chatbot.
+
+\sectionspace
+
+\runsubsection{}
+\descript{High-Frequency Liquidity \& Effective Spread Analysis Platform}
+\location{July 2025 - Mar 2026 | BitMart} 
+\textbf{Quantitative Modeling:} Real-time liquidity monitoring and market-impact recovery for the Quant Liquidity desk; LOB resilience via recovery speed, spread mean-reversion, and depth replenishment after shocks. \\
+\textbf{Data Engineering:} Developed a Time-Series Alignment Engine in Databricks using window functions and As-of Joins, seamlessly synchronizing millions of asynchronous trade logs with 1-second and 15-minute LOB snapshots. \\
+\textbf{Business Impact:} Benchmarked spot liquidity quality via Quoted/Effective Spread calculations, successfully optimizing execution strategies and contributing to a 35\% reduction in average effective spread for core trading pairs.
+
+% \sectionspace
+
+% \runsubsection{}
+% \descript{Liquidity \& Effective Spread Analysis}
+% \location{July 2025 - Present | BitMart} 
+% \textbf{Data Synchronization:} Built a Time-Series Alignment Engine in Databricks (PySpark) using window functions and As-of Joins to seamlessly synchronize millions of trade logs with asynchronous 15-minute LOB snapshots. \\
+% \textbf{Metrics \& Impact:} Calculated Effective Spread and Quoted Spread to benchmark spot liquidity quality, contributing to a 30\% reduction in average effective spread for main spot symbols and new-list pairs.
+
+% \runsubsection{Meta-Signal}
+% \descript{| Quantitative Framework}
+% \location{Jan 2024 - Present | Vancouver, BC} 
+% Implemented multiple indicators and alphas for Backtrader framework workflow. Constructed a signal system based on tree models. Provided scripts for automated local MySQL database construction and online data retrieval.
+
+% \sectionspace
+
+% \runsubsection{Sentence Similarity}
+% \descript{| NLP Project}
+% \location{Oct 2021 – Nov 2021 | Vancouver} 
+% Developed an 85\%-accuracy LSTM with Word2Vec model for question pair classification based on sentence similarity. Researched on CNN embedding layer with class weights, TFIDF, and mover distance, etc., 86\% accuracy achieved. \\
+
+% \sectionspace
+
+% \runsubsection{Surgery Outcomes Evaluation}
+% \descript{| Trajectory Analysis}
+% \location{Mar 2021 – May 2021 | Vancouver} 
+% Pre-processed and restructured raw data with 1.5k+ entries. Drafted exploratory univariate analysis, using in-depth visualization and sufficient A/B tests on the patients’ evaluation of surgery outcomes for Distal Radius Fracture. \\
+
+% \sectionspace
+
+% \runsubsection{HCV Patients Identifier}
+% \descript{| Machine Learning}
+% \location{Oct 2020 - Dec 2020 | Vancouver} 
+% Built OvR/MvM multiclass logistic-regression classifiers with 95.4/96.4\% accuracy for patient recognition. Implemented a Naive Bayes Classifier with 93.81\% accuracy as the benchmark.\\
+
+\end{minipage} % The end of the right column
+
+%----------------------------------------------------------------------------------------
+%	SECOND PAGE (EXAMPLE)
+%----------------------------------------------------------------------------------------
+
+%\newpage % Start a new page
+
+%\begin{minipage}[t]{0.33\textwidth} % The left column takes up 33% of the text width of the page
+
+%\section{Example Section}
+
+%\end{minipage} % The end of the left column
+%\hfill
+%\begin{minipage}[t]{0.66\textwidth} % The right column takes up 66% of the text width of the page
+
+%\section{Example Section 2}
+
+%\end{minipage} % The end of the right column
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
