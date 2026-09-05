@@ -1,0 +1,160 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Deedy CV/Resume — Chinese edition
+% Same layout as cv_12.tex; compile with XeLaTeX.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[letterpaper]{deedy-resume}
+
+\usepackage{xeCJK}
+\setCJKmainfont{PingFang SC}
+\setCJKsansfont{PingFang SC}
+
+% Deedy forces Lato via \fontspec, which has no CJK glyphs.
+% Keep Latin look for the name; use PingFang for Chinese titles/body.
+\titleformat{\section}{%
+\color{headings}\fontsize{16pt}{24pt}\selectfont\raggedright}{}{0em}{}
+\titleformat{\subsection}{%
+\color{subheadings}\fontsize{12pt}{12pt}\selectfont\bfseries}{}{0em}{}
+\renewcommand{\runsubsection}[1]{%
+\color{subheadings}\fontsize{12pt}{12pt}\selectfont\bfseries #1\normalfont}
+\renewcommand{\descript}[1]{%
+\color{subheadings}\raggedright\fontsize{11pt}{13pt}\selectfont {#1 \\}\normalfont}
+\renewcommand{\location}[1]{%
+\color{headings}\raggedright\fontsize{10pt}{12pt}\selectfont {#1\\}\normalfont}
+
+\begin{document}
+\hypersetup{%
+    pdfborder = {0 0 0}
+}
+
+\namesection{Zhipeng}{Zhu}{
+温哥华, BC $|$ \href{mailto:raphael.z98@outlook.com}{raphael.z98@outlook.com} $|$ +1 604.834.0061 \\
+\href{https://www.linkedin.com/in/zhipengzhu98/}{linkedin.com/in/zhipengzhu98} $|$ \href{https://zhuzp98.github.io/}{zhuzp98.github.io}
+}
+
+%----------------------------------------------------------------------------------------
+%	LEFT COLUMN
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}[t]{0.33\textwidth}
+
+\section{技能}
+\vspace{1mm}
+
+\subsection{编程}
+Python, R, SQL, Git, Shell
+
+\sectionspace
+
+\subsection{平台与治理}
+Databricks, Unity Catalog, Delta Lake \\
+Vector Search, Spark / PySpark \\
+AWS (S3), Azure Data Factory \\
+Lakeflow, Metric Views \\
+Hive, Doris, Medallion / ETL
+
+\sectionspace
+
+\subsection{Agent 与运行时}
+Genie Agents, Genie One, Genie Ontology \\
+Knowledge Assistants, Databricks Apps \\
+飞书开放平台, OBO 身份穿透 \\
+Okta SSO, MLflow tracing
+
+\sectionspace
+
+\subsection{领域}
+企业级 Agent 架构 \\
+受治理记忆 vs 经验型 RAG \\
+评估 / 回写闭环, HITL 执行
+
+\sectionspace
+
+\section{教育}
+\vspace{1mm}
+
+\subsection{统计学 / 数据科学硕士}
+\descript{英属哥伦比亚大学}
+\location{2022年5月 $|$ 温哥华, BC}
+项目与实习双轨
+
+\sectionspace
+
+\subsection{物理学学士 / 统计与数学辅修}
+\descript{俄亥俄州立大学}
+\location{2020年5月 $|$ 哥伦布, OH}
+Magna Cum Laude
+
+\sectionspace
+
+\section{贡献}
+\vspace{1mm}
+\subsection{Distplyr \& Distionary}
+\descript{R / probaverse}
+用 \texttt{dst\_*} 创建分布对象；dplyr 风格动词做平移、混合与取最大。
+
+\sectionspace
+
+\subsection{写作}
+\descript{zhuzp98.github.io}
+Agent 第一性原理（Context、OOD 沉默）。 \\
+企业级 Agent 五模块闭环。 \\
+Databricks 落地映射（GA/Beta、分阶段）。
+
+\sectionspace
+
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.66\textwidth}
+
+\section{经历}
+\vspace{1mm}
+
+\runsubsection{数据科学家 / AI 架构师}
+\descript{| BitMart}
+\location{2025年2月 -- 2026年7月 $|$ 远程}
+
+\textbf{控制面：}主导数仓$\to$Databricks Lakehouse 迁移，落地 Unity Catalog 治理与 Okta 多层权限。 \\
+\textbf{生产级 Agent：}Genie Agents、Knowledge Assistants、Genie One Agents（原 Supervisor）在 9 个 BU 上线。Finance 按日/周/月生产同步与调度。Genie 采用部门的 ad-hoc 需求：最长 2 天延迟$\to$约 1--2 小时。Finance 固定报表：1--2 天人肉$\to$全自动。 \\
+\textbf{Lark Bridge：}Databricks$\to$飞书 Text/Files/Cards，以及 Sheet$\to$UC 同步；基本替代 Superset CSV 发送——每日 100+ 文件任务、40+ Sheet 同步。
+
+\sectionspace
+
+\runsubsection{数据工程师}
+\descript{| 百威亚太}
+\location{2024年7月 -- 2024年12月 $|$ 上海}
+
+\textbf{数据工程与 Databricks：}搭建中台方案，重建 ODS--DW--ADS 任务依赖以降低冗余，优化 Databricks 集群与 Azure Data Factory ETL。 \\
+\textbf{数据治理与 BI：}落地多环境治理。与供应链、销售共建 DWS 指标并做预处理，支撑风险订单稽核与业务洞察。
+
+\sectionspace
+
+\section{项目}
+\vspace{1mm}
+
+\runsubsection{}
+\descript{\href{https://github.com/zhuzp98/lark-databricks-genie-bot}{Lark $\times$ Databricks Genie Bot}}
+\location{2026年8月 $|$ 开源 (MIT)}
+飞书机器人部署为 Databricks App，以终端用户身份（OBO）调用 Genie，使 UC 权限、deep link 与 RLS 跟随真人。Keep-alive Job、UC 会话/短时 token 表、RuntimeLock。延伸 BitMart 已上线的 Bridge。
+
+\sectionspace
+
+\runsubsection{}
+\descript{企业级 Databricks Lakehouse 与多 Agent 平台}
+\location{2026年2月 -- 2026年7月 $|$ BitMart}
+\textbf{Medallion 与多 BU 数据：}HDFS--Hive--Doris $\to$ S3 + Unity Catalog；DWD 作为 Bronze；重建 Silver/Gold；Finance 模型及 ERP/CRM 接入（现货、合约、Earn、法币、增长）。 \\
+\textbf{知识与身份：}企业文档同步入向量知识库；检索侧 Okta SSO 与多层权限。 \\
+\textbf{学习闭环：}定义 接入$\to$受治理记忆$\to$处理$\to$飞书执行$\to$评估/回写——闭环 Agent，而非单向 chatbot。
+
+\sectionspace
+
+\runsubsection{}
+\descript{高频流动性与有效价差分析平台}
+\location{2025年7月 -- 2026年3月 $|$ BitMart}
+\textbf{量化建模：}服务 Quant Liquidity 的实时流动性监控与冲击恢复；以恢复速度、价差均值回归、冲击后深度回补衡量 LOB 韧性。 \\
+\textbf{数据工程：}在 Databricks 用窗口函数与 As-of Join 做时序对齐，同步百万级异步成交与 1 秒 / 15 分钟 LOB 快照。 \\
+\textbf{业务影响：}用 Quoted/Effective Spread 衡量现货流动性，优化执行策略，核心交易对平均有效价差下降 35\%。
+
+\end{minipage}
+
+\end{document}
