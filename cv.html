@@ -102,9 +102,9 @@
 										</div><br />
 										<div>
 											<ul type="square">
-												<li><b>Control plane: </b> Led warehouse-to-Databricks Lakehouse migration with Unity Catalog governance and Okta multi-tier access.</li>
-												<li><b>Production Agents: </b> Genie Agents, Knowledge Assistants, and Genie One Agents (formerly Supervisor) live across 9 BUs. Finance on daily/weekly/monthly production sync and runs. Ad-hoc for Genie-adopting teams: up to 2-day lag → ~1–2 hours. Finance recurring reports: 1–2 days of manual work → fully automated.</li>
-												<li><b>Lark × Databricks: </b> Shipped Lark Bridge (Databricks → Lark Text / Files / Cards and Lark Sheet → Unity Catalog); largely replaced Superset CSV sends—100+ file jobs/day, 40+ Sheets synced.</li>
+												<li><b>Platform &amp; governance: </b> Led warehouse-to-Databricks Lakehouse migration with Unity Catalog governance and Okta multi-tier access.</li>
+												<li><b>Production Agents: </b> Genie Agents, Knowledge Assistants, and Genie One Agents (formerly Supervisor) live across 9 BUs. Business ad-hoc up to 20× faster; Finance fully automated with 90% process-hour savings (daily/weekly/monthly jobs); data-team ad-hoc volume down 50%.</li>
+												<li><b>Databricks Integration: </b> Conducted Lark × Databricks Integration for production. Replaced Superset dashboard/CSV push with Databricks Workflow Jobs; synced Lark Wiki/Docs/Sheets into Unity Catalog as department Domain Context.</li>
 											</ul>
 										</div>
 
@@ -317,12 +317,14 @@
 								<h3>Activities</h3>
 									<p>
 										<div>
-											<div style="float:left"><b><a href="https://github.com/zhuzp98/lark-databricks-genie-bot">Lark × Databricks Genie Bot</a></b> | Open Source (MIT)</div>
+											<div style="float:left"><b><a href="https://github.com/zhuzp98/lark-databricks-genie-bot">Lark × Databricks Integration Solution</a></b> | Open Source (MIT)</div>
 											<div style="float:right">Aug 2026</div>
 										</div><br />
 										<ul type="square">
-											<li><b>Governed IM channel: </b> Published a Lark (Feishu) WebSocket bot hosted as a Databricks App that calls Genie One / Genie as the end user (OBO), so Unity Catalog grants, deep links, and RLS follow the real person rather than a shared service principal. Extends the BitMart-shipped Lark Bridge (outbound Text / Files / Cards and Lark Sheet → Unity Catalog sync) with an interactive Genie Q&amp;A path.</li>
-											<li><b>Ops on Free Edition: </b> Overnight keep-alive Jobs against the ~24h App pause; Unity Catalog tables for sessions and short-lived OBO tokens; job-failure alerts, RuntimeLock, token-redacting JSON logs; bot copy auto-switches zh/en from the user message.</li>
+											<li><b>Lark Genie Bot: </b> On-Behalf-Of (OBO) identity so Genie One runs inside Lark as the real user (UC grants, deep links, RLS).</li>
+											<li><b>Lark Bridge Bot: </b> Org-level tenant token for bidirectional data and messages between Lark and Databricks.</li>
+											<li><b>Lark Workspace Add-on (Docs/Base): </b> OBO Genie integration inside Lark documents.</li>
+											<li><b>Databricks Lark MCP: </b> MCP tools in Databricks for Genie Code / Genie One—Bridge-like writes, callable live from Genie.</li>
 										</ul>
 
 										<div>
@@ -330,9 +332,8 @@
 											<div style="float:right">Feb 2026 - July 2026</div>
 										</div><br />
 										<ul type="square">
-											<li><b>Medallion &amp; multi-BU data: </b> Migrated HDFS–Hive–Doris pipelines to AWS S3 and Unity Catalog; re-governed DWD as Bronze and remodeled Silver/Gold; Finance models plus ERP/CRM integration across Spot, Futures, Earn, Fiat, and Growth.</li>
-											<li><b>Knowledge &amp; identity: </b> Automated pipelines to sync corporate documentation into vector knowledge bases; Okta SSO and multi-tier access on retrieve.</li>
-											<li><b>Learning loop: </b> Specified ingest → governed memory → processing → Lark execution → eval/write-back as a closed Agent system, not a one-way chatbot.</li>
+											<li><b>Data/Context &amp; Governance: </b> Data ingestion and modelling (S3 to Unity Catalog + Medallion); financial data integration and algorithms (ERP/CRM); corporate docs as Context synced to UC and vector KBs; Okta SSO + RBAC + ABAC.</li>
+											<li><b>Agent Orchestration: </b> Dynamic Inputs → Knowledge/Memory → AI processing → Lark Execution → HITL eval/write-back—a closed, self-learning Agent system.</li>
 										</ul>
 
 										<div>

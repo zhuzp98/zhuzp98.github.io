@@ -154,9 +154,9 @@ Databricks implementation map (GA/Beta, phases).
 \descript{| BitMart}
 \location{Feb 2025 - July 2026 | Remote}
 
-\textbf{Control plane:} Led warehouse$\to$Databricks Lakehouse with Unity Catalog governance and Okta multi-tier access. \\
-\textbf{Production Agents:} Genie Agents, Knowledge Assistants, and Genie One Agents (formerly Supervisor) live across 9 BUs. Finance on daily/weekly/monthly production sync and runs. Ad-hoc for Genie-adopting teams: up to 2-day lag $\to$ $\sim$1--2 hours. Finance recurring reports: 1--2 days manual $\to$ fully automated. \\
-\textbf{Lark Bridge:} Databricks$\to$Lark Text/Files/Cards plus Sheet$\to$UC sync; largely replaced Superset CSV sends---100+ file jobs/day, 40+ Sheets synced.
+\textbf{Platform \& governance:} Led warehouse$\to$Databricks Lakehouse with Unity Catalog governance and Okta multi-tier access. \\
+\textbf{Production Agents:} Genie Agents, Knowledge Assistants, and Genie One Agents (formerly Supervisor) live across 9 BUs. Business ad-hoc up to 20$\times$ faster; Finance fully automated with 90\% process-hour savings (daily/weekly/monthly jobs); data-team ad-hoc volume down 50\%. \\
+\textbf{Databricks Integration:} Conducted Lark $\times$ Databricks Integration for production. Replaced Superset dashboard/CSV push with Databricks Workflow Jobs; synced Lark Wiki/Docs/Sheets into Unity Catalog as department Domain Context.
 
 \sectionspace % Some white space after the section
 
@@ -194,18 +194,17 @@ Databricks implementation map (GA/Beta, phases).
 \vspace{1mm}
 
 \runsubsection{}
-\descript{\href{https://github.com/zhuzp98/lark-databricks-genie-bot}{Lark $\times$ Databricks Genie Bot}}
+\descript{\href{https://github.com/zhuzp98/lark-databricks-genie-bot}{Lark $\times$ Databricks Integration Solution}}
 \location{Aug 2026 | Open Source (MIT)}
-Lark bot on Databricks Apps calling Genie as the end user (OBO) so UC grants, deep links, and RLS follow the person. Keep-alive Jobs, UC session/token tables, RuntimeLock. Extends the BitMart-shipped Bridge.
+Four planes: \textbf{Genie Bot}---OBO Genie One inside Lark; \textbf{Bridge Bot}---org tenant token for bidirectional Lark$\leftrightarrow$Databricks data/messages; \textbf{Workspace Add-on}---OBO Genie in Lark Docs/Base; \textbf{Lark MCP}---Databricks MCP tools for Genie Code/One (Bridge-like writes, live from Genie).
 
 \sectionspace
 
 \runsubsection{}
 \descript{Enterprise Databricks Lakehouse \& Multi-Agent Platform}
 \location{Feb 2026 - July 2026 | BitMart} 
-\textbf{Medallion \& multi-BU data:} HDFS--Hive--Doris $\to$ S3 + Unity Catalog; DWD as Bronze; Silver/Gold remodel; Finance models plus ERP/CRM integration (Spot, Futures, Earn, Fiat, Growth). \\
-\textbf{Knowledge \& identity:} Corporate docs synced into vector KBs; Okta SSO and multi-tier access on retrieve. \\
-\textbf{Learning loop:} Specified ingest $\to$ governed memory $\to$ processing $\to$ Lark execution $\to$ eval/write-back---a closed Agent system, not a one-way chatbot.
+\textbf{Data/Context \& Governance:} Ingest and model S3$\to$Unity Catalog (Medallion); finance data and algorithms (ERP/CRM); corporate docs as Context synced to UC and vector KBs; Okta SSO + RBAC + ABAC. \\
+\textbf{Agent Orchestration:} Dynamic Inputs $\to$ Knowledge/Memory $\to$ AI processing $\to$ Lark Execution $\to$ HITL eval/write-back---a closed, self-learning Agent system.
 
 \sectionspace
 

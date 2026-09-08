@@ -114,9 +114,9 @@ Databricks 落地映射（GA/Beta、分阶段）。
 \descript{| BitMart}
 \location{2025年2月 -- 2026年7月 $|$ 远程}
 
-\textbf{控制面：}主导数仓$\to$Databricks Lakehouse 迁移，落地 Unity Catalog 治理与 Okta 多层权限。 \\
-\textbf{生产级 Agent：}Genie Agents、Knowledge Assistants、Genie One Agents（原 Supervisor）在 9 个 BU 上线。Finance 按日/周/月生产同步与调度。Genie 采用部门的 ad-hoc 需求：最长 2 天延迟$\to$约 1--2 小时。Finance 固定报表：1--2 天人肉$\to$全自动。 \\
-\textbf{Lark Bridge：}Databricks$\to$飞书 Text/Files/Cards，以及 Sheet$\to$UC 同步；基本替代 Superset CSV 发送——每日 100+ 文件任务、40+ Sheet 同步。
+\textbf{平台与治理：}主导数仓$\to$Databricks Lakehouse 迁移，落地 Unity Catalog 治理与 Okta 多层权限。 \\
+\textbf{生产级 Agent：}Genie Agents、Knowledge Assistants、Genie One Agents（原 Supervisor）在 9 个 BU 上线。业务 ad-hoc 最高 20 倍提速；Finance 全面自动化、流程工时节省 90\%（日/周/月任务）；数据部门日常临时需求量下降 50\%。 \\
+\textbf{Databricks Integration：}在生产环境落地 Lark $\times$ Databricks Integration。用 Databricks Workflow Jobs 替代 Superset Dashboard/CSV Push；将飞书 Wiki/Docs/Sheets 同步入 Unity Catalog，建立部门 Domain Context。
 
 \sectionspace
 
@@ -133,18 +133,17 @@ Databricks 落地映射（GA/Beta、分阶段）。
 \vspace{1mm}
 
 \runsubsection{}
-\descript{\href{https://github.com/zhuzp98/lark-databricks-genie-bot}{Lark $\times$ Databricks Genie Bot}}
+\descript{\href{https://github.com/zhuzp98/lark-databricks-genie-bot}{Lark $\times$ Databricks Integration Solution}}
 \location{2026年8月 $|$ 开源 (MIT)}
-飞书机器人部署为 Databricks App，以终端用户身份（OBO）调用 Genie，使 UC 权限、deep link 与 RLS 跟随真人。Keep-alive Job、UC 会话/短时 token 表、RuntimeLock。延伸 BitMart 已上线的 Bridge。
+四条能力：\textbf{Genie Bot}---OBO 在飞书内实现 Genie One；\textbf{Bridge Bot}---组织级 tenant token，飞书$\leftrightarrow$Databricks 双向数据与消息；\textbf{Workspace Add-on}---在飞书 Docs/Base 中 OBO 集成 Genie；\textbf{Lark MCP}---供 Genie Code/One 调用的 Databricks MCP（类 Bridge 写入，可被 Genie 即时使用）。
 
 \sectionspace
 
 \runsubsection{}
 \descript{企业级 Databricks Lakehouse 与多 Agent 平台}
 \location{2026年2月 -- 2026年7月 $|$ BitMart}
-\textbf{Medallion 与多 BU 数据：}HDFS--Hive--Doris $\to$ S3 + Unity Catalog；DWD 作为 Bronze；重建 Silver/Gold；Finance 模型及 ERP/CRM 接入（现货、合约、Earn、法币、增长）。 \\
-\textbf{知识与身份：}企业文档同步入向量知识库；检索侧 Okta SSO 与多层权限。 \\
-\textbf{学习闭环：}定义 接入$\to$受治理记忆$\to$处理$\to$飞书执行$\to$评估/回写——闭环 Agent，而非单向 chatbot。
+\textbf{数据和权限治理：}S3$\to$Unity Catalog 接入与建模（Medallion）；财务数据与算法（ERP/CRM 等）；企业文档作为 Context 入 UC 并建向量知识库；Okta SSO + RBAC + ABAC。 \\
+\textbf{Agent 编排：}Dynamic Inputs $\to$ Knowledge/Memory $\to$ AI processing $\to$ Lark Execution $\to$ HITL eval/write-back---闭环、可自学习的 Agent 系统。
 
 \sectionspace
 
