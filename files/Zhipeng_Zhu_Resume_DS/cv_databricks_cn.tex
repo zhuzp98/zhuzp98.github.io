@@ -1,0 +1,156 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Deedy CV — Databricks DSA / FDE referral, Chinese edition
+% Same content as cv_databricks.tex. Compile with XeLaTeX.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[letterpaper]{deedy-resume}
+
+\usepackage{xeCJK}
+\setCJKmainfont{PingFang SC}
+\setCJKsansfont{PingFang SC}
+
+\titleformat{\section}{%
+\color{headings}\fontsize{16pt}{24pt}\selectfont\raggedright}{}{0em}{}
+\titleformat{\subsection}{%
+\color{subheadings}\fontsize{12pt}{12pt}\selectfont\bfseries}{}{0em}{}
+\renewcommand{\runsubsection}[1]{%
+\color{subheadings}\fontsize{12pt}{12pt}\selectfont\bfseries #1\normalfont}
+\renewcommand{\descript}[1]{%
+\color{subheadings}\raggedright\fontsize{11pt}{13pt}\selectfont {#1 \\}\normalfont}
+\renewcommand{\location}[1]{%
+\color{headings}\raggedright\fontsize{10pt}{12pt}\selectfont {#1\\}\normalfont}
+
+\begin{document}
+\hypersetup{%
+    pdfborder = {0 0 0}
+}
+
+\namesection{Zhipeng}{Zhu}{
+数据与 AI 架构师 $|$ Databricks Lakehouse $|$ 企业级 AI \\
+温哥华, BC $|$ \href{mailto:raphael.z98@outlook.com}{raphael.z98@outlook.com} $|$ +1 604.834.0061 \\
+\href{https://www.linkedin.com/in/zhipengzhu98/}{linkedin.com/in/zhipengzhu98} $|$ \href{https://zhuzp98.github.io/}{zhuzp98.github.io}
+}
+
+\begin{minipage}[t]{0.33\textwidth}
+
+\section{技能}
+\vspace{1mm}
+
+\subsection{数据与 AI 平台}
+Databricks, Unity Catalog, Delta Lake \\
+Spark / PySpark, Lakeflow \\
+Vector Search, Metric Views, MLflow
+
+\sectionspace
+
+\subsection{GenAI 与 Agent}
+Genie Agents, Genie One \\
+Knowledge Assistants, Databricks Apps \\
+MCP, RAG, Agent Evaluation, HITL
+
+\sectionspace
+
+\subsection{数据工程}
+Python, R, SQL, Shell, Git \\
+AWS (S3), Azure Data Factory \\
+Hive, Medallion / ETL--ELT
+
+\sectionspace
+
+\subsection{治理与身份}
+Unity Catalog 治理 \\
+RBAC, ABAC, Okta SSO, OBO 身份
+
+\sectionspace
+
+\subsection{领域}
+企业级 Agent 架构 \\
+受治理记忆 vs 经验型 RAG \\
+HITL 评估 / 回写闭环
+
+\sectionspace
+
+\section{教育}
+\vspace{1mm}
+
+\subsection{统计学 / 数据科学硕士}
+\descript{英属哥伦比亚大学}
+\location{2022年5月 $|$ 温哥华, BC}
+项目与实习双轨
+
+\sectionspace
+
+\subsection{物理学学士 / 统计与数学辅修}
+\descript{俄亥俄州立大学}
+\location{2020年5月 $|$ 哥伦布, OH}
+Magna Cum Laude
+
+\sectionspace
+
+\section{写作 / 开源}
+\vspace{1mm}
+\subsection{Distplyr \& Distionary}
+\descript{R / probaverse}
+用 \texttt{dst\_*} 创建分布对象；dplyr 风格动词做平移、混合与取最大。
+
+\sectionspace
+
+\subsection{zhuzp98.github.io}
+Agent 第一性原理笔记。 \\
+企业级 Agent 五模块闭环。 \\
+Databricks 落地映射。
+
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.66\textwidth}
+
+\section{经历}
+\vspace{1mm}
+
+\runsubsection{数据与 AI 架构师}
+\descript{| BitMart}
+\location{2025年2月 -- 2026年7月 $|$ 远程}
+
+\textbf{平台：}主导数仓$\to$Databricks Lakehouse，覆盖 200+ 数据集、60+ 用户，落地 Unity Catalog 治理与 Okta SSO（RBAC/ABAC），约 10 人交付团队。建立管线工作流，开发节奏提升约 80\%，维护/紧急事件下降约 90\%。 \\
+\textbf{Agents：}主导 Genie Agents、Knowledge Assistants、Genie One Agents 在 9 个 BU（Finance、Operations、Marketing、Liquidity 等）的架构与生产上线。业务 ad-hoc 最高 20 倍提速；Finance 全面自动化、流程工时节省 90\%；数据部门日常临时需求量下降 50\%。 \\
+\textbf{交付：}将 Finance、Operations、Marketing、Liquidity 的需求转成 Databricks 架构；指导实现与生产上线；举办采用工作坊并根据 AI Q\&A 用户反馈迭代。向总裁及高管汇报。协同 AWS Operations、Data Platform、Information Security、Data Intelligence。 \\
+\textbf{集成：}生产落地 Lark $\times$ Databricks Integration——用 Databricks Workflow Jobs 替代 Superset Dashboard/CSV Push；将飞书 Wiki/Docs/Sheets 同步入 Unity Catalog，作为部门 Domain Context。
+
+\sectionspace
+
+\runsubsection{数据工程师}
+\descript{| 百威亚太}
+\location{2024年7月 -- 2024年12月 $|$ 上海}
+
+\textbf{架构：}设计 Databricks 中台方案；重建 ODS - DW - ADS 依赖；优化集群与 Azure Data Factory ETL。 \\
+\textbf{交付：}与供应链、销售共建 DWS 指标与多环境治理，支撑风险订单稽核与业务洞察。
+
+\sectionspace
+
+\section{精选项目}
+\vspace{1mm}
+
+\runsubsection{}
+\descript{\href{https://github.com/zhuzp98/lark-databricks-genie-bot}{Lark $\times$ Databricks Integration Solution}}
+\location{2026年8月 -- 至今 $|$ 开源 (MIT License)}
+受治理身份与双向工作流：\textbf{Genie Bot}（OBO 在飞书内实现 Genie One）；\textbf{Bridge Bot}（组织级 tenant token，飞书$\leftrightarrow$Databricks）；\textbf{Workspace Add-on}（在飞书 Docs/Base 中 OBO 集成 Genie）；\textbf{Lark MCP}（供 Genie Code/One 调用）。
+
+\sectionspace
+
+\runsubsection{}
+\descript{企业级 Databricks Lakehouse 与多 Agent 平台}
+\location{2026年2月 -- 2026年7月 $|$ BitMart}
+\textbf{Lakehouse 与治理：}S3$\to$Unity Catalog（Medallion）；财务数据与算法（ERP/CRM）；企业文档作为 Context 入 UC 并建向量知识库；Okta SSO + RBAC + ABAC。 \\
+\textbf{Agent 编排：}Dynamic Inputs $\to$ Knowledge/Memory $\to$ AI processing $\to$ Lark Execution $\to$ HITL eval/write-back---闭环、可自学习的 Agent 系统。
+
+\sectionspace
+
+\runsubsection{}
+\descript{高频流动性与有效价差平台}
+\location{2025年7月 -- 2026年7月 $|$ BitMart}
+\textbf{分析：}设计 Quant Liquidity 指标（quoted/effective spread、LOB 韧性：恢复/均值回归/深度回补、充足度 A--E$\to$L），成交与 15 分钟 LOB 的 As-of Join；核心交易对平均有效价差下降 35\%。 \\
+\textbf{平台：}将 legacy hive\_metastore 表迁入 Unity Catalog，部分 classic compute 任务迁至 Serverless；重做 liquidity ingestion（REST$\to$全量 WebSocket，BM 现货 184$\to$1407），集群开支约降 50\%；高并行将 3 小时串行长依赖任务压到 30 分钟内。
+
+\end{minipage}
+
+\end{document}

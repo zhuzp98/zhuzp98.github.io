@@ -1,0 +1,148 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Deedy CV — Databricks DSA / FDE referral version
+% Compile with XeLaTeX. Do not overwrite cv_12.tex.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[letterpaper]{deedy-resume}
+
+\begin{document}
+\hypersetup{%
+    pdfborder = {0 0 0}
+}
+
+\namesection{Zhipeng}{Zhu}{
+Data \& AI Architect $|$ Databricks Lakehouse $|$ Enterprise AI \\
+Vancouver, BC $|$ \href{mailto:raphael.z98@outlook.com}{raphael.z98@outlook.com} $|$ +1 604.834.0061 \\
+\href{https://www.linkedin.com/in/zhipengzhu98/}{linkedin.com/in/zhipengzhu98} $|$ \href{https://zhuzp98.github.io/}{zhuzp98.github.io}
+}
+
+%----------------------------------------------------------------------------------------
+%	LEFT COLUMN
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}[t]{0.33\textwidth}
+
+\section{Skills}
+\vspace{1mm}
+
+\subsection{Data \& AI Platform}
+Databricks, Unity Catalog, Delta Lake \\
+Spark / PySpark, Lakeflow \\
+Vector Search, Metric Views, MLflow
+
+\sectionspace
+
+\subsection{GenAI \& Agents}
+Genie Agents, Genie One \\
+Knowledge Assistants, Databricks Apps \\
+MCP, RAG, Agent Evaluation, HITL
+
+\sectionspace
+
+\subsection{Data Engineering}
+Python, R, SQL, Shell, Git \\
+AWS (S3), Azure Data Factory \\
+Hive, Medallion / ETL--ELT
+
+\sectionspace
+
+\subsection{Governance \& Identity}
+Unity Catalog governance \\
+RBAC, ABAC, Okta SSO, OBO identity
+
+\sectionspace
+
+\subsection{Domain}
+Enterprise Agent architecture \\
+Governed memory vs experiential RAG \\
+HITL eval / write-back loops
+
+\sectionspace
+
+\section{Education}
+\vspace{1mm}
+
+\subsection{MSc, Stats / Data Science}
+\descript{University of British Columbia}
+\location{May 2022 | Vancouver, BC}
+Project \& Co-op Double Track
+
+\sectionspace
+
+\subsection{BSc, Physics / Math \& Stats}
+\descript{Ohio State University}
+\location{May 2020 | Columbus, OH}
+Magna Cum Laude
+
+\sectionspace
+
+\section{Writing / OSS}
+\vspace{1mm}
+\subsection{Distplyr \& Distionary}
+\descript{R / probaverse}
+Distribution objects (\texttt{dst\_*}); dplyr-style shift, mix, maximize.
+
+\sectionspace
+
+\subsection{zhuzp98.github.io}
+First-principles Agent notes. \\
+Five-module enterprise Agent loop. \\
+Databricks implementation map.
+
+\end{minipage}
+\hfill
+%----------------------------------------------------------------------------------------
+%	RIGHT COLUMN
+%----------------------------------------------------------------------------------------
+\begin{minipage}[t]{0.66\textwidth}
+
+\section{Experience}
+\vspace{1mm}
+
+\runsubsection{Data \& AI Architect}
+\descript{| BitMart}
+\location{Feb 2025 - July 2026 | Remote}
+
+\textbf{Platform:} Architected warehouse$\to$Databricks Lakehouse spanning 200+ datasets and 60+ users, with Unity Catalog governance and Okta SSO (RBAC/ABAC), with a $\sim$10-engineer delivery team. Established pipeline workflows that improved development pace $\sim$80\% and cut maintenance/emergency events $\sim$90\%. \\
+\textbf{Agents:} Led the architecture and production deployment of Genie Agents, Knowledge Assistants, and Genie One Agents across 9 BUs (Finance, Operations, Marketing, Liquidity etc.). Business ad-hoc up to 20$\times$ faster; Finance fully automated with 90\% process-hour savings; data-team ad-hoc volume down 50\%. \\
+\textbf{Delivery:} Translated requirements from Finance, Operations, Marketing, Liquidity into Databricks architectures; guided implementation and production rollout; ran adoption workshops and iterated from user feedback on AI Q\&A. Presented outcomes to the company president and senior management. Orchestrated AWS Operations, Data Platform, Information Security, and Data Intelligence. \\
+\textbf{Integration:} Delivered production Lark $\times$ Databricks integration---replaced Superset dashboard/CSV push with Databricks Workflow Jobs; synced Lark Wiki/Docs/Sheets into Unity Catalog as department Domain Context.
+
+\sectionspace
+
+\runsubsection{Data Engineer}
+\descript{| Budweiser APAC}
+\location{Jul 2024 - Dec 2024 | Shanghai}
+
+\textbf{Architecture:} Designed Databricks middle-platform solutions; rebuilt ODS - DW - ADS dependencies; optimized clusters and Azure Data Factory ETL. \\
+\textbf{Delivery:} Partnered with supply chain and sales to model DWS metrics and multi-environment governance for risk-order inspection and business insight.
+
+\sectionspace
+
+\section{Selected Projects}
+\vspace{1mm}
+
+\runsubsection{}
+\descript{\href{https://github.com/zhuzp98/lark-databricks-genie-bot}{Lark $\times$ Databricks Integration Solution}}
+\location{Aug 2026 - Present | Open Source (MIT License)}
+Governed identity and bidirectional workflows: \textbf{Genie Bot} (OBO Genie One in Lark); \textbf{Bridge Bot} (org tenant token, Lark$\leftrightarrow$Databricks); \textbf{Workspace Add-on} (OBO Genie in Docs/Base); \textbf{Lark MCP} for Genie Code/One.
+
+\sectionspace
+
+\runsubsection{}
+\descript{Enterprise Databricks Lakehouse \& Multi-Agent Platform}
+\location{Feb 2026 - July 2026 | BitMart}
+\textbf{Lakehouse \& governance:} S3$\to$Unity Catalog (Medallion); finance data and algorithms (ERP/CRM); corporate docs as Context into UC and vector KBs; Okta SSO + RBAC + ABAC. \\
+\textbf{Agent orchestration:} Dynamic Inputs $\to$ Knowledge/Memory $\to$ AI processing $\to$ Lark Execution $\to$ HITL eval/write-back---a closed, self-learning Agent system.
+
+\sectionspace
+
+\runsubsection{}
+\descript{High-Frequency Liquidity \& Effective Spread Platform}
+\location{July 2025 - July 2026 | BitMart}
+\textbf{Analytics:} Designed Quant Liquidity metrics (quoted/effective spread, LOB resilience via recovery / mean-reversion / depth refill, adequacy A--E$\to$L) with As-of Joins of trades vs 15-min LOB; 35\% lower average effective spread on core pairs. \\
+\textbf{Platform:} Migrated legacy hive\_metastore tables to Unity Catalog and a subset of classic-compute jobs to Serverless; replanned liquidity ingestion (REST$\to$full-book WebSocket, BM spot 184$\to$1407), cutting cluster spend $\sim$50\%; high-parallel execution took a 3-hour serial DAG to under 30 min.
+
+\end{minipage}
+
+\end{document}
