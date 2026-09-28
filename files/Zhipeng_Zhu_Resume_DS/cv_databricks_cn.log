@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.6.26)  8 SEP 2026 19:46
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.6.26)  28 SEP 2026 13:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -452,7 +452,7 @@ Package fontspec Info:
 (fontspec)             SC/BI/OT:script=hani;language=dflt;"
 
 
-No file cv_databricks_cn.aux.
+(./cv_databricks_cn.aux)
 \openout1 = `cv_databricks_cn.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 23.
@@ -475,6 +475,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 23.
 LaTeX Font Info:    ... okay on input line 23.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 23.
 LaTeX Font Info:    ... okay on input line 23.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
@@ -510,11 +511,9 @@ LaTeX Font Info:    ... okay on input line 23.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring OFF on input line 23.
+(./cv_databricks_cn.out) (./cv_databricks_cn.out)
 \@outlinefile=\write3
 \openout3 = `cv_databricks_cn.out'.
-
-
-Package hyperref Warning: Rerun to get /PageLabels entry.
 
 
 Package fontspec Info: 
@@ -579,6 +578,7 @@ LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
  line 23.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 23.
+
 isodate: babel.sty, (n)german.sty have not been loaded
 
 Package fontspec Info: 
@@ -662,22 +662,16 @@ L3 programming layer <2022/08/05>
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 0.5pt have occurred.
 
-
-Package rerunfilecheck Warning: File `cv_databricks_cn.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `cv_databricks_cn.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  57B05689E69BB932892598069D88BEBA;1503.
+Package rerunfilecheck Info: File `cv_databricks_cn.out' has not changed.
+(rerunfilecheck)             Checksum: 57B05689E69BB932892598069D88BEBA;1503.
  ) 
 Here is how much of TeX's memory you used:
- 13715 strings out of 473832
- 296176 string characters out of 5729481
- 771005 words of memory out of 5000000
- 36612 multiletter control sequences out of 15000+600000
+ 13706 strings out of 473832
+ 295028 string characters out of 5729481
+ 771821 words of memory out of 5000000
+ 36597 multiletter control sequences out of 15000+600000
  561951 words of font info for 91 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 94i,5n,130p,313b,628s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 94i,5n,130p,338b,603s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on cv_databricks_cn.pdf (1 page).

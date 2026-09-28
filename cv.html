@@ -83,10 +83,10 @@
 								<!--Computer Skills-->
 								<h3>Skills</h3>
 									<ul type="square">
-										<li><b>Data &amp; AI Platform:</b> Databricks, Unity Catalog, Delta Lake, Spark / PySpark, Lakeflow, Vector Search, Metric Views, MLflow.</li>
-										<li><b>GenAI &amp; Agents:</b> Genie Agents, Genie One, Knowledge Assistants, Databricks Apps, MCP, RAG, Agent Evaluation, HITL.</li>
+										<li><b>Data &amp; AI Platform:</b> Databricks, Unity Catalog, Delta Lake, Spark / PySpark, Lakeflow, Vector Search, Metric Views.</li>
+										<li><b>GenAI &amp; Agents:</b> Genie Agents, Genie One, Knowledge Assistants, Databricks Apps, RAG, Agent Evaluation.</li>
 										<li><b>Data Engineering:</b> Python, R, SQL, Shell, Git; AWS (S3), Azure Data Factory, Hive, Medallion / ETL–ELT. Also Pine Script, Java, C++, PowerShell, Zsh, Bash, Snowflake, Doris.</li>
-										<li><b>Governance &amp; Identity:</b> Unity Catalog governance, RBAC, ABAC, Okta SSO, OBO identity, Lark Open Platform.</li>
+										<li><b>Governance &amp; Identity:</b> Unity Catalog governance, RBAC, ABAC, Okta SSO, Lark Open Platform.</li>
 										<li><b>Domain:</b> Enterprise Agent architecture; governed memory vs experiential RAG; HITL eval / write-back loops. Market microstructure and order-book dynamics (liquidity work).</li>
 									</ul>
 								<hr />
@@ -104,10 +104,10 @@
 										</div><br />
 										<div>
 											<ul type="square">
-												<li><b>Platform: </b> Architected warehouse→Databricks Lakehouse spanning 200+ datasets and 60+ users, with Unity Catalog governance and Okta SSO (RBAC/ABAC), with a ~10-engineer delivery team. Established pipeline workflows that improved development pace ~80% and cut maintenance/emergency events ~90%.</li>
-												<li><b>Agents: </b> Led the architecture and production deployment of Genie Agents, Knowledge Assistants, and Genie One Agents across 9 BUs (Finance, Operations, Marketing, Liquidity etc.). Business ad-hoc up to 20× faster; Finance fully automated with 90% process-hour savings; data-team ad-hoc volume down 50%.</li>
-												<li><b>Delivery: </b> Translated requirements from Finance, Operations, Marketing, and Liquidity into Databricks architectures; guided implementation and production rollout; ran adoption workshops and iterated from user feedback on AI Q&amp;A. Presented outcomes to the company president and senior management. Orchestrated AWS Operations, Data Platform, Information Security, and Data Intelligence.</li>
-												<li><b>Integration: </b> Delivered production Lark × Databricks integration—replaced Superset dashboard/CSV push with Databricks Workflow Jobs; synced Lark Wiki/Docs/Sheets into Unity Catalog as department Domain Context.</li>
+												<li><b>Platform: </b> In a three-month landing, personally built the production Databricks Lakehouse (200+ datasets, 60+ users, 9 BUs). Finance and Operations were live within two months. Genie, Metric Views, and Lark workflows cut the fastest ad-hoc requests by up to 20×, finance process hours by about 90%, and data-team attribution requests by about 50%. Development pace about 80% faster; maintenance and emergency events about 90% lower.</li>
+												<li><b>Delivery: </b> Coordinated about 10 engineers across Information Security, Operations, and Data Platform for identity, source-database assessment, and legacy pipelines. Enabled the existing Okta SSO, with RBAC/ABAC and column-level masking. With the DBA team, delivered a one-year batch and realtime migration plan. Partial Superset, Doris, and Hue retirement is underway.</li>
+												<li><b>Cost: </b> Reduced compute cost by about 40%. Weekly Genie usage reviews reduced Genie spend about 30–40%. Presented results to the president and senior management.</li>
+												<li><b>Integration: </b> Published usage guides, engineering docs, and the data-security SOP on the company Lark Wiki, and synced Lark Wiki, Docs, and Sheets into Unity Catalog as department context. Replaced Superset dashboard and CSV push with Databricks Workflow Jobs.</li>
 											</ul>
 										</div>
 
@@ -327,16 +327,7 @@
 											<li><b>Lark Genie Bot: </b> On-Behalf-Of (OBO) identity so Genie One runs inside Lark as the real user (UC grants, deep links, RLS).</li>
 											<li><b>Lark Bridge Bot: </b> Org-level tenant token for bidirectional data and messages between Lark and Databricks.</li>
 											<li><b>Lark Workspace Add-on (Docs/Base): </b> OBO Genie integration inside Lark documents.</li>
-											<li><b>Databricks Lark MCP: </b> MCP tools in Databricks for Genie Code / Genie One—Bridge-like writes, callable live from Genie.</li>
-										</ul>
-
-										<div>
-											<div style="float:left"><b>Enterprise Databricks Lakehouse & Multi-Agent Platform</b> | BitMart, Remote</div>
-											<div style="float:right">Feb 2026 - July 2026</div>
-										</div><br />
-										<ul type="square">
-											<li><b>Lakehouse &amp; governance: </b> S3→Unity Catalog (Medallion); finance data and algorithms (ERP/CRM); corporate docs as Context into UC and vector KBs; Okta SSO + RBAC + ABAC.</li>
-											<li><b>Agent orchestration: </b> Dynamic Inputs → Knowledge/Memory → AI processing → Lark Execution → HITL eval/write-back—a closed, self-learning Agent system.</li>
+											<li><b>Databricks Lark MCP: </b> MCP tools in Databricks for Genie Code / Genie One—Bridge-like writes, callable live from Genie. MLflow evaluation and HITL write-back live in this project.</li>
 										</ul>
 
 										<div>
@@ -345,7 +336,7 @@
 										</div><br />
 										<ul type="square">
 											<li><b>Analytics: </b> Designed Quant Liquidity metrics (quoted/effective spread, LOB resilience via recovery / mean-reversion / depth refill, adequacy A–E→L) with As-of Joins of trades vs 15-min LOB; 35% lower average effective spread on core pairs.</li>
-											<li><b>Platform: </b> Migrated legacy hive_metastore tables to Unity Catalog and a subset of classic-compute jobs to Serverless; replanned liquidity ingestion (REST→full-book WebSocket, BM spot 184→1407), cutting cluster spend ~50%; high-parallel execution took a 3-hour serial DAG to under 30 min.</li>
+											<li><b>Platform: </b> Migrated legacy hive_metastore tables to Unity Catalog. Moved some classic jobs to Serverless, and moved the 15-minute order-book job from Serverless onto an existing classic cluster; liquidity cluster spend about 50% lower. BitMart spot books moved from REST to full WebSocket (184 to 1,407 pairs); other exchanges stayed on REST. A serial DAG of about 3 hours now finishes in under 30 min.</li>
 										</ul>
 										
 										<div>
